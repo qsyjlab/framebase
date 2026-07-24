@@ -1,8 +1,8 @@
-# @framebase/element-plus-pro-components
+# @framebase/element-plus-theme
 
-## 0.2.0
+## 0.1.1
 
-### Minor Changes
+### Patch Changes
 
 - 5c133b2: 补齐组件构建产物所需的 Element Plus 样式，并确保自动解析的组件统一使用同一个 Element Plus 运行时入口。
 
@@ -21,9 +21,3 @@
   移除重复的 `ProTableSearch`、`ProTableWithSearch` 和 `ProQueryFilter` 公共 API，统一使用 `ProForm` 与 `ProTable` 直接组合。
 
   支持使用完整的 Element Plus 主色色阶覆盖主题，并恢复表格表头的原始样式。
-
-## 0.1.1
-
-### Patch Changes
-
-- 5d1cea8: Import Element Plus components and their styles during the package build so consumers do not need to register Element Plus globally.
