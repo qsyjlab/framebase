@@ -2,7 +2,8 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "composite": false,
-    "tsBuildInfoFile": "../../node_modules/.tmp/playground.tsbuildinfo"
+    "tsBuildInfoFile": "../../node_modules/.tmp/playground.tsbuildinfo",
+    "paths": {}
   },
   "include": ["src/**/*.ts", "src/**/*.vue"]
 }

@@ -1,4 +1,10 @@
-import type { FormModel, FormSchema, ProFormCollapsedRows, ProFormProps } from './types/form'
+import type {
+  FormModel,
+  FormSchema,
+  ProFormCollapsedRows,
+  ProFormProps,
+  ProFormSubmitterConfig
+} from './types/form'
 import type { ProRequestLifecycle } from '../../shared/pro-request'
 
 export const emitsEnums = {
@@ -37,4 +43,8 @@ export type NormalizedFormProps<TModel extends FormModel> = ProFormProps<TModel>
   collapsedRows: ProFormCollapsedRows
   expandOnInvalid: boolean
   autoRequest: boolean
+}
+
+export function resolveFormCollapseActionVisible(inline: boolean, config: ProFormSubmitterConfig) {
+  return config.showCollapse ?? inline
 }

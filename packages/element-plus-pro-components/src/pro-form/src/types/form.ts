@@ -20,6 +20,8 @@ export interface ProFormSubmitterConfig {
   resetText?: string
   showSubmit?: boolean
   showReset?: boolean
+  /** 是否显示展开/收起操作；默认仅 inline 表单显示。 */
+  showCollapse?: boolean
   submitButtonProps?: Partial<ButtonProps>
   resetButtonProps?: Partial<ButtonProps>
   col?: Partial<ColProps>
@@ -124,6 +126,12 @@ export interface FormSchema<
   col?: Partial<ColProps>
 }
 
+/** ProForm 字段数组的简写类型。 */
+export type ProFormSchema<
+  TModel extends FormModel = FormModel,
+  TOption extends object = ProOption
+> = FormSchema<TModel, TOption>[]
+
 export type FormFieldProp = string | string[]
 export type FormValidationCallback = (isValid: boolean, invalidFields?: unknown) => void
 
@@ -165,6 +173,7 @@ export interface ProFormProps<TModel extends FormModel = FormModel>
   inline?: boolean
   enableEffect?: boolean
   layout?: boolean
+  /** undefined 时仅 inline 表单显示默认 actions；false 时始终隐藏。 */
   submitter?: false | ProFormSubmitterConfig
   collapsible?: boolean
   collapsed?: boolean

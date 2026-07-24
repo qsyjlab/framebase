@@ -2,8 +2,9 @@ import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
+import ElementPlusStyles from 'unplugin-element-plus/vite'
 import Components from 'unplugin-vue-components/vite'
-import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+import { createElementPlusResolvers } from '../../build/element-plus-resolver'
 
 const external = new Set([
   'vue',
@@ -21,7 +22,12 @@ export default defineConfig({
     vueJsx(),
     Components({
       dts: false,
-      resolvers: [ElementPlusResolver()]
+      resolvers: [createElementPlusResolvers()]
+    }),
+    ElementPlusStyles({
+      // Directive styles are already supplied by ElementPlusResolver using
+      // their real component names (loading, popover and infinite-scroll).
+      ignoreComponents: ['LoadingDirective', 'PopoverDirective', 'InfiniteScroll']
     })
   ],
   build: {

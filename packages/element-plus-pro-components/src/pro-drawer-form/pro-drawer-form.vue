@@ -11,7 +11,7 @@
   >
     <slot name="before-form" />
     <pro-form
-      ref="formRef"
+      ref="form"
       v-bind="formProps"
       :model="initialValues"
       :fields="fields"
@@ -90,7 +90,7 @@ const emit = defineEmits<{
 }>()
 const visible = defineModel<boolean>({ default: false })
 const currentTitle = ref('')
-const formRef = useTemplateRef<FormMethodsType<TModel>>('formRef')
+const formRef = useTemplateRef<FormMethodsType<TModel>>('form')
 const reservedSlots = ['before-form', 'after-form', 'footer']
 
 const formProps = computed(() =>

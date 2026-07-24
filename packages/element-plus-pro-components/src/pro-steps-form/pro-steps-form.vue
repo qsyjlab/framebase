@@ -14,7 +14,7 @@
       <slot name="before-step" :step="currentStep" :current="current" />
       <pro-form
         :key="currentStep.key"
-        ref="formRef"
+        ref="stepForm"
         v-bind="currentStep.formProps"
         :model="values"
         :fields="currentStep.fields"
@@ -53,7 +53,7 @@
 
 <script setup lang="ts" generic="TModel extends FormModel = FormModel, TResult = unknown">
 import { computed, nextTick, ref, shallowRef, useTemplateRef, watch } from 'vue'
-import { cloneDeep } from 'lodash-es'
+import { cloneDeep, isEqual } from 'lodash-es'
 import { ElButton, ElStep, ElSteps } from 'element-plus'
 import {
   ProForm,
@@ -83,7 +83,7 @@ const current = defineModel<number>('current', { default: 0 })
 const values = shallowRef<TModel>(cloneDeep(props.initialValues))
 const loading = ref(false)
 const result = ref<TResult>()
-const formRef = useTemplateRef<FormMethodsType<TModel>>('formRef')
+const formRef = useTemplateRef<FormMethodsType<TModel>>('stepForm')
 const form = useProForm(formRef)
 const reservedSlots = ['before-step', 'after-step', 'actions']
 const currentStep = computed(() => props.steps[current.value])
@@ -98,6 +98,7 @@ watch(
 
 function handleEffect(nextValues: FormModel) {
   const typedValues = cloneDeep(nextValues) as TModel
+  if (isEqual(values.value, typedValues)) return
   values.value = typedValues
   emit('update:model-value', cloneDeep(typedValues))
 }

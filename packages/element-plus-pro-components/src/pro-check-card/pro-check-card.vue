@@ -1,6 +1,6 @@
 <template>
   <button
-    ref="buttonRef"
+    ref="button"
     type="button"
     class="pro-check-card"
     :class="{ 'is-checked': checked, 'is-disabled': disabled, 'is-loading': loading }"
@@ -49,7 +49,7 @@ const emit = defineEmits<{
   change: [value: TValue | TValue[] | undefined]
 }>()
 defineSlots<ProCheckCardSlots>()
-const buttonRef = useTemplateRef<HTMLButtonElement>('buttonRef')
+const buttonRef = useTemplateRef<HTMLButtonElement>('button')
 
 const checked = computed(() =>
   props.multiple

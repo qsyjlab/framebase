@@ -6,14 +6,12 @@ import {
   ProField,
   ProForm,
   ProList,
-  ProQueryFilter,
   ProSelect,
   ProTable,
   ProTreeSelect,
   useProDescriptions,
   useProForm,
   useProList,
-  useProQueryFilter,
   useProSelect,
   useProTable,
   useProTree,
@@ -22,8 +20,8 @@ import {
   type ProDescriptionColumns,
   type ProDescriptionsInstance,
   type ProFormInstance,
+  type ProFormSchema,
   type ProListInstance,
-  type ProQueryFilterInstance,
   type ProSelectInstance,
   type ProTableColumns,
   type ProTableInstance,
@@ -47,11 +45,6 @@ interface UserRecord {
 
 interface UserQuery {
   keyword?: string
-}
-
-interface UserFilterParams {
-  keyword?: string
-  enabled?: boolean
 }
 
 interface UserFormModel {
@@ -100,12 +93,6 @@ type ListRequestPhaseResult = Expect<
   >
 >
 
-const queryFilterRef = shallowRef<ProQueryFilterInstance<UserQuery, UserFilterParams> | null>(null)
-const queryFilter = useProQueryFilter(queryFilterRef)
-type QueryFilterResult = Expect<
-  Equal<Awaited<ReturnType<typeof queryFilter.submit>>, UserFilterParams | undefined>
->
-
 const descriptionsRef = shallowRef<ProDescriptionsInstance<UserRecord, UserQuery> | null>(null)
 const descriptions = useProDescriptions(descriptionsRef)
 type DescriptionsDataResult = Expect<
@@ -124,6 +111,10 @@ type SelectRequestPhaseResult = Expect<
 
 const formRef = shallowRef<ProFormInstance<UserFormModel> | null>(null)
 const form = useProForm(formRef)
+const formSchema: ProFormSchema<UserFormModel> = [
+  { key: 'name', name: 'user.name', label: '姓名' },
+  { key: 'enabled', name: 'enabled', label: '启用' }
+]
 type FormValuesResult = Expect<
   Equal<Awaited<ReturnType<typeof form.getFieldsValue>>, UserFormModel>
 >
@@ -155,16 +146,15 @@ void [
   ProField,
   ProForm,
   ProList,
-  ProQueryFilter,
   ProSelect,
   ProTable,
   ProTreeSelect,
   columns,
   descriptionColumns,
+  formSchema,
   requestUsers,
   table,
   list,
-  queryFilter,
   descriptions,
   select,
   form,
@@ -180,7 +170,6 @@ export type {
   FormValuesResult,
   ListDataResult,
   ListRequestPhaseResult,
-  QueryFilterResult,
   SelectOptionsResult,
   SelectRequestPhaseResult,
   TableDataResult,

@@ -145,7 +145,8 @@ export function createFormCollapsePlan<TModel extends FormModel>(
   const submitterSpan = options.hasSubmitter ? Math.max(1, submitterCol.span) : 0
   const maxCollapsedRows = resolveCollapsedRows(options.collapsedRows, options.viewportWidth)
   const collapsedFieldCount = getCollapsedFieldCount(items, submitterSpan, maxCollapsedRows)
-  const canCollapse = options.collapsible && collapsedFieldCount < items.length
+  const fieldLayout = getFieldLayout(items)
+  const canCollapse = options.collapsible && fieldLayout.rowCount > maxCollapsedRows
   const collapsed = options.collapsed && canCollapse
   const renderedItems = collapsed ? items.slice(0, collapsedFieldCount) : items
 

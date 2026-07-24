@@ -1,0 +1,14 @@
+.el-button.el-button {
+  border-radius: var(--framebase-border-radius-base);
+  font-weight: 500;
+}
+
+.el-input .el-input__wrapper,
+.el-select .el-select__wrapper {
+  border-radius: var(--framebase-border-radius-base);
+  box-shadow: inset 0 0 0 1px var(--framebase-color-border);
+}
+
+.el-textarea .el-textarea__inner {
+  border-radius: var(--framebase-border-radius-base);
+}

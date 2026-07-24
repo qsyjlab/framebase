@@ -14,11 +14,21 @@ html.dark {
   --framebase-color-text-placeholder: rgba(255, 255, 255, 0.45);
   --framebase-shadow-light: 0 1px 6px rgba(0, 0, 0, 0.32);
   --framebase-shadow-base: 0 6px 18px rgba(0, 0, 0, 0.45);
+  --framebase-table-header-bg: #262626;
+  --framebase-table-header-hover-bg: #303030;
+  --framebase-table-row-hover-bg: #262626;
+  --framebase-table-current-row-bg: rgba(22, 119, 255, 0.18);
+  --framebase-table-stripe-bg: #222222;
+  --framebase-table-border-color: #303030;
 
   --el-color-primary: var(--framebase-color-primary);
-  --el-color-primary-rgb: 22, 119, 255;
+  --el-color-primary-rgb: var(--framebase-color-primary-rgb);
+  --el-color-primary-light-1: var(--framebase-color-primary-light-1);
+  --el-color-primary-light-2: var(--framebase-color-primary-light-2);
   --el-color-primary-light-3: var(--framebase-color-primary-light-3);
+  --el-color-primary-light-4: var(--framebase-color-primary-light-4);
   --el-color-primary-light-5: var(--framebase-color-primary-light-5);
+  --el-color-primary-light-6: var(--framebase-color-primary-light-6);
   --el-color-primary-light-7: var(--framebase-color-primary-light-7);
   --el-color-primary-light-8: var(--framebase-color-primary-light-8);
   --el-color-primary-light-9: var(--framebase-color-primary-light-9);

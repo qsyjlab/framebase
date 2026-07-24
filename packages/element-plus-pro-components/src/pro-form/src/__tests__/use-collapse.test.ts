@@ -6,6 +6,7 @@ import {
   resolveFormCol,
   type FormCollapsePlanOptions
 } from '../use-collapse'
+import { resolveFormCollapseActionVisible } from '../form-props'
 
 function createFields(...cols: NonNullable<FormSchema['col']>[]): FormSchema[] {
   return cols.map((col, index) => ({ key: `field-${index + 1}`, col }))
@@ -25,15 +26,38 @@ function createPlan(overrides: Partial<FormCollapsePlanOptions> = {}) {
 }
 
 describe('pro form collapse layout', () => {
-  it('keeps two span-8 fields beside a span-5 submitter in one collapsed row', () => {
+  it('shows the collapse action for inline forms by default and allows explicit control', () => {
+    expect(resolveFormCollapseActionVisible(true, {})).toBe(true)
+    expect(resolveFormCollapseActionVisible(false, {})).toBe(false)
+    expect(resolveFormCollapseActionVisible(true, { showCollapse: false })).toBe(false)
+    expect(resolveFormCollapseActionVisible(false, { showCollapse: true })).toBe(true)
+  })
+
+  it('does not show collapse controls when all fields fit in one row', () => {
     const plan = createPlan({ fields: createFields({ span: 8 }, { span: 8 }, { span: 8 }) })
+
+    expect(plan.canCollapse).toBe(false)
+    expect(plan.collapsed).toBe(false)
+    expect(plan.fieldVisibilityMap).toEqual({
+      'field-1': true,
+      'field-2': true,
+      'field-3': true
+    })
+    expect(plan.submitterCol).toMatchObject({ span: 5, offset: 19 })
+  })
+
+  it('reserves submitter space after fields actually exceed the collapsed row count', () => {
+    const plan = createPlan({
+      fields: createFields({ span: 8 }, { span: 8 }, { span: 8 }, { span: 8 })
+    })
 
     expect(plan.canCollapse).toBe(true)
     expect(plan.collapsed).toBe(true)
     expect(plan.fieldVisibilityMap).toEqual({
       'field-1': true,
       'field-2': true,
-      'field-3': false
+      'field-3': false,
+      'field-4': false
     })
     expect(plan.submitterCol).toMatchObject({ span: 5, offset: 3 })
   })
@@ -91,7 +115,7 @@ describe('pro form collapse layout', () => {
       'field-1': false,
       'field-2': true,
       'field-3': true,
-      'field-4': false
+      'field-4': true
     })
   })
 
@@ -104,7 +128,7 @@ describe('pro form collapse layout', () => {
       'field-1': false,
       'field-2': true,
       'field-3': true,
-      'field-4': false
+      'field-4': true
     })
   })
 
@@ -114,7 +138,7 @@ describe('pro form collapse layout', () => {
       collapsed: false
     })
 
-    expect(plan.canCollapse).toBe(true)
+    expect(plan.canCollapse).toBe(false)
     expect(plan.collapsed).toBe(false)
     expect(plan.fieldVisibilityMap).toEqual({
       'field-1': true,

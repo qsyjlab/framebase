@@ -1,0 +1,45 @@
+.el-table.el-table {
+  --el-table-border-color: var(--framebase-table-border-color);
+  --el-table-text-color: var(--framebase-color-text-regular);
+  --el-table-row-hover-bg-color: var(--framebase-table-row-hover-bg);
+  --el-table-current-row-bg-color: var(--framebase-table-current-row-bg);
+  --el-table-bg-color: var(--framebase-color-bg);
+  --el-table-tr-bg-color: var(--framebase-color-bg);
+  --el-table-expanded-cell-bg-color: var(--framebase-color-fill-light);
+  --el-table-fixed-box-shadow: var(--framebase-shadow-light);
+  border-radius: var(--framebase-border-radius-base);
+
+  .el-table__inner-wrapper {
+    border-radius: inherit;
+  }
+
+  .cell {
+    line-height: 22px;
+  }
+
+  .el-table__cell {
+    padding: 12px 0;
+  }
+
+  .el-table__body tr > td.el-table__cell {
+    transition: background-color var(--el-transition-duration-fast);
+  }
+
+  .el-table__footer-wrapper tfoot td.el-table__cell {
+    background-color: var(--framebase-table-header-bg);
+    color: var(--framebase-color-text-primary);
+    font-weight: 600;
+  }
+}
+
+.el-table.el-table--large .el-table__cell {
+  padding: 16px 0;
+}
+
+.el-table.el-table--small .el-table__cell {
+  padding: 8px 0;
+}
+
+.el-table.el-table--striped .el-table__body tr.el-table__row--striped td.el-table__cell {
+  background-color: var(--framebase-table-stripe-bg);
+}

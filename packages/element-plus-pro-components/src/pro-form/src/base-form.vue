@@ -46,7 +46,7 @@
           <form-action
             :config="submitterConfig"
             :collapsed="collapsed"
-            :hidden-collapse-button="!layout || !canCollapse"
+            :hidden-collapse-button="!layout || !canCollapse || !showCollapseAction"
           />
         </slot>
       </form-item-layout-wrapper>
@@ -58,7 +58,11 @@
 import { computed } from 'vue'
 import { ElForm, type FormInstance as ElFormInstance } from 'element-plus'
 import { useProConfigProvider } from '../../pro-config-provider'
-import { type FormEmit, type NormalizedFormProps } from './form-props'
+import {
+  resolveFormCollapseActionVisible,
+  type FormEmit,
+  type NormalizedFormProps
+} from './form-props'
 import { useForm } from './form'
 import { createFormContext } from './provider'
 import FormAction from './form-action.vue'
@@ -131,6 +135,9 @@ const {
   props: props as NormalizedFormProps<TModel> & { fields: FormSchema<TModel>[] },
   emits
 })
+const showCollapseAction = computed(() =>
+  resolveFormCollapseActionVisible(props.inline, submitterConfig.value)
+)
 
 createFormContext({
   formModel,

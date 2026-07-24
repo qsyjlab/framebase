@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": false,
+    "noEmit": true,
+    "paths": {},
+    "tsBuildInfoFile": "../../node_modules/.tmp/playground-node.tsbuildinfo"
+  },
+  "include": ["vite.config.ts", "../../build/**/*.ts"]
+}

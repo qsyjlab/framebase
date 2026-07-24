@@ -27,7 +27,7 @@ import { ProTable } from '@framebase/element-plus-pro-components/pro-table'
 `ProTreeSelect` 可通过 `request` 加载整树，通过 `pathRequest` 补全异步选中路径。
 
 命令式调用使用 Vue 3.5 模板 Ref 与对应 Hook，例如 `useProTable()`、`useProSelect()`、
-`useProForm()`、`useProQueryFilter()` 和 `useProTreeSelect()`，无需注册事件。
+`useProForm()` 和 `useProTreeSelect()`，无需注册事件。
 
 ## Peer Dependencies
 

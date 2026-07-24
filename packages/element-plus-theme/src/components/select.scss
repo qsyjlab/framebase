@@ -11,11 +11,11 @@
 }
 
 .el-select-dropdown {
-  &__list {
+  .el-select-dropdown__list {
     padding: 6px 8px;
   }
 
-  &__item {
+  .el-select-dropdown__item {
     height: var(--framebase-control-height);
     padding: 0 12px;
     border-radius: var(--framebase-border-radius-base);
@@ -23,7 +23,7 @@
     font-weight: 400;
     line-height: var(--framebase-control-height);
 
-    & + & {
+    & + .el-select-dropdown__item {
       margin-top: 2px;
     }
 

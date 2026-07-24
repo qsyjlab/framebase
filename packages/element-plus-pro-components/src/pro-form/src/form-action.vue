@@ -1,6 +1,6 @@
 <template>
   <div class="form-action">
-    <el-space>
+    <div class="form-action__content">
       <el-button
         v-if="config.showSubmit !== false"
         type="primary"
@@ -13,7 +13,7 @@
         {{ config.resetText ?? '重置' }}
       </el-button>
       <toggle-arrow v-if="!hiddenCollapseButton" :expanded="!collapsed" @click="toggleCollapse" />
-    </el-space>
+    </div>
   </div>
 </template>
 <script setup lang="ts">
@@ -43,5 +43,16 @@ const { submit, reset, toggleCollapse } = useFormContext()
   display: flex;
   justify-content: v-bind(justifyContent);
   width: 100%;
+
+  &__content {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  :deep(.el-button + .el-button) {
+    margin-left: 0;
+  }
 }
 </style>
