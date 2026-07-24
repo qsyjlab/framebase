@@ -3,20 +3,40 @@
     <div class="demo-grid">
       <DemoBlock title="ProSelect" description="单选、多选、字段映射和远程请求。">
         <ProSelect v-model="city" :options="cityOptions" placeholder="选择部署城市" clearable />
-        <ProSelect v-model="cities" :options="cityOptions" multiple collapse-tags placeholder="选择多个城市" class="choice-control" />
+        <ProSelect
+          v-model="cities"
+          :options="cityOptions"
+          multiple
+          collapse-tags
+          placeholder="选择多个城市"
+          class="choice-control"
+        />
         <div class="demo-value">{{ city }} / {{ cities }}</div>
       </DemoBlock>
 
       <DemoBlock title="ProRadioGroup / ProCheckboxGroup" description="统一选项结构与按钮模式。">
         <ProRadioGroup v-model="environment" :options="environmentOptions" option-type="button" />
-        <ProCheckboxGroup v-model="modules" :options="moduleOptions" :max="3" class="choice-control" />
+        <ProCheckboxGroup
+          v-model="modules"
+          :options="moduleOptions"
+          :max="3"
+          class="choice-control"
+        />
         <div class="demo-value">{{ environment }} / {{ modules }}</div>
       </DemoBlock>
     </div>
 
-    <DemoBlock title="ProCheckCard / ProCheckCardGroup" description="单卡片、单选组、多选组和键盘导航。">
+    <DemoBlock
+      title="ProCheckCard / ProCheckCardGroup"
+      description="单卡片、单选组、多选组和键盘导航。"
+    >
       <div class="check-grid">
-        <ProCheckCard v-model="featured" value="featured" title="独立能力卡片" description="ProCheckCard 也可以脱离 Group 单独使用。" />
+        <ProCheckCard
+          v-model="featured"
+          value="featured"
+          title="独立能力卡片"
+          description="ProCheckCard 也可以脱离 Group 单独使用。"
+        />
         <ProCheckCardGroup v-model="plan" :options="planOptions" :columns="3" />
       </div>
       <div class="demo-value">featured: {{ featured }} · plan: {{ plan }}</div>
@@ -24,11 +44,25 @@
 
     <div class="demo-grid">
       <DemoBlock title="ProTree" description="搜索、勾选、当前节点与展开控制。">
-        <ProTree v-model="checkedNodes" :data="treeData" node-key="id" checkable searchable default-expand-all />
+        <ProTree
+          v-model="checkedNodes"
+          :data="treeData"
+          node-key="id"
+          checkable
+          searchable
+          default-expand-all
+        />
         <div class="demo-value">checked: {{ checkedNodes }}</div>
       </DemoBlock>
       <DemoBlock title="ProTreeSelect" description="树形数据选择与多选。">
-        <ProTreeSelect v-model="treeValue" :data="treeData" node-key="id" multiple check-strictly placeholder="选择组织节点" />
+        <ProTreeSelect
+          v-model="treeValue"
+          :data="treeData"
+          node-key="id"
+          multiple
+          check-strictly
+          placeholder="选择组织节点"
+        />
         <div class="demo-value">selected: {{ treeValue }}</div>
       </DemoBlock>
     </div>
@@ -81,12 +115,32 @@ const planOptions: ProCheckCardOption<Plan>[] = [
   { value: 'enterprise', title: '企业版', description: '审计、组织权限和专属支持。' }
 ]
 const treeData = [
-  { id: 'product', label: '产品中心', children: [{ id: 'design', label: '设计系统' }, { id: 'growth', label: '增长产品' }] },
-  { id: 'engineering', label: '技术中心', children: [{ id: 'frontend', label: '前端平台' }, { id: 'backend', label: '服务端平台' }] }
+  {
+    id: 'product',
+    label: '产品中心',
+    children: [
+      { id: 'design', label: '设计系统' },
+      { id: 'growth', label: '增长产品' }
+    ]
+  },
+  {
+    id: 'engineering',
+    label: '技术中心',
+    children: [
+      { id: 'frontend', label: '前端平台' },
+      { id: 'backend', label: '服务端平台' }
+    ]
+  }
 ]
 </script>
 
 <style scoped>
-.choice-control { width: 100%; margin-top: 14px; }
-.check-grid { display: grid; gap: 14px; }
+.choice-control {
+  width: 100%;
+  margin-top: 14px;
+}
+.check-grid {
+  display: grid;
+  gap: 14px;
+}
 </style>

@@ -43,5 +43,7 @@ const tasks = Array.from({ length: 7 }, (_, index) => ({
   content: `优先级 P${(index % 3) + 1} · 预计 ${index + 1} 天完成`
 }))
 
-function openTask(title: string) { ElMessage.info(`打开 ${title}`) }
+function openTask(title: string) {
+  ElMessage.info(`打开 ${title}`)
+}
 </script>

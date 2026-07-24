@@ -20,7 +20,12 @@
           <ProCard title="局部配置预览" subtitle="组件继承 Provider 尺寸与主题">
             <div class="button-row">
               <el-button type="primary">主要操作</el-button>
-              <ProSelect v-model="member" :options="members" placeholder="选择成员" style="width: 220px" />
+              <ProSelect
+                v-model="member"
+                :options="members"
+                placeholder="选择成员"
+                style="width: 220px"
+              />
             </div>
           </ProCard>
           <ProDescriptions :data="details" :columns="columns" title="配置详情" />
@@ -32,14 +37,28 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { ProCard, ProConfigProvider, ProDescriptions, ProSelect, type ProDescriptionColumns } from '@framebase/element-plus-pro-components'
+import {
+  ProCard,
+  ProConfigProvider,
+  ProDescriptions,
+  ProSelect,
+  type ProDescriptionColumns
+} from '@framebase/element-plus-pro-components'
 import DemoBlock from '../components/DemoBlock.vue'
 
-interface Details { theme: string; primary: string; size: string }
+interface Details {
+  theme: string
+  primary: string
+  size: string
+}
 const dark = ref(false)
 const size = ref<'small' | 'default' | 'large'>('default')
 const member = ref<number>()
-const members = [{ label: '陈晨', value: 1 }, { label: '林涛', value: 2 }, { label: '周宁', value: 3 }]
+const members = [
+  { label: '陈晨', value: 1 },
+  { label: '林涛', value: 2 },
+  { label: '周宁', value: 3 }
+]
 const themeVariables = {
   '--el-color-primary': '#165bbc',
   '--el-color-primary-rgb': '22, 91, 188',
@@ -63,6 +82,18 @@ const columns: ProDescriptionColumns<Details> = [
 </script>
 
 <style scoped>
-.provider-preview { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; padding: 16px; border-radius: 7px; background: var(--el-bg-color-page); color: var(--el-text-color-primary); }
-@media (max-width: 760px) { .provider-preview { grid-template-columns: 1fr; } }
+.provider-preview {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  padding: 16px;
+  border-radius: 7px;
+  background: var(--el-bg-color-page);
+  color: var(--el-text-color-primary);
+}
+@media (max-width: 760px) {
+  .provider-preview {
+    grid-template-columns: 1fr;
+  }
+}
 </style>
