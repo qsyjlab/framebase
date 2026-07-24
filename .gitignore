@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.output/
+.cache/
+coverage/
+*.log
+*.tgz
+.DS_Store
+playwright-report/
+test-results/

@@ -1,0 +1,25 @@
+{
+  "name": "@framebase/playground",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "pnpm run typecheck && vite build",
+    "typecheck": "vue-tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "@framebase/element-plus-pro-components": "workspace:*",
+    "@framebase/element-plus-theme": "workspace:*",
+    "@element-plus/icons-vue": "2.3.1",
+    "element-plus": "2.9.7",
+    "vue": "3.5.13"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "6.0.3",
+    "typescript": "5.8.3",
+    "vite": "8.0.0",
+    "vue-tsc": "3.2.6"
+  }
+}
