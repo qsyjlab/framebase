@@ -1,0 +1,358 @@
+:root {
+  /* 主题色 - Element Plus 蓝 */
+  --vp-c-brand: #1677ff;
+  --vp-c-brand-light: #4096ff;
+  --vp-c-brand-dark: #0958d9;
+  --vp-c-brand-darker: #003eb3;
+  --vp-button-brand-bg: var(--vp-c-brand);
+  --vp-button-brand-hover-bg: var(--vp-c-brand-light);
+  --vp-button-brand-active-bg: var(--vp-c-brand-dark);
+
+  /* 代码块专属变量 */
+  --fb-code-bg: #f6f8fa;
+  --fb-code-border: #e4e7ed;
+  --fb-code-header-bg: #f0f2f5;
+  --fb-code-text: #24292f;
+  --fb-code-font:
+    'JetBrains Mono', 'Fira Code', 'SF Mono', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono',
+    'Courier New', monospace;
+}
+
+.dark {
+  --vp-c-brand: #4096ff;
+  --vp-c-brand-light: #1677ff;
+
+  --fb-code-bg: #161b22;
+  --fb-code-border: #30363d;
+  --fb-code-header-bg: #1f2428;
+  --fb-code-text: #c9d1d9;
+}
+
+.VPContent {
+  padding-top: 0 !important;
+}
+
+.vp-doc {
+  & h1 {
+    font-size: 28px;
+    font-weight: 700;
+  }
+  & h2 {
+    margin-top: 32px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--vp-c-divider);
+    font-size: 22px;
+    font-weight: 600;
+  }
+  & h3 {
+    margin-top: 24px;
+    font-size: 18px;
+    font-weight: 600;
+  }
+}
+
+.vp-doc table {
+  display: block;
+  border-collapse: collapse;
+  margin: 20px 0;
+  overflow-x: auto;
+
+  th,
+  td {
+    border: 1px solid var(--vp-c-divider);
+    padding: 8px 14px;
+    line-height: 1.6;
+  }
+
+  th {
+    background-color: var(--vp-c-bg-soft-up);
+    font-weight: 600;
+  }
+}
+
+/* ========================================
+ * Element Plus 组件样式隔离
+ *
+ * Shadow DOM 在 EP 生态下不可行（Teleport/Popper/全局配置会失效），
+ * EP 官方文档也是用同样的「.vp-raw 重置」方案。
+ *
+ * 优先级分析（关键）：
+ * - .vp-doc table        (0,1,1)  →  EP .el-table__body (0,1,0)  → vp-doc 赢，需重置
+ * - .vp-doc tr           (0,1,1)  →  EP .el-table tr    (0,1,1)  → EP 后加载本就赢，不需重置
+ * - .vp-doc tr:nth-child(2n) (0,2,1) → EP .el-table tr (0,1,1) → vp-doc 赢，需重置
+ * - .vp-doc th/td        (0,1,1)  →  EP .el-table th.el-table__cell (0,2,1) → EP 赢，不需重置
+ *
+ * 所以只重置 vp-doc 真正赢过 EP 的属性：
+ *   table 的 display/margin/border-collapse/overflow
+ *   tr:nth-child(2n) 的斑马纹背景
+ *   tr 的 border-top
+ * 不要重置 background-color / padding / font-weight，让 EP 接管
+ * ======================================== */
+
+/* ---------- 1. table / tr / th / td ----------
+ * 影响：ProTable / ProEditableTable / ProDragSortTable / ProDescriptions
+ */
+.vp-raw table {
+  display: table;
+  margin: 0;
+  border-collapse: separate;
+  overflow: visible;
+}
+
+/* 只撤销 vp-doc 强加的斑马纹（vp-doc :nth-child(2n) 优先级高于 EP .el-table tr），
+   重置为 transparent 后 EP .el-table tr 的 background-color 才能显示 */
+.vp-raw tr:nth-child(2n) {
+  background-color: transparent;
+}
+
+/* 撤销 vp-doc 给 tr 加的 border-top（EP 不用 border-top，用 td 的 border-bottom） */
+.vp-raw tr {
+  border-top: 0;
+}
+
+/* th/td 的 border 需要重置：vp-doc th, td { border: 1px solid } 是简写属性，
+   会覆盖 EP 设置的 border-bottom / border-right 的颜色。
+   重置为 0 后，EP 的 .el-table th.el-table__cell 会重新设置正确的边框 */
+.vp-raw th,
+.vp-raw td {
+  border: 0;
+}
+
+/* ---------- 2. ul / ol / li ----------
+ * 影响：ProForm radio/checkbox 渲染为列表、ProList、分页器
+ */
+.vp-raw ul,
+.vp-raw ol {
+  padding-left: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.vp-raw li + li {
+  margin-top: 0;
+}
+
+.vp-raw li > ol,
+.vp-raw li > ul {
+  margin: 0;
+}
+
+/* ---------- 3. a 链接 ----------
+ * 影响：ProTable 工具栏、ProForm 操作区
+ */
+.vp-raw a {
+  font-weight: inherit;
+  color: inherit;
+  text-decoration: none;
+}
+
+.vp-raw a:hover {
+  color: inherit;
+}
+
+.vp-raw a > code {
+  color: inherit;
+}
+
+/* ---------- 4. p 段落 ----------
+ * 影响：ProCard 内容、ProForm 提示、ProEmpty 文案
+ */
+.vp-raw p {
+  margin: 0;
+  line-height: inherit;
+}
+
+/* ---------- 5. 行内代码 code ----------
+ * 影响：ProField 代码字段、ProDescriptions 代码值
+ */
+.vp-raw :not(pre) > code {
+  font-size: inherit;
+  color: inherit;
+  background-color: transparent;
+  border-radius: 0;
+  padding: 0;
+  font-weight: inherit;
+}
+
+/* ---------- 6. blockquote / strong / hr ---------- */
+.vp-raw blockquote {
+  margin: 0;
+  border-left: 0;
+  padding-left: 0;
+  color: inherit;
+}
+
+.vp-raw blockquote > p {
+  margin: 0;
+  font-size: inherit;
+}
+
+.vp-raw strong {
+  font-weight: 600;
+}
+
+.vp-raw hr {
+  margin: 0;
+  border-top: 0;
+}
+
+.reset-btn {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* ========================================
+ * 代码块美化
+ * ======================================== */
+.vp-doc {
+  /* 行内代码 */
+  :not(pre) > code {
+    font-family: var(--fb-code-font);
+    font-size: 0.875em;
+    padding: 0.2em 0.4em;
+    margin: 0 0.1em;
+    border-radius: 4px;
+    background-color: var(--vp-c-brand-soft);
+    color: var(--vp-c-brand);
+    border: 1px solid transparent;
+    font-weight: 500;
+  }
+
+  /* 代码块容器 */
+  div[class*='language-'] {
+    margin: 16px 0;
+    border-radius: 8px;
+    border: 1px solid var(--fb-code-border);
+    background-color: var(--fb-code-bg);
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+
+    /* 语言标签与复制按钮所在行 */
+    button.copy {
+      top: 10px;
+      right: 10px;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      background-color: var(--fb-code-header-bg);
+      border: 1px solid var(--fb-code-border);
+      opacity: 0;
+      transition:
+        opacity 0.2s ease,
+        background-color 0.2s ease;
+
+      &:hover {
+        background-color: var(--vp-c-brand-soft);
+      }
+
+      svg {
+        color: var(--fb-code-text);
+      }
+    }
+
+    &:hover button.copy {
+      opacity: 1;
+    }
+
+    /* 语言标签 */
+    .lang {
+      top: 10px;
+      right: 12px;
+      font-size: 12px;
+      font-family: var(--fb-code-font);
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 4px;
+      color: var(--fb-code-text);
+      opacity: 0.55;
+      transition: opacity 0.2s ease;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    &:hover .lang {
+      opacity: 0;
+    }
+
+    /* 当显示复制按钮时，语言标签已经隐藏了 */
+
+    /* pre 元素 */
+    pre {
+      margin: 0 !important;
+      padding: 16px 18px !important;
+      background-color: transparent !important;
+      border-radius: 0 !important;
+      overflow-x: auto;
+
+      code {
+        font-family: var(--fb-code-font) !important;
+        font-size: 13.5px;
+        line-height: 1.7;
+        color: var(--fb-code-text);
+        background-color: transparent !important;
+        font-variant-ligatures: contextual ligatures;
+        font-feature-settings:
+          'liga' 1,
+          'calt' 1;
+      }
+    }
+
+    /* 行高亮 */
+    .highlight-lines {
+      background-color: rgba(100, 108, 255, 0.08);
+    }
+  }
+
+  /* 不同语言的颜色微调 */
+  div[class*='language-ts'],
+  div[class*='language-typescript'] {
+    .lang::before {
+      content: '';
+    }
+  }
+}
+
+/* ========================================
+ * Demo 组件中的源代码展示
+ * ======================================== */
+.example {
+  border: 1px solid var(--vp-c-divider, var(--fb-code-border));
+  border-radius: 8px;
+  margin: 16px 0;
+  overflow: hidden;
+  background-color: var(--vp-c-bg);
+
+  .example-showcase {
+    padding: 24px;
+    background-color: var(--vp-c-bg);
+  }
+
+  .example-source-wrapper {
+    border-top: 1px solid var(--vp-c-divider, var(--fb-code-border));
+    background-color: var(--fb-code-bg);
+
+    .example-source {
+      margin: 0;
+      padding: 16px 18px;
+      font-size: 13.5px;
+      line-height: 1.7;
+      font-family: var(--fb-code-font);
+      overflow-x: auto;
+
+      pre {
+        margin: 0 !important;
+        padding: 0 !important;
+        background-color: transparent !important;
+      }
+    }
+  }
+}
+
+/* 暗色模式下的语法高亮颜色微调 */
+.dark {
+  .vp-doc div[class*='language-'] {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+}

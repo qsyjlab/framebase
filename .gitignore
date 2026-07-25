@@ -2,6 +2,7 @@ node_modules/
 dist/
 .output/
 .cache/
+**/.vitepress/cache/
 coverage/
 *.log
 *.tgz
