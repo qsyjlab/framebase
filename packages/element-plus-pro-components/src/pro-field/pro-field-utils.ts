@@ -5,6 +5,7 @@ import {
   type ProOption,
   type ProOptionFields
 } from '../shared/pro-option'
+import { getProDictionary } from './pro-dictionary-registry'
 import type {
   ProFieldValueEnum,
   ProFieldValueEnumItem,
@@ -17,6 +18,39 @@ export function resolveProFieldValueType(
   valueType: ProFieldValueType = 'text'
 ): ProFieldValueTypeConfig {
   return typeof valueType === 'string' ? { type: valueType } : valueType
+}
+
+/** Prefix marking an explicit dictionary reference, e.g. `'dict:gender'`. */
+const PRO_DICT_PREFIX = 'dict:'
+
+/**
+ * If `valueEnum` is a dictionary name reference, return the resolved name
+ * (stripping the optional `dict:` prefix). Returns `undefined` for inline
+ * Record/Map enums.
+ */
+export function resolveProDictionaryName(
+  valueEnum: ProFieldValueEnum | undefined
+): string | undefined {
+  if (typeof valueEnum !== 'string') return undefined
+  return valueEnum.startsWith(PRO_DICT_PREFIX) ? valueEnum.slice(PRO_DICT_PREFIX.length) : valueEnum
+}
+
+/**
+ * Resolve a `valueEnum` into its inline Record/Map form.
+ *
+ * - Inline `Record`/`Map` are returned as-is.
+ * - A string reference is looked up against `dictionaries` (typically
+ *   `ProConfigProvider.dictionaries`) first, then the global dictionary
+ *   registry. Returns `undefined` when the name is unknown.
+ */
+export function resolveProFieldValueEnum(
+  valueEnum: ProFieldValueEnum | undefined,
+  dictionaries?: Record<string, ProFieldValueEnum>
+): ProFieldValueEnum | undefined {
+  if (!valueEnum) return undefined
+  if (typeof valueEnum !== 'string') return valueEnum
+  const name = resolveProDictionaryName(valueEnum)!
+  return dictionaries?.[name] ?? getProDictionary(name)
 }
 
 export function normalizeProFieldEnumItem(

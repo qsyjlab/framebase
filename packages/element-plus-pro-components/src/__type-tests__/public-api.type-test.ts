@@ -1,12 +1,16 @@
 import { shallowRef } from 'vue'
 import {
+  ProAsyncButton,
+  ProBadge,
   ProCard,
+  ProConfirmButton,
   ProConfigProvider,
   ProDescriptions,
   ProField,
   ProForm,
   ProList,
   ProSelect,
+  ProStatus,
   ProTable,
   ProTreeSelect,
   useProDescriptions,
@@ -17,6 +21,7 @@ import {
   useProTree,
   useProTreeSelect,
   type FormMethodsType,
+  type ProAsyncButtonInstance,
   type ProDescriptionColumns,
   type ProDescriptionsInstance,
   type ProFormInstance,
@@ -133,6 +138,11 @@ const treeRef = shallowRef<ProTreeInstance<TreeNode> | null>(null)
 const tree = useProTree(treeRef)
 type TreeDataResult = Expect<Equal<Awaited<ReturnType<typeof tree.getData>>, TreeNode[]>>
 
+const asyncButtonRef = shallowRef<ProAsyncButtonInstance<string> | null>(null)
+type AsyncButtonResult = Expect<
+  Equal<Awaited<ReturnType<NonNullable<typeof asyncButtonRef.value>['execute']>>, string>
+>
+
 async function requestUsers(
   params: ProTableRequestParams<UserQuery>
 ): Promise<ProTableRequestResult<UserRecord>> {
@@ -140,13 +150,17 @@ async function requestUsers(
 }
 
 void [
+  ProAsyncButton,
+  ProBadge,
   ProCard,
+  ProConfirmButton,
   ProConfigProvider,
   ProDescriptions,
   ProField,
   ProForm,
   ProList,
   ProSelect,
+  ProStatus,
   ProTable,
   ProTreeSelect,
   columns,
@@ -159,10 +173,12 @@ void [
   select,
   form,
   treeSelect,
-  tree
+  tree,
+  asyncButtonRef
 ]
 
 export type {
+  AsyncButtonResult,
   DescriptionsDataResult,
   DescriptionsRequestPhaseResult,
   FormDirtyResult,

@@ -1,4 +1,9 @@
-import { getProPathValue } from '../shared/pro-path'
+import {
+  getPathValue,
+  getProRowKey,
+  normalizeProPagedResponse,
+  paginateProData
+} from '@framebase/core'
 import type {
   ProListItemMeta,
   ProListPageInfo,
@@ -10,28 +15,21 @@ import type {
 export function normalizeProListResponse<TRecord extends object>(
   response: ProListRequestResult<TRecord>
 ): ProListRequestResult<TRecord> {
-  return {
-    data: Array.isArray(response.data) ? response.data : [],
-    total: Number.isFinite(response.total) ? response.total : 0,
-    success: response.success
-  }
+  return normalizeProPagedResponse(response)
 }
 
 export function paginateProListData<TRecord extends object>(
   data: TRecord[],
   pageInfo: ProListPageInfo
 ) {
-  const start = (pageInfo.current - 1) * pageInfo.pageSize
-  return data.slice(start, start + pageInfo.pageSize)
+  return paginateProData(data, pageInfo)
 }
 
 export function getProListRowKey<TRecord extends object>(
   record: TRecord,
   rowKey: ProListRowKey<TRecord>
 ) {
-  return typeof rowKey === 'function'
-    ? (rowKey as (record: TRecord) => string | number)(record)
-    : getProPathValue<string | number>(record, rowKey)
+  return getProRowKey(record, rowKey as Parameters<typeof getProRowKey>[1])
 }
 
 export function getProListValue<TRecord extends object, TValue>(
@@ -42,7 +40,7 @@ export function getProListValue<TRecord extends object, TValue>(
   if (!getter) return undefined
   return typeof getter === 'function'
     ? (getter as (record: TRecord, index: number) => TValue)(record, index)
-    : getProPathValue<TValue>(record, getter)
+    : getPathValue<TValue>(record, getter)
 }
 
 export function getProListItemValues<TRecord extends object>(

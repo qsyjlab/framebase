@@ -10,24 +10,45 @@ import type { ProLiteralUnion } from '../shared/pro-path'
 
 export type ProFieldMode = 'read' | 'edit'
 
-export type ProFieldBuiltinValueType =
-  | 'text'
-  | 'textarea'
-  | 'number'
-  | 'money'
-  | 'percent'
-  | 'date'
-  | 'datetime'
-  | 'select'
-  | 'radio'
-  | 'checkbox'
-  | 'switch'
-  | 'enum'
-  | 'tag'
-  | 'status'
-  | 'progress'
-  | 'image'
-  | 'upload'
+/**
+ * Registry interface for built-in field value types.
+ *
+ * Extensible via TypeScript declaration merging so applications can register
+ * custom value types and get full autocomplete + type checking:
+ *
+ * ```ts
+ * declare module '@framebase/element-plus-pro-components' {
+ *   interface ProFieldBuiltinValueTypes {
+ *     bankCard: true
+ *     idCard: true
+ *   }
+ * }
+ * ```
+ *
+ * `registerProField('bankCard', { ... })` at runtime then makes the type
+ * fully functional in ProField / ProForm / ProTable.
+ */
+export interface ProFieldBuiltinValueTypes {
+  text: true
+  textarea: true
+  number: true
+  money: true
+  percent: true
+  date: true
+  datetime: true
+  select: true
+  radio: true
+  checkbox: true
+  switch: true
+  enum: true
+  tag: true
+  status: true
+  progress: true
+  image: true
+  upload: true
+}
+
+export type ProFieldBuiltinValueType = keyof ProFieldBuiltinValueTypes
 
 export interface ProFieldValueTypeConfig {
   type: ProLiteralUnion<ProFieldBuiltinValueType>
@@ -48,9 +69,32 @@ export interface ProFieldValueEnumItem {
 
 export type ProFieldValueEnumValue = string | number | ProFieldValueEnumItem
 
+/**
+ * Builtin dictionary names registered via `registerProDictionary` or provided
+ * through `ProConfigProvider.dictionaries`. Extend via declaration merging to
+ * get autocomplete for `valueEnum: '<name>'` references:
+ *
+ * ```ts
+ * declare module '@framebase/element-plus-pro-components' {
+ *   interface ProFieldBuiltinDictionaries {
+ *     gender: true
+ *     province: true
+ *   }
+ * }
+ * ```
+ *
+ * Empty by default, so any `string` is accepted; merging known names narrows
+ * the union and enables editor hints without breaking ad-hoc usage.
+ */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type -- intentionally empty for declaration merging
+export interface ProFieldBuiltinDictionaries {}
+
+export type ProFieldDictionaryName = ProLiteralUnion<keyof ProFieldBuiltinDictionaries>
+
 export type ProFieldValueEnum =
   | Record<string, ProFieldValueEnumValue>
   | Map<ProChoiceValue, ProFieldValueEnumValue>
+  | ProFieldDictionaryName
 
 export interface ProFieldProps<TValue = unknown, TOption extends object = ProOption> {
   modelValue?: TValue

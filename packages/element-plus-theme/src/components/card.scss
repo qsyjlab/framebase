@@ -1,25 +1,43 @@
+// Card —— shadcn 风格：边框 + 微阴影，header 底分隔线，hover 阴影加深
 .el-card {
-  --el-card-border-color: var(--framebase-color-border);
-  --el-card-border-radius: var(--framebase-border-radius-base);
-  --el-card-bg-color: var(--framebase-color-bg);
+  --el-card-border-color: var(--framebase-card-border);
+  --el-card-border-radius: var(--framebase-radius-lg);
+  --el-card-bg-color: var(--framebase-card-bg);
+  --el-card-padding: var(--framebase-card-padding);
+
   border: 1px solid var(--el-card-border-color);
   border-radius: var(--el-card-border-radius);
-  box-shadow: var(--framebase-shadow-light);
+  box-shadow: var(--framebase-card-shadow);
+  background-color: var(--el-card-bg-color);
+  transition:
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+
+  &.is-hover-shadow:hover,
+  &.is-always-shadow {
+    box-shadow: var(--framebase-card-shadow-hover);
+    border-color: var(--framebase-color-border-strong);
+  }
 
   &__header {
-    padding: 16px 20px 0;
-    border-bottom: 0;
+    padding: var(--framebase-card-header-padding);
+    border-bottom: 1px solid var(--framebase-color-border-lighter);
     color: var(--framebase-color-text-primary);
     font-weight: 600;
     font-size: 15px;
-    line-height: 1.4;
+    line-height: 1.5;
   }
 
   &__body {
-    padding: 16px 20px;
+    padding: var(--framebase-card-padding);
+  }
+
+  // 无标题时，body 不重复顶部分隔
+  &.is-without-header .el-card__body {
+    // 保持原 padding
   }
 }
 
 html.dark .el-card {
-  box-shadow: var(--framebase-shadow-light);
+  box-shadow: var(--framebase-shadow-sm);
 }

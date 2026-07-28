@@ -1,5 +1,6 @@
 import {
   computed,
+  onMounted,
   onScopeDispose,
   ref,
   toRaw,
@@ -13,6 +14,7 @@ import { useFormContext } from './provider'
 import type {
   FormDynamicValue,
   FormFieldDependencyContext,
+  FormFieldEffectContext,
   FormModel,
   FormSchema
 } from './types/form'
@@ -78,6 +80,69 @@ export function useFormField<TModel extends FormModel>(
     const preferContext = Boolean(schema.value.dependencies?.length || schema.value.shouldUpdate)
     return resolveFormDynamicValue(value, context.value, preferContext, fallback)
   }
+
+  // --- Field-level effects ---
+  // Triggered when declared `dependencies` change or `shouldUpdate` reports a
+  // change. Bypasses `normalize` via `setFieldValueRaw` so programmatic
+  // mutations are not re-shaped by input rules.
+  const effectHandler = computed(() => schema.value.effects)
+  // Seed previous values with the initial state so the first triggered run
+  // can report what changed from. The immediate run (effectsImmediate) still
+  // reports `undefined` since there is no prior change to compare against.
+  let effectPreviousValue: unknown = formContext.getFieldValue(fieldName.value)
+  let effectPreviousDependencyValues: readonly unknown[] = [...dependencyValues.value]
+  let isRunningEffect = false
+
+  function buildEffectContext(isImmediate: boolean): FormFieldEffectContext<TModel> {
+    return {
+      ...context.value,
+      previousValue: isImmediate ? undefined : effectPreviousValue,
+      previousDependencyValues: isImmediate ? undefined : effectPreviousDependencyValues,
+      setFieldValue: formContext.setFieldValueRaw,
+      clearFieldValue: formContext.clearFieldValue,
+      validateField: formContext.validateField,
+      clearFieldError: formContext.clearFieldErrors
+    }
+  }
+
+  function runEffect(isImmediate = false) {
+    const handler = effectHandler.value
+    if (typeof handler !== 'function') return
+    // Guard against synchronous re-entrance: an effect that sets one of its
+    // own dependencies would otherwise recurse immediately.
+    if (isRunningEffect) return
+    isRunningEffect = true
+    try {
+      handler(buildEffectContext(isImmediate))
+    } finally {
+      effectPreviousValue = context.value.value
+      effectPreviousDependencyValues = [...context.value.dependencyValues]
+      isRunningEffect = false
+    }
+  }
+
+  const stopEffectsDepsWatch = watch(
+    dependencyValues,
+    () => {
+      if (effectHandler.value) runEffect()
+    },
+    { deep: true }
+  )
+
+  // `modelSnapshot` only changes when `shouldUpdate` returns true, so this
+  // watch fires exactly for shouldUpdate-driven effect triggers.
+  const stopEffectsModelWatch = watch(modelSnapshot, () => {
+    if (effectHandler.value && schema.value.shouldUpdate) runEffect()
+  })
+
+  if (schema.value.effectsImmediate) {
+    onMounted(() => runEffect(true))
+  }
+
+  onScopeDispose(() => {
+    stopEffectsDepsWatch()
+    stopEffectsModelWatch()
+  })
 
   return {
     context,

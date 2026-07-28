@@ -145,7 +145,7 @@ defineExpose(exposed)
   overflow: hidden;
   color: var(--el-text-color-primary);
   background: var(--el-bg-color-overlay);
-  border-radius: var(--el-border-radius-base);
+  border-radius: var(--framebase-radius-lg);
   transition:
     border-color var(--el-transition-duration-fast),
     box-shadow var(--el-transition-duration-fast);
@@ -156,7 +156,7 @@ defineExpose(exposed)
 
   &.is-shadow-always,
   &.is-shadow-hover:hover {
-    box-shadow: var(--el-box-shadow-light);
+    box-shadow: var(--framebase-card-shadow-hover);
   }
 
   &__header {

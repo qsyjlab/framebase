@@ -25,8 +25,37 @@ export const navigation: PlaygroundNavGroup[] = [
     ]
   },
   {
+    title: '@framebase/core',
+    items: [
+      {
+        path: '/core',
+        title: '路径与分页工具',
+        description:
+          'getPathValue / setPathValue / normalizePath / paginateData / getRowKey / moveItem。',
+        components: []
+      }
+    ]
+  },
+  {
+    title: '@framebase/vue',
+    items: [
+      {
+        path: '/vue',
+        title: '组合式 API',
+        description: 'useRequest / usePagination / useSelection / useUrlState。',
+        components: []
+      }
+    ]
+  },
+  {
     title: '数据展示',
     items: [
+      {
+        path: '/display/actions',
+        title: '操作与状态',
+        description: '异步操作、危险确认、状态语义和通知徽标。',
+        components: ['ProAsyncButton', 'ProConfirmButton', 'ProStatus', 'ProBadge']
+      },
       {
         path: '/display/cards',
         title: '卡片与描述',
@@ -38,6 +67,12 @@ export const navigation: PlaygroundNavGroup[] = [
         title: '列表',
         description: '请求驱动、分页、选择与网格布局。',
         components: ['ProList']
+      },
+      {
+        path: '/display/feedback',
+        title: '反馈与异常',
+        description: 'HTTP 异常状态页与运行时错误边界。',
+        components: ['ProException', 'ProErrorBoundary']
       }
     ]
   },
@@ -109,14 +144,46 @@ const routes: RouteRecordRaw[] = [
     meta: { title: '组件总览', description: '按领域浏览全部公开组件，并验证发布产物是否完整。' }
   },
   {
+    path: '/core',
+    component: () => import('./views/CorePage.vue'),
+    meta: {
+      title: '路径与分页工具',
+      description:
+        'getPathValue / setPathValue / normalizePath / paginateData / getRowKey / moveItem。',
+      eyebrow: '@framebase/core'
+    }
+  },
+  {
+    path: '/vue',
+    component: () => import('./views/VueHooksPage.vue'),
+    meta: {
+      title: '组合式 API',
+      description: 'useRequest / usePagination / useSelection / useUrlState。',
+      eyebrow: '@framebase/vue'
+    }
+  },
+  {
     path: '/display/cards',
     component: () => import('./views/DisplayPage.vue'),
     meta: { title: '卡片与描述', description: '卡片、统计、详情、空状态和结果反馈。' }
   },
   {
+    path: '/display/actions',
+    component: () => import('./views/ActionsPage.vue'),
+    meta: { title: '操作与状态', description: '异步操作、危险确认、状态语义和通知徽标。' }
+  },
+  {
     path: '/display/list',
     component: () => import('./views/ListPage.vue'),
     meta: { title: '列表', description: '请求驱动、分页、选择与网格布局。' }
+  },
+  {
+    path: '/display/feedback',
+    component: () => import('./views/FeedbackPage.vue'),
+    meta: {
+      title: '反馈与异常',
+      description: 'HTTP 异常状态页与运行时错误边界。'
+    }
   },
   {
     path: '/input/choices',

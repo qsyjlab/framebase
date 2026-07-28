@@ -33,6 +33,7 @@ function createForm(
     forceUpdateModel: vi.fn(),
     setFieldValue: vi.fn(),
     getFieldValue: vi.fn(),
+    clearFieldValue: vi.fn(),
     getFieldsValue: vi.fn(() => ({ name: 'current' })),
     setFieldErrors: vi.fn(),
     clearFieldErrors: vi.fn(),

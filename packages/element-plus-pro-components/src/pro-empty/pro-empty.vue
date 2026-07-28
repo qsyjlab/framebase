@@ -181,7 +181,7 @@ const hasExtra = computed(() =>
     min-height: 32px;
     padding: 7px 15px;
     border: 1px solid var(--el-border-color, #dcdfe6);
-    border-radius: var(--el-border-radius-base, 4px);
+    border-radius: var(--framebase-radius-md);
     background: var(--el-bg-color-overlay, #fff);
     color: var(--el-text-color-regular, #606266);
     cursor: pointer;

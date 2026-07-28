@@ -6,7 +6,15 @@
     "noEmit": false,
     "outDir": "./dist/types",
     "rootDir": "./src",
-    "tsBuildInfoFile": "../../node_modules/.tmp/pro-components-build.tsbuildinfo"
+    "tsBuildInfoFile": "../../node_modules/.tmp/pro-components-build.tsbuildinfo",
+    "paths": {
+      "@framebase/core": ["../core/dist/types/index.d.ts"],
+      "@framebase/core/*": ["../core/dist/types/*"],
+      "@framebase/vue": ["../vue/dist/types/index.d.ts"],
+      "@framebase/vue/*": ["../vue/dist/types/*"],
+      "@framebase/element-plus-pro-components": ["./src/index.ts"],
+      "@framebase/element-plus-pro-components/*": ["./src/*"]
+    }
   },
   "include": ["src/**/*.ts", "src/**/*.vue"],
   "exclude": ["src/**/__tests__/**", "src/__type-tests__/**"]

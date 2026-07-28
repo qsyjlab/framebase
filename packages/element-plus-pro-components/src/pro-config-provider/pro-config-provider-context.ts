@@ -16,7 +16,7 @@ export function mergeProConfig(
     Object.entries(current).filter(([, value]) => value !== undefined)
   ) as ProConfigProviderProps
 
-  return {
+  const merged: ProConfigProviderProps = {
     ...parent,
     ...definedCurrent,
     theme: mergeSection(parent.theme, current.theme, true),
@@ -34,6 +34,15 @@ export function mergeProConfig(
     card: mergeSection(parent.card, current.card),
     list: mergeSection(parent.list, current.list)
   }
+
+  if (parent.dictionaries || current.dictionaries) {
+    merged.dictionaries = {
+      ...parent.dictionaries,
+      ...current.dictionaries
+    }
+  }
+
+  return merged
 }
 
 function mergeSection<T extends object>(parent?: T, current?: T, mergeVariables = false) {

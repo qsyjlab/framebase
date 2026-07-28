@@ -9,7 +9,7 @@ import {
   type Ref
 } from 'vue'
 import type { ProConfigProviderContext } from '../../pro-config-provider/pro-config-provider'
-import { resolveProConfigProviderPopperClass } from '../../pro-config-provider/pro-config-provider-utils'
+import { resolveProPagination } from '../../shared/pro-pagination'
 import { isProRequestAbort, useProRequest } from '../../shared/pro-request'
 import type {
   ProTableFilters,
@@ -50,9 +50,18 @@ export function useProTableData<
   const { props } = options
   const tableData = shallowRef<TRecord[]>([])
   const total = ref(0)
+  const initialPagination = resolveProPagination(
+    props.pagination,
+    options.proConfig.value.table?.pagination,
+    {
+      defaultPageSizes: [10, 20, 50, 100],
+      small: options.currentSize.value === 'small',
+      dark: options.proConfig.value.dark
+    }
+  )
   const pageInfo = ref<ProTablePageInfo>({
-    current: typeof props.pagination === 'object' ? (props.pagination.current ?? 1) : 1,
-    pageSize: typeof props.pagination === 'object' ? (props.pagination.pageSize ?? 10) : 10
+    current: initialPagination.current,
+    pageSize: initialPagination.pageSize
   })
   const sorter = shallowRef<ProTableSorter>()
   const filters = shallowRef<ProTableFilters>({})
@@ -72,22 +81,13 @@ export function useProTableData<
     refreshing: requestState.refreshing.value
   }))
   const requestError = computed(() => requestState.error.value)
-  const paginationProps = computed(() => {
-    const config = typeof props.pagination === 'object' ? props.pagination : {}
-    return {
-      pageSizes: config.pageSizes ?? [10, 20, 50, 100],
-      layout: Array.isArray(config.layout)
-        ? config.layout.join(',')
-        : (config.layout ?? 'total, sizes, prev, pager, next, jumper'),
-      background: config.background ?? true,
-      small: config.small ?? options.currentSize.value === 'small',
-      popperClass: resolveProConfigProviderPopperClass(
-        options.proConfig.value.dark,
-        config.popperClass
-      ),
-      teleported: config.teleported ?? true
-    }
-  })
+  const paginationProps = computed(() =>
+    resolveProPagination(props.pagination, options.proConfig.value.table?.pagination, {
+      defaultPageSizes: [10, 20, 50, 100],
+      small: options.currentSize.value === 'small',
+      dark: options.proConfig.value.dark
+    })
+  )
 
   watch(requestState.loading, options.onLoadingChange, { immediate: true })
   watch(requestLifecycle, lifecycle => options.onRequestStateChange({ ...lifecycle }), {

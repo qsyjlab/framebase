@@ -37,6 +37,41 @@ export interface FormFieldDependencyContext<TModel extends FormModel = FormModel
   getFieldValue: FormMethodsType<TModel>['getFieldValue']
 }
 
+/**
+ * Effect context handed to a field's `effects` callback.
+ *
+ * Extends the dependency context with mutation helpers so effects can drive
+ * cross-field side effects (clearing, cascading options, conditional
+ * validation, etc.). The `setFieldValue` helper writes the literal value
+ * without running the target field's `normalize` hook, since effects
+ * typically produce already-valid programmatic values rather than raw user
+ * input.
+ */
+export interface FormFieldEffectContext<TModel extends FormModel = FormModel>
+  extends FormFieldDependencyContext<TModel> {
+  /** Previous value of the field itself (undefined on the immediate run). */
+  previousValue: unknown
+  /** Previous dependency values, aligned with `dependencyValues` (undefined on the immediate run). */
+  previousDependencyValues: readonly unknown[] | undefined
+  /** Set a field value without running its `normalize` hook. */
+  setFieldValue: FormMethodsType<TModel>['setFieldValue']
+  /** Delete a field value at the given path. */
+  clearFieldValue: (name: ProPath) => void
+  /** Validate the given field(s). */
+  validateField: FormMethodsType<TModel>['validateField']
+  /** Clear validation errors for the given field(s). */
+  clearFieldError: (name: FormFieldProp | FormFieldProp[]) => void
+}
+
+/**
+ * Field-level side effect. Triggered when the field's declared `dependencies`
+ * change (or when `shouldUpdate` reports a change). Use this for cross-field
+ * mutations; for pure re-renders prefer `show`/`disabled`/`fieldProps`/`rules`.
+ */
+export type FormFieldEffect<TModel extends FormModel = FormModel> = (
+  context: FormFieldEffectContext<TModel>
+) => void
+
 export type FormValueTransformContext<TModel extends FormModel = FormModel> =
   FormFieldDependencyContext<TModel>
 
@@ -100,6 +135,17 @@ export interface FormSchema<
   dependencies?: FormFieldPath<TModel>[]
   /** 完整模型比较入口；适合无法通过 dependencies 描述的高级场景。 */
   shouldUpdate?: FormCallback<[previous: Readonly<TModel>, current: Readonly<TModel>], boolean>
+  /**
+   * 字段级副作用回调。当声明的 `dependencies` 发生变化（或 `shouldUpdate`
+   * 返回 true）时触发，用于跨字段联动：清空关联字段、级联拉取选项、改写
+   * 其他字段值等。与 `show`/`disabled`/`fieldProps`/`rules` 的纯函数响应
+   * 不同，effects 可以直接修改其他字段。
+   */
+  effects?: FormFieldEffect<TModel>
+  /**
+   * 是否在字段挂载后立即执行一次 `effects`。默认 false。
+   */
+  effectsImmediate?: boolean
   /** 输入写入模型前执行。 */
   normalize?: FormCallback<
     [value: unknown, previousValue: unknown, values: Readonly<TModel>],
@@ -151,6 +197,7 @@ export interface FormMethodsType<TModel extends FormModel = FormModel>
   forceUpdateModel: (model?: Partial<TModel>) => void
   setFieldValue: <TValue = unknown>(name: ProPath, value: TValue) => void
   getFieldValue: <TValue = unknown>(name: ProPath) => TValue | undefined
+  clearFieldValue: (name: ProPath) => void
   getFieldsValue: (options?: GetFormValuesOptions) => TModel
   setFieldErrors: (errors: FormFieldErrorsInput<TModel>) => void
   clearFieldErrors: (names?: FormFieldProp | FormFieldProp[]) => void

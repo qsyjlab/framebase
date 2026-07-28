@@ -128,6 +128,8 @@ const {
   submitterColAttrs,
   getFieldValue,
   setFieldValue,
+  setFieldValueRaw,
+  clearFieldValue,
   fieldVisibilityMap,
   getFieldError,
   loading
@@ -146,6 +148,10 @@ createFormContext({
   toggleCollapse,
   getFieldValue,
   setFieldValue,
+  setFieldValueRaw,
+  clearFieldValue,
+  validateField: formExposeMethods.validateField,
+  clearFieldErrors: formExposeMethods.clearFieldErrors,
   setFieldVisibility: (key, visible) => {
     fieldVisibilityMap[String(key)] = visible
   },

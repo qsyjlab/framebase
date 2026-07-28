@@ -11,7 +11,7 @@ import {
   type Ref
 } from 'vue'
 import { cloneDeep, isEqual, isPlainObject } from 'lodash-es'
-import { getProPathValue, setProPathValue } from '../../shared/pro-path'
+import { getProPathValue, setProPathValue, unsetProPathValue } from '../../shared/pro-path'
 import { isProRequestAbort, useProRequest } from '../../shared/pro-request'
 import { getFormDependencyKey } from './form-dependency'
 import { normalizeFormFieldErrors } from './form-errors'
@@ -83,6 +83,22 @@ export const useForm = <TModel extends FormModel>(parameter: UseFormParameter<TM
       ? schema.normalize(value, previousValue, formModel.value)
       : value
     setProPathValue(formModel.value, name, nextValue)
+    delete fieldErrorMap[getFieldKey(name)]
+  }
+
+  /**
+   * Write a field value without running the target field's `normalize` hook.
+   * Used by `effects` so programmatic mutations are not re-shaped by input
+   * normalization rules.
+   */
+  const setFieldValueRaw: FormMethodsType<TModel>['setFieldValue'] = (name, value) => {
+    setProPathValue(formModel.value, name, value)
+    delete fieldErrorMap[getFieldKey(name)]
+  }
+
+  /** Delete a field value at the given path and clear its error. */
+  const clearFieldValue: FormMethodsType<TModel>['clearFieldValue'] = name => {
+    unsetProPathValue(formModel.value, name)
     delete fieldErrorMap[getFieldKey(name)]
   }
 
@@ -310,6 +326,7 @@ export const useForm = <TModel extends FormModel>(parameter: UseFormParameter<TM
     scrollToField,
     setFieldValue,
     getFieldValue,
+    clearFieldValue,
     getFieldsValue,
     setFieldErrors,
     clearFieldErrors,
@@ -350,6 +367,8 @@ export const useForm = <TModel extends FormModel>(parameter: UseFormParameter<TM
     setCollapsed,
     getFieldValue,
     setFieldValue,
+    setFieldValueRaw,
+    clearFieldValue,
     getFieldsValue,
     fieldVisibilityMap,
     getFieldError,

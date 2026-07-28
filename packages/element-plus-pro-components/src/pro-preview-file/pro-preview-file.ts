@@ -1,6 +1,18 @@
 import type { Ref } from 'vue'
 
-export type ProPreviewFileKind = 'image' | 'pdf' | 'xlsx' | 'docx' | 'unsupported'
+/**
+ * Registry interface for preview file kinds. Extensible via declaration
+ * merging so applications can register custom kinds (e.g. `video`, `audio`).
+ */
+export interface ProPreviewFileKinds {
+  image: true
+  pdf: true
+  xlsx: true
+  docx: true
+  unsupported: true
+}
+
+export type ProPreviewFileKind = keyof ProPreviewFileKinds
 export type ProPreviewFileValue = string | Blob | File
 
 export interface ProPreviewFileSource {

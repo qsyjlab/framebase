@@ -179,6 +179,13 @@ export interface ProTableOptions {
   reload?: boolean
   density?: boolean
   setting?: boolean
+  /**
+   * Allow applications to register custom toolbar options (e.g. `export`,
+   * `fullscreen`, `refresh`). Built-in options are `reload`, `density` and
+   * `setting`; any additional keys are passed through to the `toolbar` slot
+   * for custom rendering.
+   */
+  [key: string]: boolean | undefined
 }
 
 export interface ProTableDragSortEnd<TRecord extends object> {

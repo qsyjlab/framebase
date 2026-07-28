@@ -1,3 +1,4 @@
+// Table —— shadcn/Ant 风格：表头浅灰背景，行 hover 用 muted，边框极轻
 .el-table.el-table {
   --el-table-border-color: var(--framebase-table-border-color);
   --el-table-text-color: var(--framebase-color-text-regular);
@@ -5,41 +6,59 @@
   --el-table-current-row-bg-color: var(--framebase-table-current-row-bg);
   --el-table-bg-color: var(--framebase-color-bg);
   --el-table-tr-bg-color: var(--framebase-color-bg);
-  --el-table-expanded-cell-bg-color: var(--framebase-color-fill-light);
-  --el-table-fixed-box-shadow: var(--framebase-shadow-light);
-  border-radius: var(--framebase-border-radius-base);
+  --el-table-expanded-cell-bg-color: var(--framebase-color-bg-muted);
+  --el-table-fixed-box-shadow: var(--framebase-shadow-sm);
+  --el-table-header-bg-color: var(--framebase-table-header-bg);
+  --el-table-header-text-color: var(--framebase-table-header-text);
+
+  border-radius: var(--framebase-radius-lg);
+  font-size: 14px;
 
   .el-table__inner-wrapper {
     border-radius: inherit;
   }
 
-  .cell {
-    line-height: 22px;
+  // 表头：浅灰背景 + 中等字重
+  .el-table__header-wrapper th.el-table__cell {
+    background-color: var(--framebase-table-header-bg);
+    color: var(--framebase-table-header-text);
+    font-weight: 600;
+    font-size: 13px;
+    border-bottom: 1px solid var(--framebase-color-border);
   }
 
-  .el-table__cell {
-    padding: 12px 0;
-  }
-
+  // 行 hover 过渡
   .el-table__body tr > td.el-table__cell {
-    transition: background-color var(--el-transition-duration-fast);
+    transition: background-color 0.15s ease;
+    border-bottom: 1px solid var(--framebase-table-border-color);
   }
 
+  // 最后一行不显示底边框（外层圆角包边）
+  .el-table__body tr:last-child > td.el-table__cell {
+    border-bottom: 0;
+  }
+
+  // 表尾
   .el-table__footer-wrapper tfoot td.el-table__cell {
     background-color: var(--framebase-table-header-bg);
     color: var(--framebase-color-text-primary);
     font-weight: 600;
+    border-top: 1px solid var(--framebase-color-border);
+  }
+
+  // 斑马纹
+  &.el-table--striped .el-table__body tr.el-table__row--striped td.el-table__cell {
+    background-color: var(--framebase-table-stripe-bg);
+  }
+
+  // 当前行
+  .el-table__body tr.current-row > td.el-table__cell {
+    background-color: var(--framebase-table-current-row-bg) !important;
   }
 }
 
-.el-table.el-table--large .el-table__cell {
-  padding: 16px 0;
-}
-
-.el-table.el-table--small .el-table__cell {
-  padding: 8px 0;
-}
-
+// 尺寸变体：通过 --el-table-cell-padding-* 变量控制，无需手动覆盖 padding
+// 兼容旧的 striped class
 .el-table.el-table--striped .el-table__body tr.el-table__row--striped td.el-table__cell {
   background-color: var(--framebase-table-stripe-bg);
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { isProRequestAbort, useProRequest } from '../pro-request'
+import { isRequestAbort, useRequest } from '../index'
 
 function deferred<T>() {
   let resolve!: (value: T) => void
@@ -12,11 +12,11 @@ function deferred<T>() {
   return { promise, reject, resolve }
 }
 
-describe('useProRequest', () => {
+describe('useRequest', () => {
   it('only lets the latest request update state', async () => {
     const first = deferred<string[]>()
     const second = deferred<string[]>()
-    const state = useProRequest<string[]>()
+    const state = useRequest<string[]>()
 
     const firstTask = state.execute(() => first.promise, undefined)
     const secondTask = state.execute(() => second.promise, undefined)
@@ -33,7 +33,7 @@ describe('useProRequest', () => {
 
   it('prevents cancelled requests from mutating state', async () => {
     const pending = deferred<string[]>()
-    const state = useProRequest<string[]>()
+    const state = useRequest<string[]>()
     const task = state.execute(() => pending.promise, undefined)
 
     state.cancel()
@@ -48,7 +48,7 @@ describe('useProRequest', () => {
     const first = deferred<string[]>()
     const second = deferred<string[]>()
     const signals: AbortSignal[] = []
-    const state = useProRequest<string[]>()
+    const state = useRequest<string[]>()
 
     const firstTask = state.execute((_, context) => {
       signals.push(context.signal)
@@ -71,7 +71,7 @@ describe('useProRequest', () => {
   })
 
   it('debounces execution and retries failed requests', async () => {
-    const state = useProRequest<string[]>({ debounce: 10, retry: 1 })
+    const state = useRequest<string[]>({ debounce: 10, retry: 1 })
     let calls = 0
 
     const result = await state.execute(async (_, context) => {
@@ -86,7 +86,7 @@ describe('useProRequest', () => {
   })
 
   it('replays the last request through retry', async () => {
-    const state = useProRequest<string[]>()
+    const state = useRequest<string[]>()
     let failed = true
 
     await expect(
@@ -102,11 +102,11 @@ describe('useProRequest', () => {
   })
 })
 
-describe('isProRequestAbort', () => {
+describe('isRequestAbort', () => {
   it('recognizes DOM and Axios cancellation errors', () => {
-    expect(isProRequestAbort(new DOMException('aborted', 'AbortError'))).toBe(true)
-    expect(isProRequestAbort({ name: 'CanceledError' })).toBe(true)
-    expect(isProRequestAbort({ code: 'ERR_CANCELED' })).toBe(true)
-    expect(isProRequestAbort(new Error('failed'))).toBe(false)
+    expect(isRequestAbort(new DOMException('aborted', 'AbortError'))).toBe(true)
+    expect(isRequestAbort({ name: 'CanceledError' })).toBe(true)
+    expect(isRequestAbort({ code: 'ERR_CANCELED' })).toBe(true)
+    expect(isRequestAbort(new Error('failed'))).toBe(false)
   })
 })

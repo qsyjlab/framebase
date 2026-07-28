@@ -1,6 +1,6 @@
 import type { ComponentSize } from 'element-plus'
 import type { Ref, VNodeChild } from 'vue'
-import type { ProFieldRendererDefinition } from '../pro-field'
+import type { ProFieldRendererDefinition, ProFieldValueEnum } from '../pro-field'
 import type { ProListRequestResult } from '../pro-list'
 import type { ProDescriptionsProps } from '../pro-descriptions'
 import type { ProTableOptions, ProTableRequestResult } from '../pro-table'
@@ -10,6 +10,24 @@ export interface ProConfigProviderFieldConfig {
   renderers?: Record<string, ProFieldRendererDefinition>
 }
 
+/**
+ * Global pagination defaults consumed by `ProTable` / `ProList`.
+ *
+ * Each field follows `props.pagination.<field> ?? proConfig.{table|list}.pagination?.<field> ?? builtin`,
+ * so inline props always win and global config fills the gaps. `pageSize` only
+ * seeds the initial page size; runtime page state remains owned by the
+ * component.
+ */
+export interface ProConfigProviderPaginationConfig {
+  pageSize?: number
+  pageSizes?: number[]
+  layout?: string | string[]
+  background?: boolean
+  small?: boolean
+  popperClass?: string
+  teleported?: boolean
+}
+
 export interface ProConfigProviderTableConfig {
   responseAdapter?: (response: unknown) => ProTableRequestResult<object>
   transformParams?: <TParams extends object>(params: TParams) => TParams
@@ -17,6 +35,7 @@ export interface ProConfigProviderTableConfig {
   options?: boolean | ProTableOptions
   size?: ComponentSize
   border?: boolean
+  pagination?: ProConfigProviderPaginationConfig
 }
 
 export interface ProConfigProviderFormConfig {
@@ -45,6 +64,7 @@ export interface ProConfigProviderListConfig {
   emptyText?: string
   responseAdapter?: (response: unknown) => ProListRequestResult<object>
   transformParams?: <TParams extends object>(params: TParams) => TParams
+  pagination?: ProConfigProviderPaginationConfig
 }
 
 export interface ProConfigProviderThemeConfig {
@@ -63,6 +83,13 @@ export interface ProConfigProviderProps {
   descriptions?: ProConfigProviderDescriptionsConfig
   card?: ProConfigProviderCardConfig
   list?: ProConfigProviderListConfig
+  /**
+   * Tree-scoped dictionary registry, keyed by name. Fields declaring
+   * `valueEnum: '<name>'` (or `valueEnum: 'dict:<name>'`) resolve against
+   * this map first, falling back to the global `registerProDictionary`
+   * registry. Local entries override parent entries with the same name.
+   */
+  dictionaries?: Record<string, ProFieldValueEnum>
 }
 
 export type ProConfigProviderContext = Readonly<Ref<ProConfigProviderProps>>

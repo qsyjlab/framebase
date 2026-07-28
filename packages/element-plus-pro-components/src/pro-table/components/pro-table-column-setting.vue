@@ -137,7 +137,7 @@ function handleNodeDrop(_draggingNode: TreeNodeLike, dropNode: TreeNodeLike) {
 
   :deep(.el-tree-node__content) {
     height: 36px;
-    border-radius: var(--el-border-radius-base);
+    border-radius: var(--framebase-radius-sm);
 
     &:hover {
       background: var(--el-fill-color-light);

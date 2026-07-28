@@ -104,7 +104,7 @@ const hasExtra = computed(() => Boolean(slots.extra || props.primaryText || prop
     max-width: 720px;
     margin: 24px auto 0;
     padding: 20px;
-    border-radius: var(--el-border-radius-base);
+    border-radius: var(--framebase-radius-md);
     background: var(--el-fill-color-light);
     text-align: left;
   }

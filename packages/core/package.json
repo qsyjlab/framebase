@@ -1,0 +1,65 @@
+{
+  "name": "@framebase/core",
+  "version": "0.1.0",
+  "description": "Framework-agnostic pure utilities for path access and paginated data sources. Runtime helpers delegate to lodash-es; path type inference is hand-rolled for editor autocomplete.",
+  "license": "MIT",
+  "author": "qsyjlab",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/qsyjlab/framebase.git",
+    "directory": "packages/core"
+  },
+  "bugs": {
+    "url": "https://github.com/qsyjlab/framebase/issues"
+  },
+  "homepage": "https://github.com/qsyjlab/framebase/tree/main/packages/core",
+  "keywords": [
+    "utils",
+    "path",
+    "pagination",
+    "data",
+    "framework-agnostic",
+    "lodash"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "tag": "latest"
+  },
+  "type": "module",
+  "main": "./dist/es/index.js",
+  "module": "./dist/es/index.js",
+  "types": "./dist/types/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/es/index.js"
+    },
+    "./*": {
+      "types": "./dist/types/*/index.d.ts",
+      "import": "./dist/es/*/index.js"
+    }
+  },
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "pnpm run clean && pnpm run build:types && vite build --config vite.config.ts",
+    "build:types": "vue-tsc -p tsconfig.build.json",
+    "typecheck": "vue-tsc -p tsconfig.json --noEmit",
+    "test": "vitest run src",
+    "lint": "eslint src",
+    "verify": "pnpm run typecheck && pnpm run lint && pnpm run test && pnpm run build",
+    "pack:check": "pnpm run verify && pnpm pack --pack-destination ../../.output/packages",
+    "prepublishOnly": "pnpm run verify"
+  },
+  "dependencies": {
+    "lodash-es": "^4.17.21"
+  },
+  "devDependencies": {
+    "@types/lodash-es": "^4.17.12",
+    "vue-tsc": "2.2.0"
+  }
+}

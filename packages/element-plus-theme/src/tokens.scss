@@ -1,67 +1,158 @@
-html:root {
-  --framebase-color-bg: #ffffff;
-  --framebase-color-bg-page: #f0f2f5;
-  --framebase-color-bg-overlay: #ffffff;
-  --framebase-color-fill-light: #fafafa;
-  --framebase-color-fill-lighter: #f5f5f5;
-  --framebase-color-border: #e8e8e8;
-  --framebase-color-border-light: #e8e8e8;
-  --framebase-color-border-lighter: #f0f0f0;
-  --framebase-color-border-strong: #d9d9d9;
-  --framebase-color-text-primary: #141414;
-  --framebase-color-text-regular: #1f1f1f;
-  --framebase-color-text-secondary: #595959;
-  --framebase-color-text-placeholder: #8c8c8c;
-  --framebase-color-primary: #1677ff;
-  --framebase-color-primary-rgb: 22, 119, 255;
-  --framebase-color-primary-light-1: #2d85ff;
-  --framebase-color-primary-light-2: #4592ff;
-  --framebase-color-primary-light-3: #5ca0ff;
-  --framebase-color-primary-light-4: #73adff;
-  --framebase-color-primary-light-5: #8bbbff;
-  --framebase-color-primary-light-6: #a2c9ff;
-  --framebase-color-primary-light-7: #b9d6ff;
-  --framebase-color-primary-light-8: #d0e4ff;
-  --framebase-color-primary-light-9: #e8f1ff;
-  --framebase-color-primary-dark-2: #1260cc;
-  --framebase-color-danger: #ff4d4f;
-  --framebase-border-radius-base: 6px;
-  --framebase-border-radius-small: 4px;
-  --framebase-border-radius-large: 10px;
-  --framebase-border-radius-round: 999px;
-  --framebase-control-height: 36px;
-  --framebase-menu-item-height: 42px;
-  --framebase-menu-radius: 5px;
-  --framebase-shadow-light: 0 1px 2px rgba(0, 0, 0, 0.03),
-    0 4px 12px rgba(0, 0, 0, 0.04);
-  --framebase-shadow-base: 0 6px 16px rgba(0, 0, 0, 0.08),
-    0 2px 6px rgba(0, 0, 0, 0.04);
-  --framebase-table-header-bg: #fafafa;
-  --framebase-table-header-hover-bg: #f0f0f0;
-  --framebase-table-row-hover-bg: #fafafa;
-  --framebase-table-current-row-bg: #e6f4ff;
-  --framebase-table-stripe-bg: #fcfcfc;
-  --framebase-table-border-color: #f0f0f0;
+// Framebase Design Tokens
+// 风格参考：shadcn/ui —— 大圆角、强阴影、边框替代填充、状态色双值
+// 主色：#2563eb (Tailwind blue-600)，可在此处整体替换色系
+// 注：使用 html:root 提升特异性，覆盖 Element Plus 组件样式运行时注入的 :root 定义
 
+html:root {
+  // ========== 主色 ==========
+  --framebase-color-primary: #2563eb;
+  --framebase-color-primary-rgb: 37, 99, 235;
+  --framebase-color-primary-hover: #1d4ed8; // blue-700
+  --framebase-color-primary-active: #1e40af; // blue-800
+  --framebase-color-primary-light-1: #3b82f6; // blue-500
+  --framebase-color-primary-light-2: #60a5fa; // blue-400
+  --framebase-color-primary-light-3: #93c5fd; // blue-300
+  --framebase-color-primary-light-4: #bfdbfe; // blue-200
+  --framebase-color-primary-light-5: #dbeafe; // blue-100
+  --framebase-color-primary-light-6: #eff6ff; // blue-50
+  --framebase-color-primary-light-7: #f0f6ff;
+  --framebase-color-primary-light-8: #f5f9ff;
+  --framebase-color-primary-light-9: #fafcff;
+  --framebase-color-primary-dark-2: #1d4ed8;
+
+  // ========== 背景 ==========
+  --framebase-color-bg: #ffffff;
+  --framebase-color-bg-page: #f8fafc; // slate-50，shadcn 典型页面背景
+  --framebase-color-bg-overlay: #ffffff;
+  --framebase-color-bg-muted: #f1f5f9; // slate-100，hover/muted 用
+  --framebase-color-bg-subtle: #f8fafc;
+  --framebase-color-fill-light: #f1f5f9;
+  --framebase-color-fill-lighter: #f8fafc;
+
+  // ========== 文字 ==========
+  --framebase-color-text-primary: #0f172a; // slate-900
+  --framebase-color-text-regular: #1e293b; // slate-800
+  --framebase-color-text-secondary: #475569; // slate-600
+  --framebase-color-text-placeholder: #94a3b8; // slate-400
+  --framebase-color-text-muted: #64748b; // slate-500
+  --framebase-color-text-disabled: #94a3b8;
+
+  // ========== 边框 ==========
+  --framebase-color-border: #e2e8f0; // slate-200
+  --framebase-color-border-light: #e2e8f0;
+  --framebase-color-border-lighter: #f1f5f9;
+  --framebase-color-border-strong: #cbd5e1; // slate-300
+
+  // ========== 圆角（shadcn 风格，比 Ant 更大） ==========
+  --framebase-radius-sm: 4px;
+  --framebase-radius-base: 6px;
+  --framebase-radius-md: 8px;
+  --framebase-radius-lg: 12px;
+  --framebase-radius-xl: 16px;
+  --framebase-radius-round: 999px;
+
+  // 旧别名（向后兼容）
+  --framebase-border-radius-base: var(--framebase-radius-md);
+  --framebase-border-radius-small: var(--framebase-radius-sm);
+  --framebase-border-radius-large: var(--framebase-radius-lg);
+  --framebase-border-radius-round: var(--framebase-radius-round);
+
+  // ========== 阴影（4 档，shadcn 风格） ==========
+  --framebase-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --framebase-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --framebase-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --framebase-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+  // 旧别名
+  --framebase-shadow-light: var(--framebase-shadow-sm);
+  --framebase-shadow-base: var(--framebase-shadow-md);
+
+  // ========== 状态色（双值，shadcn 风格：bg 浅 + fg 深） ==========
+  --framebase-success-bg: #f0fdf4; // green-50
+  --framebase-success-fg: #166534; // green-800
+  --framebase-success-border: #bbf7d0; // green-200
+  --framebase-success-color: #16a34a; // green-600，纯色用
+
+  --framebase-warning-bg: #fffbeb; // amber-50
+  --framebase-warning-fg: #92400e; // amber-800
+  --framebase-warning-border: #fde68a; // amber-200
+  --framebase-warning-color: #d97706; // amber-600
+
+  --framebase-danger-bg: #fef2f2; // red-50
+  --framebase-danger-fg: #991b1b; // red-800
+  --framebase-danger-border: #fecaca; // red-200
+  --framebase-danger-color: #dc2626; // red-600
+
+  --framebase-info-bg: #eff6ff; // blue-50
+  --framebase-info-fg: #1e40af; // blue-800
+  --framebase-info-border: #bfdbfe; // blue-200
+  --framebase-info-color: #2563eb; // blue-600
+
+  --framebase-neutral-bg: #f1f5f9; // slate-100
+  --framebase-neutral-fg: #475569; // slate-600
+  --framebase-neutral-border: #e2e8f0; // slate-200
+  --framebase-neutral-color: #64748b; // slate-500
+
+  // ========== 控件高度 ==========
+  --framebase-control-height: 36px;
+  --framebase-control-height-small: 30px;
+  --framebase-control-height-large: 42px;
+
+  // ========== 卡片专用 ==========
+  --framebase-card-padding: 24px;
+  --framebase-card-padding-compact: 16px;
+  --framebase-card-header-padding: 16px 24px;
+  --framebase-card-shadow: var(--framebase-shadow-sm);
+  --framebase-card-shadow-hover: var(--framebase-shadow-md);
+  --framebase-card-bg: var(--framebase-color-bg);
+  --framebase-card-border: var(--framebase-color-border);
+
+  // ========== 表格专用 ==========
+  --framebase-table-header-bg: #f8fafc; // slate-50
+  --framebase-table-header-hover-bg: #f1f5f9; // slate-100
+  --framebase-table-header-text: var(--framebase-color-text-primary);
+  --framebase-table-row-hover-bg: #f8fafc;
+  --framebase-table-current-row-bg: #eff6ff; // blue-50
+  --framebase-table-stripe-bg: #fafbfc;
+  --framebase-table-border-color: #f1f5f9; // slate-100，极轻
+  --framebase-table-cell-padding: 12px 16px;
+  --framebase-table-cell-padding-small: 8px 12px;
+  --framebase-table-cell-padding-large: 16px 16px;
+
+  // ========== 菜单 ==========
+  --framebase-menu-item-height: 40px;
+  --framebase-menu-radius: var(--framebase-radius-md);
+
+  // ========== 焦点环（shadcn 风格） ==========
+  --framebase-ring-color: rgb(37 99 235 / 0.5);
+  --framebase-ring-offset: 2px;
+  --framebase-ring-width: 2px;
+
+  // ========== Element Plus 变量映射 ==========
   --el-bg-color: var(--framebase-color-bg);
   --el-bg-color-page: var(--framebase-color-bg-page);
   --el-bg-color-overlay: var(--framebase-color-bg-overlay);
   --el-fill-color-blank: var(--framebase-color-bg);
   --el-fill-color-light: var(--framebase-color-fill-light);
   --el-fill-color-lighter: var(--framebase-color-fill-lighter);
+  --el-fill-color: var(--framebase-color-bg-muted);
+
   --el-border-color: var(--framebase-color-border);
   --el-border-color-light: var(--framebase-color-border-light);
   --el-border-color-lighter: var(--framebase-color-border-lighter);
   --el-border-color-dark: var(--framebase-color-border-strong);
-  --el-border-radius-base: var(--framebase-border-radius-base);
-  --el-border-radius-small: var(--framebase-border-radius-small);
-  --el-border-radius-round: var(--framebase-border-radius-round);
+
+  --el-border-radius-base: var(--framebase-radius-base);
+  --el-border-radius-small: var(--framebase-radius-sm);
+  --el-border-radius-round: var(--framebase-radius-round);
+
   --el-text-color-primary: var(--framebase-color-text-primary);
   --el-text-color-regular: var(--framebase-color-text-regular);
   --el-text-color-secondary: var(--framebase-color-text-secondary);
   --el-text-color-placeholder: var(--framebase-color-text-placeholder);
-  --el-text-color-disabled: var(--framebase-color-text-placeholder);
+  --el-text-color-disabled: var(--framebase-color-text-disabled);
   --el-disabled-text-color: var(--framebase-color-text-placeholder);
+
   --el-color-primary: var(--framebase-color-primary);
   --el-color-primary-rgb: var(--framebase-color-primary-rgb);
   --el-color-primary-light-1: var(--framebase-color-primary-light-1);
@@ -74,16 +165,41 @@ html:root {
   --el-color-primary-light-8: var(--framebase-color-primary-light-8);
   --el-color-primary-light-9: var(--framebase-color-primary-light-9);
   --el-color-primary-dark-2: var(--framebase-color-primary-dark-2);
+
+  --el-color-success: var(--framebase-success-color);
+  --el-color-warning: var(--framebase-warning-color);
+  --el-color-danger: var(--framebase-danger-color);
+  --el-color-error: var(--framebase-danger-color);
+  --el-color-info: var(--framebase-neutral-color);
+
   --el-menu-text-color: var(--el-text-color-regular);
   --el-menu-hover-text-color: var(--el-text-color-primary);
-  --el-table-text-color: var(--el-text-color-regular);
-  --el-table-header-text-color: var(--el-text-color-primary);
-  --el-pagination-text-color: var(--el-text-color-regular);
-  --el-pagination-button-color: var(--el-text-color-regular);
-  --el-input-text-color: var(--el-text-color-regular);
-  --el-input-placeholder-color: var(--el-text-color-placeholder);
-  --el-select-input-color: var(--el-text-color-regular);
-  --el-box-shadow-light: var(--framebase-shadow-light);
-  --el-box-shadow: var(--framebase-shadow-base);
-  --el-color-danger: var(--framebase-color-danger);
+  --el-menu-bg-color: var(--framebase-color-bg);
+  --el-menu-hover-bg-color: var(--framebase-color-bg-muted);
+
+  --el-table-text-color: var(--framebase-color-text-regular);
+  --el-table-header-text-color: var(--framebase-color-text-primary);
+  --el-table-border-color: var(--framebase-table-border-color);
+  --el-table-row-hover-bg-color: var(--framebase-table-row-hover-bg);
+  --el-table-current-row-bg-color: var(--framebase-table-current-row-bg);
+  --el-table-bg-color: var(--framebase-color-bg);
+  --el-table-tr-bg-color: var(--framebase-color-bg);
+  --el-table-expanded-cell-bg-color: var(--framebase-color-bg-muted);
+  --el-table-cell-padding: var(--framebase-table-cell-padding);
+  --el-table-cell-padding-small: var(--framebase-table-cell-padding-small);
+  --el-table-cell-padding-large: var(--framebase-table-cell-padding-large);
+
+  --el-pagination-text-color: var(--framebase-color-text-regular);
+  --el-pagination-button-color: var(--framebase-color-text-regular);
+  --el-pagination-button-bg-color: var(--framebase-color-bg);
+
+  --el-input-text-color: var(--framebase-color-text-regular);
+  --el-input-placeholder-color: var(--framebase-color-text-placeholder);
+  --el-input-border-color: var(--framebase-color-border);
+  --el-input-bg-color: var(--framebase-color-bg);
+
+  --el-select-input-color: var(--framebase-color-text-regular);
+
+  --el-box-shadow-light: var(--framebase-shadow-sm);
+  --el-box-shadow: var(--framebase-shadow-md);
 }
