@@ -314,6 +314,122 @@
         <el-descriptions-item label="忽略次数">{{ lockSkipCount }}</el-descriptions-item>
       </el-descriptions>
     </DemoBlock>
+
+    <DemoBlock
+      title="useFormState + useFieldArray + useSubmit"
+      description="动态联系人数组：脏检测 + 稳定 key 增删 + 防重入提交。"
+      eyebrow="表单"
+    >
+      <template #actions>
+        <el-button size="small" :disabled="!form.isDirty.value" @click="form.reset()"
+          >reset</el-button
+        >
+        <el-button
+          size="small"
+          type="primary"
+          :loading="submit.loading.value"
+          :disabled="!form.isDirty.value"
+          @click="onFormSubmit"
+        >
+          提交
+        </el-button>
+      </template>
+      <el-space wrap style="margin-bottom: 12px">
+        <el-tag :type="form.isDirty.value ? 'warning' : 'success'">
+          isDirty: {{ form.isDirty.value }}
+        </el-tag>
+        <el-tag>contacts: {{ contacts.fields.value.length }}</el-tag>
+        <el-tag v-if="submit.success.value" type="success">提交成功</el-tag>
+        <el-tag v-if="submit.error.value" type="danger">提交失败</el-tag>
+      </el-space>
+      <div
+        v-for="(item, index) in contacts.fields.value"
+        :key="item.key"
+        style="margin-bottom: 8px"
+      >
+        <el-input v-model="item.value.type" placeholder="类型" style="width: 100px" />
+        <el-input
+          v-model="item.value.value"
+          placeholder="值"
+          style="width: 200px; margin-left: 8px"
+        />
+        <el-button
+          size="small"
+          link
+          type="danger"
+          style="margin-left: 8px"
+          @click="contacts.remove(index)"
+          >删除</el-button
+        >
+      </div>
+      <el-button size="small" @click="contacts.append({ type: 'email', value: '' })"
+        >添加联系方式</el-button
+      >
+    </DemoBlock>
+
+    <DemoBlock
+      title="useTableSort + useColumnVisibility"
+      description="单列排序 + 列显隐（localStorage 持久化）。"
+      eyebrow="表格交互"
+    >
+      <template #actions>
+        <el-dropdown trigger="click">
+          <el-button size="small">列设置 ({{ cols.hiddenKeys.value.length }} 隐藏)</el-button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item v-for="c in allColumns" :key="c.key">
+                <el-checkbox :model-value="cols.isVisible(c.key)" @change="cols.toggle(c.key)">
+                  {{ c.label }}
+                </el-checkbox>
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+      </template>
+      <el-space wrap style="margin-bottom: 12px">
+        <el-tag
+          >sort: {{ sort.state.value.field ?? '-' }} {{ sort.state.value.order ?? '' }}</el-tag
+        >
+        <el-button size="small" link @click="sort.setSort('id', 'asc')">id asc</el-button>
+        <el-button size="small" link @click="sort.setSort('name', 'desc')">name desc</el-button>
+        <el-button size="small" link @click="sort.clear()">clear sort</el-button>
+      </el-space>
+      <el-table :data="tableData" style="margin-bottom: 12px">
+        <el-table-column v-if="cols.isVisible('id')" prop="id" label="ID" width="80" />
+        <el-table-column v-if="cols.isVisible('name')" prop="name" label="名称" />
+        <el-table-column v-if="cols.isVisible('age')" prop="age" label="年龄" width="80" />
+      </el-table>
+    </DemoBlock>
+
+    <DemoBlock
+      title="useValueEnum + useDictionary"
+      description="字典读取：从 ProConfigProvider.dictionaries 解析 status 字典。"
+      eyebrow="字典"
+    >
+      <el-space wrap style="margin-bottom: 12px">
+        <el-tag>exists: {{ statusDict.exists.value }}</el-tag>
+        <el-tag>options: {{ statusDict.options.value.length }}</el-tag>
+      </el-space>
+      <el-descriptions :column="1" border style="margin-bottom: 12px">
+        <el-descriptions-item label="getText('active')">{{
+          statusDict.getText('active') || '(空)'
+        }}</el-descriptions-item>
+        <el-descriptions-item label="getText('pending')">{{
+          statusDict.getText('pending') || '(空)'
+        }}</el-descriptions-item>
+        <el-descriptions-item label="getItem('disabled')">
+          <code>{{ JSON.stringify(statusDict.getItem('disabled')) }}</code>
+        </el-descriptions-item>
+      </el-descriptions>
+      <el-select placeholder="选择状态" style="width: 200px">
+        <el-option
+          v-for="opt in statusDict.options.value"
+          :key="String(opt.value)"
+          :label="opt.label"
+          :value="opt.value as string"
+        />
+      </el-select>
+    </DemoBlock>
   </div>
 </template>
 
@@ -327,7 +443,14 @@ import {
   usePagedList,
   useInfiniteList,
   useCrud,
-  useAsyncLock
+  useAsyncLock,
+  useFormState,
+  useFieldArray,
+  useSubmit,
+  useTableSort,
+  useColumnVisibility,
+  useValueEnum,
+  useDictionary
 } from '@framebase/vue'
 import { ElMessage } from 'element-plus'
 import DemoBlock from '../components/DemoBlock.vue'
@@ -572,4 +695,56 @@ async function runLocked() {
     ElMessage.success('提交完成')
   }
 }
+
+// --- useFormState + useFieldArray + useSubmit ---
+interface Contact {
+  type: string
+  value: string
+}
+interface ContactForm {
+  contacts: Contact[]
+}
+const form = useFormState<ContactForm>({ contacts: [{ type: 'email', value: 'ada@example.com' }] })
+const contacts = useFieldArray<Contact>(form.values.contacts, {
+  defaultItem: () => ({ type: 'email', value: '' })
+})
+// 同步 contacts 变化回 form.values，保证脏检测生效
+watch(
+  contacts.fields,
+  items => {
+    form.values.contacts = items.map(i => ({ ...i.value }))
+  },
+  { deep: true }
+)
+const submit = useSubmit()
+async function onFormSubmit() {
+  await submit.run(async () => {
+    await new Promise(r => setTimeout(r, 600))
+    form.commit()
+  })
+  if (submit.success.value) ElMessage.success('表单提交成功')
+}
+
+// --- useTableSort + useColumnVisibility ---
+const sort = useTableSort({ initial: { field: 'id', order: 'asc' } })
+const cols = useColumnVisibility({ storageKey: 'playground-table-cols' })
+const allColumns = [
+  { key: 'id', label: 'ID' },
+  { key: 'name', label: '名称' },
+  { key: 'age', label: '年龄' }
+]
+const tableData = [
+  { id: 1, name: 'Ada', age: 36 },
+  { id: 2, name: 'Bob', age: 28 },
+  { id: 3, name: 'Cara', age: 42 }
+]
+
+// --- useValueEnum + useDictionary ---
+// statusDict 从 ProConfigProvider.dictionaries 读取（App.vue 已配置 dictionaries）
+const statusDict = useDictionary('status')
+// 内联 enum 演示（不依赖 Provider）
+const _inlineEnum = useValueEnum({
+  yes: { text: '是', type: 'success' },
+  no: { text: '否', type: 'danger' }
+})
 </script>

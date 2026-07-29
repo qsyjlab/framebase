@@ -47,6 +47,13 @@
             pagination: { defaultPageSize: 5 },
             pagedList: { immediate: true }
           }"
+          :dictionaries="{
+            status: {
+              active: { text: '启用', type: 'success' },
+              disabled: { text: '禁用', type: 'danger' },
+              pending: { text: '待审核', type: 'warning' }
+            }
+          }"
         >
           <RouterView />
         </ProConfigProvider>

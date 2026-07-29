@@ -85,6 +85,29 @@ export default defineConfig({
           ]
         },
         {
+          text: '表单',
+          items: [
+            { text: 'useFormState', link: '/vue/use-form-state' },
+            { text: 'useFieldArray', link: '/vue/use-field-array' },
+            { text: 'useSubmit', link: '/vue/use-submit' }
+          ]
+        },
+        {
+          text: '表格交互',
+          items: [
+            { text: 'useTableSort', link: '/vue/use-table-sort' },
+            { text: 'useTableFilters', link: '/vue/use-table-filters' },
+            { text: 'useColumnVisibility', link: '/vue/use-column-visibility' }
+          ]
+        },
+        {
+          text: '字典',
+          items: [
+            { text: 'useValueEnum', link: '/vue/use-value-enum' },
+            { text: 'useDictionary', link: '/vue/use-dictionary' }
+          ]
+        },
+        {
           text: '配置',
           items: [
             { text: 'useHookConfig / provideHookConfig', link: '/vue/use-hook-config' }
