@@ -70,7 +70,9 @@ export default defineConfig({
           text: '请求',
           items: [
             { text: 'useRequest', link: '/vue/use-request' },
-            { text: 'usePagedList', link: '/vue/use-paged-list' }
+            { text: 'usePagedList', link: '/vue/use-paged-list' },
+            { text: 'useInfiniteList', link: '/vue/use-infinite-list' },
+            { text: 'useCrud', link: '/vue/use-crud' }
           ]
         },
         {
@@ -78,7 +80,8 @@ export default defineConfig({
           items: [
             { text: 'usePagination', link: '/vue/use-pagination' },
             { text: 'useSelection', link: '/vue/use-selection' },
-            { text: 'useUrlState', link: '/vue/use-url-state' }
+            { text: 'useUrlState', link: '/vue/use-url-state' },
+            { text: 'useAsyncLock', link: '/vue/use-async-lock' }
           ]
         },
         {

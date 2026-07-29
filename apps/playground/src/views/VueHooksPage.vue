@@ -215,12 +215,120 @@
         }}</el-descriptions-item>
       </el-descriptions>
     </DemoBlock>
+
+    <DemoBlock
+      title="useInfiniteList"
+      description="无限滚动：loadMore 累积下一页，reload 清空重载，hasMore 自动判断。"
+      eyebrow="请求"
+    >
+      <template #actions>
+        <el-button
+          size="small"
+          :loading="infiniteList.loading.value"
+          :disabled="!infiniteList.hasMore.value"
+          @click="infiniteList.loadMore()"
+        >
+          loadMore
+        </el-button>
+        <el-button
+          size="small"
+          :loading="infiniteList.loading.value"
+          @click="infiniteList.reload()"
+        >
+          reload
+        </el-button>
+      </template>
+      <el-space wrap style="margin-bottom: 12px">
+        <el-tag :type="infiniteList.hasMore.value ? 'success' : 'info'">
+          hasMore: {{ infiniteList.hasMore.value }}
+        </el-tag>
+        <el-tag>current: {{ infiniteList.current.value }}</el-tag>
+        <el-tag>accumulated: {{ infiniteList.list.value.length }}</el-tag>
+        <el-tag>total: {{ infiniteList.total.value }}</el-tag>
+      </el-space>
+      <el-table
+        v-loading="infiniteList.loading.value"
+        :data="infiniteList.list.value"
+        style="margin-bottom: 12px"
+        max-height="280"
+      >
+        <el-table-column prop="id" label="ID" width="80" />
+        <el-table-column prop="name" label="名称" />
+      </el-table>
+    </DemoBlock>
+
+    <DemoBlock
+      title="useCrud"
+      description="增删改查聚合：create/update/remove 成功后自动 reload 列表，独立 loading。"
+      eyebrow="请求"
+    >
+      <template #actions>
+        <el-button size="small" type="primary" :loading="crud.creating.value" @click="onCrudCreate">
+          新增
+        </el-button>
+      </template>
+      <el-table v-loading="crud.loading.value" :data="crud.list.value" style="margin-bottom: 12px">
+        <el-table-column prop="id" label="ID" width="80" />
+        <el-table-column prop="name" label="名称" />
+        <el-table-column label="操作" width="180">
+          <template #default="{ row }">
+            <el-button size="small" link :loading="crud.updating.value" @click="onCrudUpdate(row)">
+              改名
+            </el-button>
+            <el-button
+              size="small"
+              link
+              type="danger"
+              :loading="crud.removing.value"
+              @click="onCrudRemove(row)"
+            >
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-descriptions :column="2" border>
+        <el-descriptions-item label="submitting">{{ crud.submitting.value }}</el-descriptions-item>
+        <el-descriptions-item label="list.length">{{
+          crud.list.value.length
+        }}</el-descriptions-item>
+      </el-descriptions>
+    </DemoBlock>
+
+    <DemoBlock
+      title="useAsyncLock"
+      description="并发锁：同 key 进行中再次调用被忽略，防重复提交。"
+      eyebrow="状态"
+    >
+      <template #actions>
+        <el-button size="small" :loading="lock.isLocked()" @click="runLocked">
+          提交（500ms）
+        </el-button>
+        <el-button size="small" @click="lock.cancel()">cancel</el-button>
+      </template>
+      <el-descriptions :column="1" border>
+        <el-descriptions-item label="locks">
+          <code>{{ JSON.stringify([...lock.locks.value]) }}</code>
+        </el-descriptions-item>
+        <el-descriptions-item label="执行次数">{{ lockRunCount }}</el-descriptions-item>
+        <el-descriptions-item label="忽略次数">{{ lockSkipCount }}</el-descriptions-item>
+      </el-descriptions>
+    </DemoBlock>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useRequest, usePagination, useSelection, useUrlState, usePagedList } from '@framebase/vue'
+import {
+  useRequest,
+  usePagination,
+  useSelection,
+  useUrlState,
+  usePagedList,
+  useInfiniteList,
+  useCrud,
+  useAsyncLock
+} from '@framebase/vue'
 import { ElMessage } from 'element-plus'
 import DemoBlock from '../components/DemoBlock.vue'
 
@@ -361,4 +469,107 @@ const pagedList = usePagedList<PagedUser, { keyword: string }>({
   pageSize: 5,
   params: () => ({ keyword: pagedKeyword.value })
 })
+
+// --- useInfiniteList ---
+interface InfiniteItem {
+  id: number
+  name: string
+}
+const infiniteList = useInfiniteList<InfiniteItem>({
+  request: async params => {
+    await new Promise(r => setTimeout(r, 500))
+    const start = (params.current - 1) * params.pageSize
+    const data = Array.from({ length: params.pageSize }, (_, i) => ({
+      id: start + i + 1,
+      name: `条目 ${start + i + 1}`
+    }))
+    return { data, total: 40 }
+  },
+  pageSize: 8
+})
+
+// --- useCrud ---
+interface CrudUser {
+  id: number
+  name: string
+}
+// 内存数据源，写操作直接变更
+let crudStore: CrudUser[] = Array.from({ length: 7 }, (_, i) => ({
+  id: i + 1,
+  name: `用户 ${i + 1}`
+}))
+let crudSeq = crudStore.length
+
+const crud = useCrud<CrudUser, Record<string, any>, { name: string }, { name: string }>({
+  list: {
+    request: async params => {
+      await new Promise(r => setTimeout(r, 500))
+      const start = (params.current - 1) * params.pageSize
+      return {
+        data: crudStore.slice(start, start + params.pageSize),
+        total: crudStore.length
+      }
+    },
+    pageSize: 5
+  },
+  create: async payload => {
+    await new Promise(r => setTimeout(r, 400))
+    crudSeq += 1
+    crudStore = [...crudStore, { id: crudSeq, name: payload.name }]
+  },
+  update: async (record, payload) => {
+    await new Promise(r => setTimeout(r, 400))
+    crudStore = crudStore.map(u => (u.id === record.id ? { ...u, ...payload } : u))
+  },
+  remove: async record => {
+    await new Promise(r => setTimeout(r, 400))
+    crudStore = crudStore.filter(u => u.id !== record.id)
+  }
+})
+
+async function onCrudCreate() {
+  try {
+    await crud.create({ name: `新用户 ${Date.now() % 1000}` })
+    ElMessage.success('创建成功')
+  } catch (e) {
+    ElMessage.error(`创建失败: ${e}`)
+  }
+}
+
+async function onCrudUpdate(row: CrudUser) {
+  try {
+    await crud.update(row, { name: `${row.name}✏️` })
+    ElMessage.success('更新成功')
+  } catch (e) {
+    ElMessage.error(`更新失败: ${e}`)
+  }
+}
+
+async function onCrudRemove(row: CrudUser) {
+  try {
+    await crud.remove(row)
+    ElMessage.success('删除成功')
+  } catch (e) {
+    ElMessage.error(`删除失败: ${e}`)
+  }
+}
+
+// --- useAsyncLock ---
+const lock = useAsyncLock()
+const lockRunCount = ref(0)
+const lockSkipCount = ref(0)
+
+async function runLocked() {
+  const result = await lock.run(async () => {
+    lockRunCount.value += 1
+    await new Promise(r => setTimeout(r, 500))
+    return 'done'
+  })
+  if (result === undefined) {
+    lockSkipCount.value += 1
+    ElMessage.warning('已忽略重复提交')
+  } else {
+    ElMessage.success('提交完成')
+  }
+}
 </script>
