@@ -34,6 +34,17 @@ const { state } = useTableSort({
 function useTableSort(options?: UseTableSortOptions): UseTableSortReturn
 ```
 
+## 参数
+
+### UseTableSortOptions
+
+| 属性         | 类型                                           | 默认值                         | 说明                      |
+| ------------ | ---------------------------------------------- | ------------------------------ | ------------------------- |
+| `initial`    | `TableSortState`                               | `{ field: null, order: null }` | 初始排序                  |
+| `urlKey`     | `string`                                       | —                              | 设置后持久化到 URL 该 key |
+| `urlOptions` | `Omit<UrlStateOptions<TableSortState>, 'key'>` | —                              | 透传 `useUrlState` 选项   |
+| `onChange`   | `(state: TableSortState) => void`              | —                              | 排序变化回调              |
+
 ## 返回值
 
 | 属性      | 类型                     | 说明                                          |

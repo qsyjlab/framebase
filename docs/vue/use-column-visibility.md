@@ -46,6 +46,16 @@ const { isVisible } = useColumnVisibility({
 function useColumnVisibility(options?: UseColumnVisibilityOptions): UseColumnVisibilityReturn
 ```
 
+## 参数
+
+### UseColumnVisibilityOptions
+
+| 属性         | 类型                      | 默认值                | 说明                            |
+| ------------ | ------------------------- | --------------------- | ------------------------------- |
+| `initial`    | `Record<string, boolean>` | `{}`                  | 初始显隐 map，缺失 key 视为可见 |
+| `storageKey` | `string`                  | —                     | 设置后持久化到 localStorage     |
+| `storage`    | `Storage`                 | `window.localStorage` | 自定义存储实例                  |
+
 ## 返回值
 
 | 属性         | 类型                           | 说明                       |

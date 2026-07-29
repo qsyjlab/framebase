@@ -19,7 +19,7 @@ const { options, getText, getItem } = useValueEnum(statusEnum)
 // <el-select v-for="opt in options" ...>
 
 getText('active') // '启用'
-getItem('disabled') // { text: '禁用', status: 'danger' }
+getItem('disabled') // { text: '禁用', type: 'danger' }
 ```
 
 ## 签名

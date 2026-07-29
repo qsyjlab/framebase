@@ -54,6 +54,14 @@ function provideDictionaries(
 ): Readonly<Ref<DictionaryRegistry>>
 ```
 
+## 参数
+
+### UseDictionaryOptions
+
+| 属性       | 类型        | 默认值 | 说明                 |
+| ---------- | ----------- | ------ | -------------------- |
+| `fallback` | `ValueEnum` | —      | 字典未命中时的兜底值 |
+
 ## 返回值
 
 继承 `useValueEnum` 全部字段，额外：

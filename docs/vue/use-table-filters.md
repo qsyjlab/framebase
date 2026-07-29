@@ -35,6 +35,17 @@ const { filters } = useTableFilters({
 function useTableFilters(options?: UseTableFiltersOptions): UseTableFiltersReturn
 ```
 
+## 参数
+
+### UseTableFiltersOptions
+
+| 属性         | 类型                                         | 默认值 | 说明                      |
+| ------------ | -------------------------------------------- | ------ | ------------------------- |
+| `initial`    | `TableFilters`                               | `{}`   | 初始筛选                  |
+| `urlKey`     | `string`                                     | —      | 设置后持久化到 URL 该 key |
+| `urlOptions` | `Omit<UrlStateOptions<TableFilters>, 'key'>` | —      | 透传 `useUrlState` 选项   |
+| `onChange`   | `(filters: TableFilters) => void`            | —      | 筛选变化回调              |
+
 ## 返回值
 
 | 属性         | 类型                      | 说明                                     |

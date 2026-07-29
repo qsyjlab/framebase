@@ -33,6 +33,14 @@ const { fields, append, remove, values } = useFieldArray<Contact>([{ type: 'emai
 function useFieldArray<T>(initial?: T[], options?: UseFieldArrayOptions): UseFieldArrayReturn<T>
 ```
 
+## 参数
+
+### UseFieldArrayOptions
+
+| 属性          | 类型        | 默认值       | 说明                        |
+| ------------- | ----------- | ------------ | --------------------------- |
+| `defaultItem` | `() => any` | `() => ({})` | `append()` 无参时的工厂函数 |
+
 ## 返回值
 
 | 属性      | 类型                        | 说明                                       |
