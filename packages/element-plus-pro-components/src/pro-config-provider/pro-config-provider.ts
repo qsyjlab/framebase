@@ -1,5 +1,6 @@
 import type { ComponentSize } from 'element-plus'
 import type { Ref, VNodeChild } from 'vue'
+import type { HookConfig } from '@framebase/vue'
 import type { ProFieldRendererDefinition, ProFieldValueEnum } from '../pro-field'
 import type { ProListRequestResult } from '../pro-list'
 import type { ProDescriptionsProps } from '../pro-descriptions'
@@ -83,6 +84,11 @@ export interface ProConfigProviderProps {
   descriptions?: ProConfigProviderDescriptionsConfig
   card?: ProConfigProviderCardConfig
   list?: ProConfigProviderListConfig
+  /**
+   * Hook 级别的全局默认配置，作用于 @framebase/vue 的 useRequest / usePagination /
+   * usePagedList。调用方传入的 options 优先级高于此处的配置。
+   */
+  hooks?: HookConfig
   /**
    * Tree-scoped dictionary registry, keyed by name. Fields declaring
    * `valueEnum: '<name>'` (or `valueEnum: 'dict:<name>'`) resolve against

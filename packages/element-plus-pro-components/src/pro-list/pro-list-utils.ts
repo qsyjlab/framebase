@@ -3,7 +3,7 @@ import {
   getProRowKey,
   normalizeProPagedResponse,
   paginateProData
-} from '@framebase/core'
+} from '@framebase/vue'
 import type {
   ProListItemMeta,
   ProListPageInfo,

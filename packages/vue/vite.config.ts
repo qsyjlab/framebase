@@ -1,8 +1,9 @@
 import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 
-// vue 包以 vue / vue-router / @framebase/core 作为外部依赖。
-const external = new Set(['vue', 'vue-router', '@framebase/core'])
+// vue 包将 @framebase/core 源码打包进 dist（core 不单独发版）。
+// vue / vue-router / lodash-es 作为外部依赖（lodash-es 是 core 运行时依赖，由用户安装）。
+const external = new Set(['vue', 'vue-router', 'lodash-es'])
 
 export default defineConfig({
   plugins: [],

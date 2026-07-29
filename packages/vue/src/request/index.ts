@@ -6,6 +6,7 @@
  * depending on this module.
  */
 import { computed, shallowRef, type ComputedRef, type ShallowRef } from 'vue'
+import { useHookConfig, resolveHookOption } from '../config'
 
 export type RequestPhase = 'idle' | 'pending' | 'success' | 'error'
 export type RequestAction = 'initial' | 'reload' | 'refresh' | 'page' | 'retry' | 'submit'
@@ -62,6 +63,12 @@ export interface RequestState<TData> {
 
 /** Shared abortable request state with debounce, retry and latest-request-wins semantics. */
 export function useRequest<TData>(defaults: RequestOptions = {}): RequestState<TData> {
+  const hookConfig = useHookConfig()
+  const resolvedDefaults: RequestOptions = {
+    debounce: resolveHookOption(defaults.debounce, hookConfig.value.request?.debounce),
+    retry: resolveHookOption(defaults.retry, hookConfig.value.request?.retry),
+    retryDelay: resolveHookOption(defaults.retryDelay, hookConfig.value.request?.retryDelay)
+  }
   const data = shallowRef<TData>()
   const error = shallowRef<unknown>()
   const phase = shallowRef<RequestPhase>('idle')
@@ -95,7 +102,7 @@ export function useRequest<TData>(defaults: RequestOptions = {}): RequestState<T
     params: TParams,
     options: RequestExecuteOptions = {}
   ): Promise<TData> {
-    const resolvedOptions = { ...defaults, ...options }
+    const resolvedOptions = { ...resolvedDefaults, ...options }
     const currentAction =
       resolvedOptions.action ?? (data.value === undefined ? 'initial' : 'refresh')
     const run = () => execute(request, params, { ...resolvedOptions, action: 'retry', debounce: 0 })

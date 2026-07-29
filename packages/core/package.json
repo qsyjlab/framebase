@@ -21,10 +21,7 @@
     "framework-agnostic",
     "lodash"
   ],
-  "publishConfig": {
-    "access": "public",
-    "tag": "latest"
-  },
+  "private": true,
   "type": "module",
   "main": "./dist/es/index.js",
   "module": "./dist/es/index.js",

@@ -69,7 +69,8 @@ export default defineConfig({
         {
           text: '请求',
           items: [
-            { text: 'useRequest', link: '/vue/use-request' }
+            { text: 'useRequest', link: '/vue/use-request' },
+            { text: 'usePagedList', link: '/vue/use-paged-list' }
           ]
         },
         {
@@ -78,6 +79,12 @@ export default defineConfig({
             { text: 'usePagination', link: '/vue/use-pagination' },
             { text: 'useSelection', link: '/vue/use-selection' },
             { text: 'useUrlState', link: '/vue/use-url-state' }
+          ]
+        },
+        {
+          text: '配置',
+          items: [
+            { text: 'useHookConfig / provideHookConfig', link: '/vue/use-hook-config' }
           ]
         }
       ],

@@ -32,7 +32,8 @@ export function mergeProConfig(
     table: mergeSection(parent.table, current.table),
     descriptions: mergeSection(parent.descriptions, current.descriptions),
     card: mergeSection(parent.card, current.card),
-    list: mergeSection(parent.list, current.list)
+    list: mergeSection(parent.list, current.list),
+    hooks: mergeHooks(parent.hooks, current.hooks)
   }
 
   if (parent.dictionaries || current.dictionaries) {
@@ -58,6 +59,18 @@ function mergeSection<T extends object>(parent?: T, current?: T, mergeVariables 
     } as T
   }
   return merged
+}
+
+function mergeHooks(
+  parent?: ProConfigProviderProps['hooks'],
+  current?: ProConfigProviderProps['hooks']
+): ProConfigProviderProps['hooks'] | undefined {
+  if (!parent && !current) return undefined
+  return {
+    request: { ...parent?.request, ...current?.request },
+    pagination: { ...parent?.pagination, ...current?.pagination },
+    pagedList: { ...parent?.pagedList, ...current?.pagedList }
+  }
 }
 
 export function useProConfigProvider() {

@@ -159,12 +159,68 @@
       </el-space>
       <el-alert :title="`当前 URL query: ${currentUrlQuery}`" type="info" :closable="false" />
     </DemoBlock>
+
+    <DemoBlock
+      title="usePagedList"
+      description="分页列表请求：组合 usePagination + useRequest，分页/查询变化自动请求。"
+      eyebrow="请求"
+    >
+      <template #actions>
+        <el-button size="small" :loading="pagedList.loading.value" @click="pagedList.reload()">
+          reload
+        </el-button>
+        <el-button size="small" :loading="pagedList.loading.value" @click="pagedList.refresh()">
+          refresh
+        </el-button>
+        <el-button size="small" :disabled="pagedList.loading.value" @click="pagedList.cancel()">
+          cancel
+        </el-button>
+      </template>
+      <el-space wrap style="margin-bottom: 12px">
+        <el-input
+          v-model="pagedKeyword"
+          placeholder="keyword（params 变化回第一页）"
+          style="width: 220px"
+        />
+        <el-select
+          v-model="pagedList.pageSize.value"
+          style="width: 110px"
+          @change="pagedList.setPageSize(Number($event))"
+        >
+          <el-option :value="5" label="5 条/页" />
+          <el-option :value="10" label="10 条/页" />
+        </el-select>
+      </el-space>
+      <el-table
+        v-loading="pagedList.loading.value"
+        :data="pagedList.list.value"
+        style="margin-bottom: 12px"
+      >
+        <el-table-column prop="id" label="ID" width="80" />
+        <el-table-column prop="name" label="名称" />
+      </el-table>
+      <el-pagination
+        :current-page="pagedList.current.value"
+        :page-size="pagedList.pageSize.value"
+        :total="pagedList.total.value"
+        layout="prev, pager, next, total"
+        @current-change="(v: number) => pagedList.setCurrent(v)"
+      />
+      <el-descriptions :column="2" border style="margin-top: 12px">
+        <el-descriptions-item label="phase">
+          <el-tag :type="phaseTagType(pagedList.phase.value)">{{ pagedList.phase.value }}</el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item label="list.length">{{
+          pagedList.list.value.length
+        }}</el-descriptions-item>
+      </el-descriptions>
+    </DemoBlock>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useRequest, usePagination, useSelection, useUrlState } from '@framebase/vue'
+import { useRequest, usePagination, useSelection, useUrlState, usePagedList } from '@framebase/vue'
 import { ElMessage } from 'element-plus'
 import DemoBlock from '../components/DemoBlock.vue'
 
@@ -283,4 +339,26 @@ watch(
   },
   { deep: true }
 )
+
+// --- usePagedList ---
+interface PagedUser {
+  id: number
+  name: string
+}
+const pagedKeyword = ref('')
+const pagedList = usePagedList<PagedUser, { keyword: string }>({
+  request: async params => {
+    // 模拟网络延迟
+    await new Promise(r => setTimeout(r, 600))
+    const all: PagedUser[] = Array.from({ length: 23 }, (_, i) => ({
+      id: i + 1,
+      name: `用户 ${i + 1}${params.keyword ? ` · ${params.keyword}` : ''}`
+    }))
+    const matched = params.keyword ? all.filter(u => u.name.includes(params.keyword)) : all
+    const start = (params.current - 1) * params.pageSize
+    return { data: matched.slice(start, start + params.pageSize), total: matched.length }
+  },
+  pageSize: 5,
+  params: () => ({ keyword: pagedKeyword.value })
+})
 </script>

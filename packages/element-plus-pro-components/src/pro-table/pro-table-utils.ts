@@ -4,7 +4,7 @@ import {
   moveProItem,
   normalizeProPagedResponse,
   paginateProData
-} from '@framebase/core'
+} from '@framebase/vue'
 import type {
   ProTableColumn,
   ProTableColumnState,

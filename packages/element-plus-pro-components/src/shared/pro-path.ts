@@ -1,8 +1,8 @@
 /**
- * Re-export path utilities from `@framebase/core`.
+ * Re-export path utilities from `@framebase/vue` (which re-exports `@framebase/core`).
  *
- * The canonical implementation now lives in `@framebase/core/path` so it can be
- * reused outside of the Element Plus pro-components package. This file keeps the
+ * The canonical implementation lives in `@framebase/core/path` and is bundled into
+ * `@framebase/vue` so consumers only need a single dependency. This file keeps the
  * historical import path (`shared/pro-path`) working for existing callers and
  * preserves the `Pro`-prefixed naming convention used across this package.
  */
@@ -16,4 +16,4 @@ export {
   type ProLiteralUnion,
   type ProDataPath,
   type ProDataIndex
-} from '@framebase/core'
+} from '@framebase/vue'

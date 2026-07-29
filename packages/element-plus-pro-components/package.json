@@ -59,7 +59,6 @@
     "prepublishOnly": "pnpm run verify"
   },
   "peerDependencies": {
-    "@framebase/core": "workspace:^",
     "@framebase/vue": "workspace:^",
     "@element-plus/icons-vue": "^2.3.0",
     "dayjs": "^1.11.0",

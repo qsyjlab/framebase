@@ -13,6 +13,7 @@
 <script setup lang="ts">
 import { computed, inject, provide, type CSSProperties } from 'vue'
 import { ElConfigProvider } from 'element-plus'
+import { provideHookConfig } from '@framebase/vue'
 import { mergeProConfig, proConfigProviderContextKey } from './pro-config-provider-context'
 import type { ProConfigProviderProps } from './pro-config-provider'
 
@@ -34,6 +35,8 @@ const themeStyle = computed<CSSProperties>(() => {
 })
 
 provide(proConfigProviderContextKey, config)
+// 透传 hooks 配置到 @framebase/vue 的 inject/provide 体系
+provideHookConfig(() => config.value.hooks ?? {})
 </script>
 
 <style>

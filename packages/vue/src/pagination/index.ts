@@ -7,6 +7,7 @@
  */
 import { computed, ref, type ComputedRef, type Ref } from 'vue'
 import type { PageInfo } from '@framebase/core'
+import { useHookConfig, resolveHookOption } from '../config'
 
 export type { PageInfo }
 
@@ -41,8 +42,13 @@ export interface UsePaginationReturn {
 }
 
 export function usePagination(options: PaginationOptions = {}): UsePaginationReturn {
-  const current = ref(options.current ?? 1)
-  const pageSize = ref(options.pageSize ?? 10)
+  const hookConfig = useHookConfig()
+  const initialCurrent =
+    resolveHookOption(options.current, hookConfig.value.pagination?.defaultCurrent) ?? 1
+  const initialPageSize =
+    resolveHookOption(options.pageSize, hookConfig.value.pagination?.defaultPageSize) ?? 10
+  const current = ref(initialCurrent)
+  const pageSize = ref(initialPageSize)
   const total = ref(options.total ?? 0)
   const listeners = new Set<(ctx: PaginationChangeContext) => void>()
 
@@ -82,8 +88,8 @@ export function usePagination(options: PaginationOptions = {}): UsePaginationRet
 
   function reset(reason: PaginationChangeContext['reason'] = 'reset') {
     const previous = { ...pageInfo.value }
-    current.value = options.current ?? 1
-    pageSize.value = options.pageSize ?? 10
+    current.value = initialCurrent
+    pageSize.value = initialPageSize
     emit(reason, previous)
   }
 
