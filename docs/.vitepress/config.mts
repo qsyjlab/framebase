@@ -97,6 +97,7 @@ export default defineConfig({
           items: [
             { text: 'useTableSort', link: '/vue/use-table-sort' },
             { text: 'useTableFilters', link: '/vue/use-table-filters' },
+            { text: 'useTableRowEdit', link: '/vue/use-table-row-edit' },
             { text: 'useColumnVisibility', link: '/vue/use-column-visibility' }
           ]
         },
@@ -104,7 +105,8 @@ export default defineConfig({
           text: '字典',
           items: [
             { text: 'useValueEnum', link: '/vue/use-value-enum' },
-            { text: 'useDictionary', link: '/vue/use-dictionary' }
+            { text: 'useDictionary', link: '/vue/use-dictionary' },
+            { text: 'useTreeData', link: '/vue/use-tree-data' }
           ]
         },
         {

@@ -402,6 +402,50 @@
     </DemoBlock>
 
     <DemoBlock
+      title="useTableRowEdit"
+      description="单行内联编辑：点击编辑进入可编辑态，保存/取消退出。"
+      eyebrow="表格交互"
+    >
+      <template #actions>
+        <el-tag>{{
+          rowEdit.isEditingAny.value ? `编辑中: ${rowEdit.editingKey.value}` : '空闲'
+        }}</el-tag>
+      </template>
+      <el-table :data="rowEditData" style="margin-bottom: 12px">
+        <el-table-column prop="id" label="ID" width="80" />
+        <el-table-column prop="name" label="名称">
+          <template #default="{ row }">
+            <el-input v-if="rowEdit.isEditing(row.id)" v-model="row.name" size="small" />
+            <span v-else>{{ row.name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="role" label="角色">
+          <template #default="{ row }">
+            <el-select
+              v-if="rowEdit.isEditing(row.id)"
+              v-model="row.role"
+              size="small"
+              style="width: 120px"
+            >
+              <el-option value="admin" label="管理员" />
+              <el-option value="user" label="用户" />
+            </el-select>
+            <span v-else>{{ row.role }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="160">
+          <template #default="{ row }">
+            <template v-if="rowEdit.isEditing(row.id)">
+              <el-button size="small" type="primary" @click="onRowSave(row)">保存</el-button>
+              <el-button size="small" @click="rowEdit.stopEdit(row.id)">取消</el-button>
+            </template>
+            <el-button v-else size="small" @click="rowEdit.startEdit(row.id)">编辑</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </DemoBlock>
+
+    <DemoBlock
       title="useValueEnum + useDictionary"
       description="字典读取：从 ProConfigProvider.dictionaries 解析 status 字典。"
       eyebrow="字典"
@@ -430,6 +474,55 @@
         />
       </el-select>
     </DemoBlock>
+
+    <DemoBlock
+      title="useTreeData"
+      description="扁平数组 → 响应式树：查找节点、路径追踪、搜索过滤。"
+      eyebrow="字典"
+    >
+      <template #actions>
+        <el-input
+          v-model="treeKeyword"
+          placeholder="搜索部门"
+          size="small"
+          style="width: 160px"
+          clearable
+        />
+      </template>
+      <el-space wrap style="margin-bottom: 12px">
+        <el-tag>nodes: {{ treeData.flat.value.length }}</el-tag>
+        <el-tag v-if="treeData.filtered.value.length"
+          >filtered: {{ treeData.filtered.value.length }}</el-tag
+        >
+      </el-space>
+      <el-row :gutter="16">
+        <el-col :span="12">
+          <h4 style="margin: 0 0 8px">树结构</h4>
+          <el-tree
+            :data="treeKeyword ? treeData.filtered.value : treeData.tree.value"
+            :props="{ label: 'name', children: 'children' }"
+            default-expand-all
+            :node-key="'id'"
+            highlight-current
+            @node-click="onTreeNodeClick"
+          />
+        </el-col>
+        <el-col :span="12">
+          <h4 style="margin: 0 0 8px">路径</h4>
+          <el-descriptions :column="1" border>
+            <el-descriptions-item label="selected">
+              {{ treeSelected ?? '(点击左侧节点)' }}
+            </el-descriptions-item>
+            <el-descriptions-item label="path">
+              <el-tag v-for="(n, i) in treePath" :key="i" size="small" style="margin-right: 4px">
+                {{ n.name }}
+              </el-tag>
+              <span v-if="!treePath.length">-</span>
+            </el-descriptions-item>
+          </el-descriptions>
+        </el-col>
+      </el-row>
+    </DemoBlock>
   </div>
 </template>
 
@@ -449,8 +542,10 @@ import {
   useSubmit,
   useTableSort,
   useColumnVisibility,
+  useTableRowEdit,
   useValueEnum,
-  useDictionary
+  useDictionary,
+  useTreeData
 } from '@framebase/vue'
 import { ElMessage } from 'element-plus'
 import DemoBlock from '../components/DemoBlock.vue'
@@ -747,4 +842,51 @@ const _inlineEnum = useValueEnum({
   yes: { text: '是', type: 'success' },
   no: { text: '否', type: 'danger' }
 })
+
+// --- useTableRowEdit ---
+interface RowEditItem {
+  id: number
+  name: string
+  role: string
+}
+const rowEditData = ref<RowEditItem[]>([
+  { id: 1, name: 'Ada', role: 'admin' },
+  { id: 2, name: 'Bob', role: 'user' },
+  { id: 3, name: 'Cara', role: 'user' }
+])
+const rowEdit = useTableRowEdit<number>()
+
+function onRowSave(_row: RowEditItem) {
+  ElMessage.success(`已保存: ${_row.name} (${_row.role})`)
+  rowEdit.stopEdit(_row.id)
+}
+
+// --- useTreeData ---
+interface DeptNode {
+  id: number
+  parentId: number | null
+  name: string
+  children?: DeptNode[]
+}
+const treeKeyword = ref('')
+const treeSelected = ref<number | null>(null)
+const treePath = ref<DeptNode[]>([])
+const treeData = useTreeData<DeptNode>(
+  [
+    { id: 1, parentId: null, name: '总部' },
+    { id: 2, parentId: 1, name: '研发部' },
+    { id: 3, parentId: 1, name: '市场部' },
+    { id: 4, parentId: 2, name: '前端组' },
+    { id: 5, parentId: 2, name: '后端组' },
+    { id: 6, parentId: 3, name: '品牌组' }
+  ],
+  {
+    filterPredicate: node => node.name.includes(treeKeyword.value)
+  }
+)
+
+function onTreeNodeClick(node: DeptNode) {
+  treeSelected.value = node.id
+  treePath.value = treeData.findPath(node.id)
+}
 </script>
