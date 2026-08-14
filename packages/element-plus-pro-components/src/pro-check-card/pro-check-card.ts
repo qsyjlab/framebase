@@ -11,8 +11,9 @@ export interface ProCheckCardOption<TValue extends ProCheckCardValue = ProCheckC
   loading?: boolean
 }
 
-export interface ProCheckCardProps<TValue extends ProCheckCardValue = ProCheckCardValue>
-  extends ProCheckCardOption<TValue> {
+export interface ProCheckCardProps<
+  TValue extends ProCheckCardValue = ProCheckCardValue
+> extends ProCheckCardOption<TValue> {
   modelValue?: TValue | TValue[]
   multiple?: boolean
   bodyStyle?: CSSProperties

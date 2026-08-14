@@ -1,5 +1,27 @@
 # @framebase/vue
 
+## 0.2.1
+
+### Patch Changes
+
+- ProTable 移除内置 search 与 fullscreen，升级依赖与构建修复
+
+  ### ProTable
+  - 移除内置关键词搜索（`options.search`）与全屏（`options.fullscreen`）工具栏按钮
+  - 移除 `ProTableKeywordSearch` 类型
+  - `ProTableExpose` 移除 `fullScreen`、`setKeyword`、`getKeyword` 方法
+  - `keyword-change` 事件移除
+  - 工具栏现在只保留：刷新、密度、列设置
+  - 如需搜索能力，可通过 `toolbar` 插槽自定义或使用 `ProLightFilter`
+
+  ### 依赖升级
+  - `element-plus` 升级至 2.14.4
+  - `@element-plus/icons-vue` 升级至 2.3.2
+
+  ### Bug 修复
+  - 修复 Vite 8 下 `@vitejs/plugin-vue` 构建泛型组件 `defineProps<T>()` 时无法解析导入类型的问题
+  - 修复 `useFormState` 的 `isDirty` 在字段值变更后不更新的问题（`toRaw` 绕过响应式追踪）
+
 ## 0.2.0
 
 ### Minor Changes

@@ -1,6 +1,6 @@
 {
   "name": "@framebase/vue",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Vue 3 composables for request, pagination, selection and URL state built on @framebase/core.",
   "license": "MIT",
   "author": "qsyjlab",
@@ -67,12 +67,12 @@
     }
   },
   "dependencies": {
-    "lodash-es": "^4.17.21"
+    "lodash-es": "^4.18.1"
   },
   "devDependencies": {
     "@framebase/core": "workspace:*",
     "@types/lodash-es": "^4.17.12",
-    "vue": "3.5.13",
-    "vue-router": "4.5.0"
+    "vue": "3.5.41",
+    "vue-router": "5.2.0"
   }
 }

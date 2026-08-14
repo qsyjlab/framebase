@@ -10,7 +10,7 @@ interface Row {
   name: string
 }
 
-function setup(props: ProTableProps<Row, Record<string, never>>) {
+function setup(props: ProTableProps<Row, Record<string, any>>) {
   const beforePageChange = vi.fn()
   const afterLoad = vi.fn()
   const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
@@ -37,13 +37,13 @@ describe('use-pro-table-data', () => {
   })
 
   it('syncs controlled local data without treating it as a page change', async () => {
-    const props = reactive<ProTableProps<Row, Record<string, never>>>({
+    const props = reactive<ProTableProps<Row, Record<string, any>>>({
       columns: [],
       data: [{ id: 1, name: 'A' }],
       pagination: false,
       autoRequest: true
-    } as ProTableProps<Row, Record<string, never>>)
-    const { state, beforePageChange } = setup(props)
+    } as ProTableProps<Row, Record<string, any>>)
+    const { state, beforePageChange } = setup(props as ProTableProps<Row, Record<string, any>>)
     await nextTick()
 
     expect(state.tableData.value).toEqual([{ id: 1, name: 'A' }])
@@ -67,7 +67,7 @@ describe('use-pro-table-data', () => {
       pagination: true,
       autoRequest: true
     })
-    const { beforePageChange } = setup(props as ProTableProps<Row, Record<string, never>>)
+    const { beforePageChange } = setup(props as ProTableProps<Row, Record<string, any>>)
     await nextTick()
     const initialCalls = beforePageChange.mock.calls.length
 
@@ -78,14 +78,14 @@ describe('use-pro-table-data', () => {
   })
 
   it('ignores recreated pagination objects until page values actually change', async () => {
-    const props = reactive<ProTableProps<Row, Record<string, never>>>({
+    const props = reactive<ProTableProps<Row, Record<string, any>>>({
       columns: [],
       request: async () => ({ data: [], total: 0 }),
       params: {},
       pagination: { current: 1, pageSize: 10 },
       autoRequest: true
     })
-    const { state, beforePageChange } = setup(props)
+    const { state, beforePageChange } = setup(props as ProTableProps<Row, Record<string, any>>)
     await nextTick()
     const initialCalls = beforePageChange.mock.calls.length
 
@@ -108,7 +108,7 @@ describe('use-pro-table-data', () => {
       pagination: { current: 2, pageSize: 20 },
       autoRequest: false
     })
-    const { state } = setup(props as ProTableProps<Row, Record<string, never>>)
+    const { state } = setup(props as ProTableProps<Row, Record<string, any>>)
 
     await state.setSorter({ key: 'name', field: 'user_name', order: 'descending' }, false)
     await state.setFilters({ status: ['active'] }, false)
@@ -132,38 +132,26 @@ describe('use-pro-table-data', () => {
     })
   })
 
-  it('submits toolbar keywords with a configurable name and clears them on reset', async () => {
+  it('clears sorter and filters on reset', async () => {
     const request = vi.fn(async () => ({ data: [], total: 0 }))
-    const props = reactive<ProTableProps<Row, { query?: string }>>({
+    const props = reactive<ProTableProps<Row, Record<string, any>>>({
       columns: [],
       request,
       pagination: { current: 2, pageSize: 20 },
-      autoRequest: false,
-      options: { search: { name: 'query' } }
+      autoRequest: false
     })
-    const { state } = setup(props as ProTableProps<Row, Record<string, never>>)
-
-    await state.setKeyword('orders')
-    expect(request).toHaveBeenLastCalledWith(
-      expect.objectContaining({ query: 'orders', current: 1 }),
-      expect.any(Object)
-    )
+    const { state } = setup(props as ProTableProps<Row, Record<string, any>>)
 
     await state.setSorter({ key: 'name', order: 'ascending' }, false)
     await state.setFilters({ status: ['active'] }, false)
     await state.resetTableState()
 
-    expect(state.keyword.value).toBe('')
     expect(state.getServerState()).toEqual({
       current: 1,
       pageSize: 20,
       sorter: undefined,
       filters: {}
     })
-    expect(request).toHaveBeenLastCalledWith(
-      expect.not.objectContaining({ query: expect.anything() }),
-      expect.any(Object)
-    )
   })
 
   it('uses restored URL pagination for the first request without resetting it', async () => {
@@ -189,7 +177,7 @@ describe('use-pro-table-data', () => {
       removeEventListener: vi.fn()
     })
     const request = vi.fn(async () => ({ data: [], total: 0 }))
-    const props = reactive<ProTableProps<Row, Record<string, never>>>({
+    const props = reactive<ProTableProps<Row, Record<string, any>>>({
       columns: [],
       request,
       pagination: true,
@@ -198,7 +186,7 @@ describe('use-pro-table-data', () => {
       statePersistence: { key: 'orders-table' }
     })
 
-    const { state, beforePageChange } = setup(props)
+    const { state, beforePageChange } = setup(props as ProTableProps<Row, Record<string, any>>)
 
     await vi.waitFor(() => expect(request).toHaveBeenCalledTimes(1))
     expect(request).toHaveBeenCalledWith(
@@ -219,7 +207,7 @@ describe('use-pro-table-data', () => {
       addEventListener: vi.fn(),
       removeEventListener: vi.fn()
     })
-    const props = reactive<ProTableProps<Row, Record<string, never>>>({
+    const props = reactive<ProTableProps<Row, Record<string, any>>>({
       columns: [],
       request: async () => ({ data: [], total: 0 }),
       pagination: true,
@@ -227,7 +215,7 @@ describe('use-pro-table-data', () => {
       urlState: { key: 'orders' }
     })
 
-    setup(props)
+    setup(props as ProTableProps<Row, Record<string, any>>)
 
     expect(replaceState).toHaveBeenCalledWith(
       null,

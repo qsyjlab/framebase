@@ -1,5 +1,32 @@
 # @framebase/element-plus-pro-components
 
+## 1.1.0
+
+### Minor Changes
+
+- ProTable 移除内置 search 与 fullscreen，升级依赖与构建修复
+
+  ### ProTable
+  - 移除内置关键词搜索（`options.search`）与全屏（`options.fullscreen`）工具栏按钮
+  - 移除 `ProTableKeywordSearch` 类型
+  - `ProTableExpose` 移除 `fullScreen`、`setKeyword`、`getKeyword` 方法
+  - `keyword-change` 事件移除
+  - 工具栏现在只保留：刷新、密度、列设置
+  - 如需搜索能力，可通过 `toolbar` 插槽自定义或使用 `ProLightFilter`
+
+  ### 依赖升级
+  - `element-plus` 升级至 2.14.4
+  - `@element-plus/icons-vue` 升级至 2.3.2
+
+  ### Bug 修复
+  - 修复 Vite 8 下 `@vitejs/plugin-vue` 构建泛型组件 `defineProps<T>()` 时无法解析导入类型的问题
+  - 修复 `useFormState` 的 `isDirty` 在字段值变更后不更新的问题（`toRaw` 绕过响应式追踪）
+
+### Patch Changes
+
+- Updated dependencies
+  - @framebase/vue@0.2.1
+
 ## 1.0.0
 
 ### Minor Changes
@@ -17,20 +44,17 @@
   - `borderStyle` / `size` 控制视觉风格
 
   ## ProTable 工具栏图标
-
   - 刷新/密度/列设置三个工具栏按钮图标由 Element Plus 图标改为内联 SVG（照抄 Ant Design Icons），不再依赖 @element-plus/icons-vue
   - 列设置面板：拖拽柄 + 固定列首/列尾按钮同步改为内联 SVG
   - 行拖拽柄图标同步替换
   - 列头 tip 图标 cursor 由 `help` 改为 `pointer`
 
   ## 主题包（element-plus-theme）
-
   - 新增 `drawer.scss`：`--el-drawer-padding-primary` 默认对齐 dialog（`var(--el-dialog-padding-primary, 0px)`）
   - `select.scss`：`.el-select` 默认 `width: 100%`（分页器内 select 排除，保持 `width: auto`）
   - `table.scss`：表格外 border 圆角改为 `0`（直角）
 
   ## 工程化
-
   - 各包新增 `dev` watch 脚本（core/vue/pro-components 用 `vite build --watch`，theme 用 `sass --watch`），根 `dev` 脚本用 concurrently 并行启动 watch + playground
   - 修复 `tsconfig.json` 中 `ignoreDeprecations: "6.0"` 在 TS 5.x 下非法的问题
 

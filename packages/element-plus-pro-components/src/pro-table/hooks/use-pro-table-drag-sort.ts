@@ -42,8 +42,7 @@ export function useProTableDragSort<TRecord extends object>(
     if (!config.value || config.value.disabled || !options.tableRef.value) return
     const tableElement = (options.tableRef.value as TableInstance & { $el?: HTMLElement }).$el
     const tbody = tableElement?.querySelector('.el-table__body-wrapper tbody') as
-      | HTMLElement
-      | undefined
+      HTMLElement | undefined
     if (!tbody) return
     sortableInstance = Sortable.create(tbody, {
       animation: config.value.animation ?? 180,

@@ -11,9 +11,7 @@
         :options="{
           reload: true,
           density: true,
-          setting: true,
-          fullscreen: true,
-          search: { placeholder: '搜索订单或负责人' }
+          setting: true
         }"
         :pagination="{ pageSize: 5 }"
       >

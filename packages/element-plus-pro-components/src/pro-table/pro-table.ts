@@ -1,4 +1,4 @@
-import type { TableColumnCtx, TableInstance, TableProps } from 'element-plus'
+import type { TableColumnCtx, TableInstance } from 'element-plus'
 import type { Component, VNodeChild } from 'vue'
 import type { ProFieldProps } from '../pro-field'
 import type {
@@ -55,8 +55,7 @@ export interface ProTableCopyConfig<TRecord extends object, TValue = unknown> {
 }
 
 export type ProTableDynamicValue<TRecord extends object, TValue> =
-  | TValue
-  | ((scope: ProTableRenderScope<TRecord>) => TValue)
+  TValue | ((scope: ProTableRenderScope<TRecord>) => TValue)
 
 export type ProTableEditableRowKey = string | number
 
@@ -112,13 +111,12 @@ export interface ProTableEditable<TRecord extends object> {
   onError?: (errors: ProTableEditableErrors | undefined) => void
 }
 
-export interface ProTableColumn<TRecord extends object, TValue = unknown>
-  extends Partial<
-    Omit<
-      TableColumnCtx<TRecord>,
-      'children' | 'columnKey' | 'formatter' | 'label' | 'prop' | 'renderCell'
-    >
-  > {
+export interface ProTableColumn<TRecord extends object, TValue = unknown> extends Partial<
+  Omit<
+    TableColumnCtx<TRecord>,
+    'children' | 'columnKey' | 'formatter' | 'label' | 'prop' | 'renderCell'
+  >
+> {
   key: ProLiteralUnion<string>
   dataIndex?: ProDataIndex<TRecord>
   title?: string
@@ -155,7 +153,7 @@ export interface ProTablePagination extends Partial<ProTablePageInfo> {
 export interface ProTableColumnState {
   show?: boolean
   order?: number
-  fixed?: TableColumnCtx<unknown>['fixed']
+  fixed?: TableColumnCtx<Record<string, any>>['fixed']
 }
 
 export interface ProTableColumnsState {
@@ -202,22 +200,13 @@ export interface ProTableOptions {
   reload?: boolean
   density?: boolean
   setting?: boolean
-  fullscreen?: boolean
-  search?: boolean | ProTableKeywordSearch
   /**
    * Allow applications to register custom toolbar options (e.g. `export`,
-   * `fullscreen`, `refresh`). Built-in options are `reload`, `density` and
-   * `setting`; any additional keys are passed through to the `toolbar` slot
-   * for custom rendering.
+   * `refresh`). Built-in options are `reload`, `density` and `setting`; any
+   * additional keys are passed through to the `toolbar` slot for custom
+   * rendering.
    */
   [key: string]: unknown
-}
-
-export interface ProTableKeywordSearch {
-  name?: string
-  placeholder?: string
-  clearable?: boolean
-  width?: string | number
 }
 
 export type ProTableScrollTarget =
@@ -282,10 +271,10 @@ export interface ProTableProps<
   showAlert?: boolean
   alwaysShowAlert?: boolean
   autoFitHeight?: boolean
-  height?: TableProps<TRecord>['height']
-  size?: TableProps<TRecord>['size']
+  height?: string | number
+  size?: '' | 'default' | 'small' | 'large'
   border?: boolean
-  tableLayout?: TableProps<TRecord>['tableLayout']
+  tableLayout?: 'fixed' | 'auto'
   emptyText?: string
   errorText?: string | ((error: unknown) => string)
   retryText?: string
@@ -299,13 +288,10 @@ export interface ProTableExpose<TRecord extends object> extends ProRequestContro
   getTotal: () => number
   getServerState: () => ProTableServerState
   getSelectedKeys: () => Array<string | number>
-  getKeyword: () => string
   reload: (resetPage?: boolean) => Promise<TRecord[]>
   refresh: () => Promise<TRecord[]>
   reset: () => Promise<TRecord[]>
-  fullScreen: () => Promise<void>
   scrollTo: (target: ProTableScrollTarget) => Promise<void>
-  setKeyword: (keyword: string, reload?: boolean) => Promise<TRecord[]>
   setPageInfo: (pageInfo: Partial<ProTablePageInfo>, reload?: boolean) => Promise<TRecord[]>
   setSorter: (sorter?: ProTableSorter, reload?: boolean) => Promise<TRecord[]>
   setFilters: (filters: ProTableFilters, reload?: boolean) => Promise<TRecord[]>

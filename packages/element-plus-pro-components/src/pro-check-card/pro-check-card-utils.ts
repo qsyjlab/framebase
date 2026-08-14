@@ -1,12 +1,7 @@
 import type { ProCheckCardOption, ProCheckCardValue } from './pro-check-card'
 
 export type ProCheckCardNavigationKey =
-  | 'ArrowLeft'
-  | 'ArrowRight'
-  | 'ArrowUp'
-  | 'ArrowDown'
-  | 'Home'
-  | 'End'
+  'ArrowLeft' | 'ArrowRight' | 'ArrowUp' | 'ArrowDown' | 'Home' | 'End'
 
 export function getInitialProCheckCardIndex<TValue extends ProCheckCardValue>(
   options: ProCheckCardOption<TValue>[],

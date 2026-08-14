@@ -17,25 +17,25 @@ export interface ProUploadProps<
   TResponse = unknown,
   TFile extends ProUploadFile<TResponse> = ProUploadFile<TResponse>
 > extends Partial<
-    Pick<
-      UploadProps,
-      | 'action'
-      | 'accept'
-      | 'autoUpload'
-      | 'beforeRemove'
-      | 'data'
-      | 'disabled'
-      | 'drag'
-      | 'headers'
-      | 'limit'
-      | 'listType'
-      | 'method'
-      | 'multiple'
-      | 'name'
-      | 'showFileList'
-      | 'withCredentials'
-    >
-  > {
+  Pick<
+    UploadProps,
+    | 'action'
+    | 'accept'
+    | 'autoUpload'
+    | 'beforeRemove'
+    | 'data'
+    | 'disabled'
+    | 'drag'
+    | 'headers'
+    | 'limit'
+    | 'listType'
+    | 'method'
+    | 'multiple'
+    | 'name'
+    | 'showFileList'
+    | 'withCredentials'
+  >
+> {
   modelValue?: TFile[]
   maxSize?: number
   showTip?: boolean

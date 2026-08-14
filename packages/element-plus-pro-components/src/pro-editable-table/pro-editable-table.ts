@@ -28,8 +28,9 @@ export type ProEditableTableTableProps<TRecord extends object> = Pick<
   | 'tableLayout'
 >
 
-export interface ProEditableTableProps<TRecord extends object>
-  extends ProEditableTableTableProps<TRecord> {
+export interface ProEditableTableProps<
+  TRecord extends object
+> extends ProEditableTableTableProps<TRecord> {
   modelValue?: TRecord[]
   data?: TRecord[]
   columns?: ProTableColumns<TRecord>

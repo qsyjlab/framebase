@@ -1,9 +1,7 @@
 import type { ButtonProps } from 'element-plus'
 
 export type ProAsyncFeedbackMessage<TValue> =
-  | string
-  | false
-  | ((value: TValue) => string | false | undefined)
+  string | false | ((value: TValue) => string | false | undefined)
 
 export interface ProAsyncActionContext {
   event?: MouseEvent

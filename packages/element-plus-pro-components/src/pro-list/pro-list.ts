@@ -22,12 +22,10 @@ export interface ProListRequestResult<TRecord extends object> {
 }
 
 export type ProListRowKey<TRecord extends object> =
-  | ProDataIndex<TRecord>
-  | ((record: TRecord) => string | number)
+  ProDataIndex<TRecord> | ((record: TRecord) => string | number)
 
 export type ProListValueGetter<TRecord extends object, TValue = unknown> =
-  | ProDataIndex<TRecord>
-  | ((record: TRecord, index: number) => TValue)
+  ProDataIndex<TRecord> | ((record: TRecord, index: number) => TValue)
 
 export interface ProListItemMeta<TRecord extends object> {
   title?: ProListValueGetter<TRecord, VNodeChild>
