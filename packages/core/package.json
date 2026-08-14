@@ -44,6 +44,7 @@
   "scripts": {
     "clean": "rimraf dist",
     "build": "pnpm run clean && pnpm run build:types && vite build --config vite.config.ts",
+    "dev": "vite build --config vite.config.ts --watch",
     "build:types": "vue-tsc -p tsconfig.build.json",
     "typecheck": "vue-tsc -p tsconfig.json --noEmit",
     "test": "vitest run src",

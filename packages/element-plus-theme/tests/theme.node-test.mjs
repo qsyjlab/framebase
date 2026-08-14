@@ -28,7 +28,7 @@ test('form controls keep Framebase dimensions when Element Plus styles load late
   const select = await readFile(new URL('components/select.scss', sourceRoot), 'utf8')
 
   assert.match(controls, /\.el-select \.el-select__wrapper/)
-  assert.match(controls, /var\(--framebase-border-radius-base\)/)
+  assert.match(controls, /var\(--framebase-radius-md\)/)
   assert.match(select, /\.el-select-dropdown\s*\{[\s\S]*\.el-select-dropdown__item/)
   assert.match(select, /height: var\(--framebase-control-height\);/)
   assert.match(select, /padding: 0 12px;/)
@@ -37,12 +37,12 @@ test('form controls keep Framebase dimensions when Element Plus styles load late
 test('theme exposes stable customization tokens', async () => {
   const tokens = await readFile(new URL('tokens.scss', sourceRoot), 'utf8')
   const dark = await readFile(new URL('dark.scss', sourceRoot), 'utf8')
-  assert.match(tokens, /^html:root\s*\{/)
+  assert.match(tokens, /^html:root\s*\{/m)
   assert.match(tokens, /--framebase-color-bg:/)
   assert.match(tokens, /--framebase-color-text-primary:/)
-  assert.match(tokens, /--framebase-color-primary: #1677ff;/)
-  assert.match(tokens, /--framebase-color-primary-light-1: #2d85ff;/)
-  assert.match(tokens, /--framebase-color-primary-light-9: #e8f1ff;/)
+  assert.match(tokens, /--framebase-color-primary: #2b62e8;/)
+  assert.match(tokens, /--framebase-color-primary-light-1: #4a76ef;/)
+  assert.match(tokens, /--framebase-color-primary-light-9: #eef4ff;/)
   assert.match(tokens, /--el-color-primary: var\(--framebase-color-primary\);/)
   assert.match(tokens, /--el-color-primary-light-1: var\(--framebase-color-primary-light-1\);/)
   assert.match(tokens, /--el-color-primary-light-9: var\(--framebase-color-primary-light-9\);/)
@@ -51,17 +51,43 @@ test('theme exposes stable customization tokens', async () => {
   assert.match(tokens, /--framebase-shadow-light:/)
 })
 
-test('table theme exposes Ant Design inspired semantic styling', async () => {
+test('table theme exposes re-ap inspired semantic styling', async () => {
   const tokens = await readFile(new URL('tokens.scss', sourceRoot), 'utf8')
   const dark = await readFile(new URL('dark.scss', sourceRoot), 'utf8')
   const table = await readFile(new URL('components/table.scss', sourceRoot), 'utf8')
 
-  assert.match(tokens, /--framebase-table-current-row-bg: #e6f4ff;/)
-  assert.match(dark, /--framebase-table-current-row-bg: rgba\(22, 119, 255, 0\.18\);/)
+  assert.match(
+    tokens,
+    /--framebase-table-current-row-bg: var\(--framebase-color-primary-light-9\);/
+  )
+  assert.match(dark, /--framebase-table-current-row-bg: rgba\(77, 124, 254, 0\.15\);/)
   assert.match(table, /\.el-table\.el-table\s*\{/)
-  assert.doesNotMatch(table, /--el-table-header-(?:bg|text)-color:/)
+  // 表头 EP 变量映射到 framebase token
+  assert.match(table, /--el-table-header-bg-color: var\(--framebase-table-header-bg\);/)
+  assert.match(table, /--el-table-header-text-color: var\(--framebase-table-header-text\);/)
   assert.doesNotMatch(table, /thead th\.el-table__cell/)
-  assert.match(table, /\.el-table\.el-table\s*\{[\s\S]*\.el-table__cell\s*\{\s*padding: 12px 0;/)
-  assert.match(table, /\.el-table\.el-table--large \.el-table__cell\s*\{\s*padding: 16px 0;/)
-  assert.match(table, /\.el-table\.el-table--small \.el-table__cell\s*\{\s*padding: 8px 0;/)
+  // padding 由 --el-table-cell-padding 变量驱动（tokens.scss 中定义）
+  assert.match(tokens, /--el-table-cell-padding: var\(--framebase-table-cell-padding\);/)
+  assert.match(
+    tokens,
+    /--el-table-cell-padding-small: var\(--framebase-table-cell-padding-small\);/
+  )
+  assert.match(
+    tokens,
+    /--el-table-cell-padding-large: var\(--framebase-table-cell-padding-large\);/
+  )
+})
+
+test('table header and body use the same border color token', async () => {
+  const tokens = await readFile(new URL('tokens.scss', sourceRoot), 'utf8')
+  const table = await readFile(new URL('components/table.scss', sourceRoot), 'utf8')
+  const borderDeclarations = table.match(/border-bottom: 1px solid ([^;]+);/g) ?? []
+
+  assert.match(tokens, /--framebase-table-border-color: var\(--framebase-color-border\);/)
+  assert.ok(borderDeclarations.length >= 2)
+  assert.ok(
+    borderDeclarations.every(declaration =>
+      declaration.includes('var(--framebase-table-border-color)')
+    )
+  )
 })

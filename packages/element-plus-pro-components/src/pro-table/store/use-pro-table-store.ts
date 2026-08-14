@@ -19,6 +19,7 @@ import type {
   ProTableRequestResult,
   ProTableSorter
 } from '../pro-table'
+import { getProTableRowKey } from '../pro-table-utils'
 
 export interface ProTableStoreEmitMap<TRecord extends object> {
   'update:loading': [loading: boolean]
@@ -34,6 +35,8 @@ export interface ProTableStoreEmitMap<TRecord extends object> {
   'update:data': [data: TRecord[]]
   'editable-change': [data: TRecord[]]
   'drag-sort-end': [event: ProTableDragSortEnd<TRecord>]
+  'size-change': [size: 'small' | 'default' | 'large']
+  'keyword-change': [keyword: string]
 }
 
 type ProTableStoreEmit<TRecord extends object> = <
@@ -57,6 +60,7 @@ export function useProTableStore<
   const { props, emit, proConfig } = options
   const wrapperRef = ref<HTMLDivElement>()
   const toolbarRef = ref<HTMLDivElement>()
+  const extraRef = ref<HTMLDivElement>()
   const alertRef = ref<HTMLDivElement>()
   const paginationRef = ref<HTMLDivElement>()
   const tableRef = ref<TableInstance>()
@@ -104,17 +108,36 @@ export function useProTableStore<
     }
   })
   clearEditing = editableState.clearEditRows
+  const resolvedRowSelection = computed(() => {
+    const config =
+      props.rowSelection && typeof props.rowSelection === 'object' ? props.rowSelection : {}
+    return {
+      ...config,
+      enabled:
+        props.rowSelection !== false && (Boolean(props.checkable) || Boolean(props.rowSelection)),
+      type: config.type ?? 'checkbox',
+      selectedKeys: config.selectedKeys ?? props.selectedKeys ?? [],
+      cacheSelectedData: config.cacheSelectedData ?? props.cacheSelectedData ?? [],
+      reserveSelection: config.reserveSelection ?? props.reserveSelection ?? false,
+      columnTitle: config.columnTitle ?? '',
+      columnWidth: config.columnWidth ?? 44,
+      fixed: config.fixed,
+      align: config.align ?? 'center'
+    }
+  })
   const selectionState = useProTableSelection({
     data: dataState.tableData,
     tableRef,
     rowKey: () => props.rowKey ?? 'id',
-    checkable: () => props.checkable ?? false,
-    reserveSelection: () => props.reserveSelection ?? false,
-    selectedKeys: () => props.selectedKeys ?? [],
-    cacheSelectedData: () => props.cacheSelectedData ?? [],
+    mode: () => resolvedRowSelection.value.type,
+    checkable: () => resolvedRowSelection.value.enabled,
+    reserveSelection: () => resolvedRowSelection.value.reserveSelection,
+    selectedKeys: () => resolvedRowSelection.value.selectedKeys,
+    cacheSelectedData: () => resolvedRowSelection.value.cacheSelectedData,
     onChange: (keys, rows) => {
       emit('update:selectedKeys', keys)
       emit('selection-change', rows)
+      resolvedRowSelection.value.onChange?.(keys, rows)
     }
   })
   syncSelection = selectionState.syncVisibleSelection
@@ -123,7 +146,7 @@ export function useProTableStore<
     height: () => props.height,
     tableRef,
     wrapperRef,
-    occupiedRefs: [toolbarRef, alertRef, paginationRef],
+    occupiedRefs: [toolbarRef, extraRef, alertRef, paginationRef],
     dependencies: () => [
       props.pagination,
       props.size,
@@ -148,7 +171,9 @@ export function useProTableStore<
       Boolean(
         columnsState.toolbarOptions.value.reload ||
           columnsState.toolbarOptions.value.density ||
-          columnsState.toolbarOptions.value.setting
+          columnsState.toolbarOptions.value.setting ||
+          columnsState.toolbarOptions.value.fullscreen ||
+          columnsState.toolbarOptions.value.search
       )
   )
   const resolvedCustomRenderAfter = computed(
@@ -167,7 +192,53 @@ export function useProTableStore<
 
   function setTableSize(size: 'small' | 'default' | 'large') {
     currentSize.value = size
+    emit('size-change', size)
     void nextTick(() => tableRef.value?.doLayout())
+  }
+
+  async function setKeyword(keyword: string, reload = true) {
+    emit('keyword-change', keyword)
+    return dataState.setKeyword(keyword, reload)
+  }
+
+  async function reset() {
+    clearEditing()
+    selectionState.clearSelection()
+    emit('keyword-change', '')
+    return dataState.resetTableState()
+  }
+
+  async function fullScreen() {
+    if (typeof document === 'undefined' || !wrapperRef.value || !document.fullscreenEnabled) return
+    if (document.fullscreenElement === wrapperRef.value) await document.exitFullscreen()
+    else await wrapperRef.value.requestFullscreen()
+  }
+
+  async function scrollTo(target: import('../pro-table').ProTableScrollTarget) {
+    await nextTick()
+    if (typeof target === 'number') {
+      tableRef.value?.setScrollTop(target)
+      return
+    }
+    if (target.left !== undefined) tableRef.value?.setScrollLeft(target.left)
+    if (target.top !== undefined) {
+      tableRef.value?.setScrollTop(target.top)
+      return
+    }
+    const index =
+      target.index ??
+      (target.key === undefined
+        ? -1
+        : dataState.tableData.value.findIndex(
+            row => getProTableRowKey(row, props.rowKey ?? 'id') === target.key
+          ))
+    if (index < 0) return
+    const tableElement = tableRef.value?.$el as HTMLElement | undefined
+    const rows = tableElement?.querySelectorAll<HTMLTableRowElement>(
+      '.el-table__body-wrapper tbody > tr'
+    )
+    const row = rows?.[index]
+    if (row) tableRef.value?.setScrollTop(row.offsetTop)
   }
 
   async function handleTableSortChange(payload: {
@@ -192,6 +263,29 @@ export function useProTableStore<
     await dataState.setFilters({ ...dataState.filters.value, ...serverFilters })
   }
 
+  function handleTableSelect(rows: TRecord[], row: TRecord) {
+    const key = getProTableRowKey(row, props.rowKey ?? 'id')
+    resolvedRowSelection.value.onSelect?.(
+      row,
+      key !== undefined && rows.some(item => getProTableRowKey(item, props.rowKey ?? 'id') === key),
+      rows
+    )
+  }
+
+  function handleTableSelectAll(rows: TRecord[]) {
+    resolvedRowSelection.value.onSelectAll?.(rows.length > 0, rows)
+  }
+
+  function selectRadioRow(row: TRecord, index: number) {
+    if (resolvedRowSelection.value.selectable?.(row, index) === false) return
+    selectionState.selectRow(row)
+    resolvedRowSelection.value.onSelect?.(row, true, selectionState.getSelectedRows())
+  }
+
+  function getSelectionRowKey(row: TRecord) {
+    return getProTableRowKey(row, props.rowKey ?? 'id')
+  }
+
   const exposed: ProTableExpose<TRecord> = {
     getTable: () => tableRef.value,
     getData: () => cloneDeep(dataState.tableData.value),
@@ -204,8 +298,13 @@ export function useProTableStore<
     retryRequest: dataState.retryRequest,
     cancelRequest: dataState.cancelRequest,
     getSelectedKeys: () => [...selectionState.selectedKeyList.value],
+    getKeyword: () => dataState.keyword.value,
     reload: dataState.reload,
     refresh: dataState.refresh,
+    reset,
+    fullScreen,
+    scrollTo,
+    setKeyword,
     setPageInfo: dataState.setPageInfo,
     setSorter: dataState.setSorter,
     setFilters: dataState.setFilters,
@@ -249,6 +348,7 @@ export function useProTableStore<
   return {
     wrapperRef,
     toolbarRef,
+    extraRef,
     alertRef,
     paginationRef,
     tableRef,
@@ -259,6 +359,11 @@ export function useProTableStore<
     setTableSize,
     handleTableSortChange,
     handleTableFilterChange,
+    handleTableSelect,
+    handleTableSelectAll,
+    selectRadioRow,
+    getSelectionRowKey,
+    resolvedRowSelection,
     exposed,
     ...dataState,
     ...columnsState,

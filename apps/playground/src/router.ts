@@ -115,6 +115,12 @@ export const navigation: PlaygroundNavGroup[] = [
         title: '表格',
         description: '标准表格、可编辑表格与拖拽排序。',
         components: ['ProTable', 'ProEditableTable', 'ProDragSortTable']
+      },
+      {
+        path: '/data/light-filter',
+        title: '轻量筛选',
+        description: '行内紧凑筛选栏，支持展开/收起与多种边框样式。',
+        components: ['ProLightFilter']
       }
     ]
   },
@@ -204,6 +210,14 @@ const routes: RouteRecordRaw[] = [
     path: '/data/tables',
     component: () => import('./views/TablesPage.vue'),
     meta: { title: '表格', description: '标准表格、可编辑表格与拖拽排序。' }
+  },
+  {
+    path: '/data/light-filter',
+    component: () => import('./views/LightFilterPage.vue'),
+    meta: {
+      title: '轻量筛选',
+      description: '行内紧凑筛选栏，支持展开/收起与多种边框样式。'
+    }
   },
   {
     path: '/files',

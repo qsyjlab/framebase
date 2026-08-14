@@ -179,6 +179,7 @@ import type {
   ProDescriptionsProps,
   ProDescriptionsRenderScope
 } from './pro-descriptions'
+import { copyProText } from '../shared/pro-copy'
 
 defineOptions({
   name: 'ProDescriptions',
@@ -394,27 +395,11 @@ async function copyColumnValue(column: ProDescriptionsColumn<TRecord>) {
       : (config.text ?? String(scope.value ?? ''))
 
   try {
-    await copyText(text)
+    await copyProText(text)
     ElMessage.success(config.successText ?? '复制成功')
   } catch {
     ElMessage.error('复制失败')
   }
-}
-
-async function copyText(text: string) {
-  if (navigator.clipboard?.writeText) {
-    await navigator.clipboard.writeText(text)
-    return
-  }
-  const textarea = document.createElement('textarea')
-  textarea.value = text
-  textarea.style.position = 'fixed'
-  textarea.style.opacity = '0'
-  document.body.appendChild(textarea)
-  textarea.select()
-  const copied = document.execCommand('copy')
-  textarea.remove()
-  if (!copied) throw new Error('Copy is not supported')
 }
 
 function ProDescriptionsCustomValue(valueProps: {

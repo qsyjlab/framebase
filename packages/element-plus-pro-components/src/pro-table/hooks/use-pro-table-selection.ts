@@ -7,6 +7,7 @@ interface UseProTableSelectionOptions<TRecord extends object> {
   data: Ref<TRecord[]>
   tableRef: Ref<TableInstance | undefined>
   rowKey: () => ProTableRowKey<TRecord>
+  mode: () => 'checkbox' | 'radio'
   checkable: () => boolean
   reserveSelection: () => boolean
   selectedKeys: () => Array<string | number>
@@ -50,6 +51,7 @@ export function useProTableSelection<TRecord extends object>(
 
   function handleSelectionChange(rows: TRecord[]) {
     if (syncing) return
+    if (options.mode() === 'radio') return
     if (!options.reserveSelection()) selectedRows.clear()
     options.data.value
       .map(row => getProTableRowKey(row, options.rowKey()))
@@ -65,12 +67,17 @@ export function useProTableSelection<TRecord extends object>(
   async function syncVisibleSelection() {
     if (!options.checkable() || !options.tableRef.value) return
     await nextTick()
+    const keySet = new Set(selectedKeyList.value)
+    options.data.value.forEach(row => {
+      const key = getProTableRowKey(row, options.rowKey())
+      if (key !== undefined && keySet.has(key)) selectedRows.set(key, row)
+    })
+    if (options.mode() === 'radio') return
     const tableRef = options.tableRef.value
     if (!tableRef) return
     syncing = true
     try {
       tableRef.clearSelection()
-      const keySet = new Set(selectedKeyList.value)
       options.data.value.forEach(row => {
         const key = getProTableRowKey(row, options.rowKey())
         if (key !== undefined && keySet.has(key)) {
@@ -92,6 +99,18 @@ export function useProTableSelection<TRecord extends object>(
     internalChange = true
     void runProtectedTableOp(() => options.tableRef.value?.clearSelection())
     options.onChange([], [])
+  }
+
+  function selectRow(row: TRecord, selected = true) {
+    const key = getProTableRowKey(row, options.rowKey())
+    if (key === undefined) return
+    if (options.mode() === 'radio') {
+      selectedRows.clear()
+      if (selected) selectedRows.set(key, row)
+      commitSelection()
+      return
+    }
+    void runProtectedTableOp(() => options.tableRef.value?.toggleRowSelection(row, selected))
   }
 
   async function runProtectedTableOp(op: () => void) {
@@ -140,6 +159,7 @@ export function useProTableSelection<TRecord extends object>(
     handleSelectionChange,
     syncVisibleSelection,
     clearSelection,
+    selectRow,
     getSelectedRows
   }
 }

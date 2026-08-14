@@ -20,7 +20,7 @@ interface ProTableColumnRendererProps {
   customRenderAfter?: (value: VNodeChild, scope: ProTableRenderScope<TableRecord>) => VNodeChild
 }
 
-export const ProTableColumnRenderer = defineComponent({
+const ProTableColumnRendererImpl = defineComponent({
   name: 'ProTableColumn',
   props: {
     column: {
@@ -44,31 +44,32 @@ export const ProTableColumnRenderer = defineComponent({
   }
 })
 
+export const ProTableColumnRenderer: Component = ProTableColumnRendererImpl
+
 function renderColumn(props: Readonly<ProTableColumnRendererProps>) {
   const column = props.column
   const children = column.children?.filter(child => !child.hideInTable) ?? []
   const columnProps = getElementColumnProps(column)
 
-  return h(ElTableColumn, columnProps, {
-    default: children.length
-      ? () => children.map(child => renderChildColumn(child, props))
-      : (scope?: { row?: TableRecord; $index?: number }) => renderCell(scope, props),
-    header: column.tip ? () => renderColumnHeader(column) : undefined
-  })
+  return h(
+    ElTableColumn,
+    { ...columnProps, key: getProTableColumnKey(column) },
+    {
+      default: children.length
+        ? () => children.map(child => renderChildColumn(child, props))
+        : (scope?: { row?: TableRecord; $index?: number }) => renderCell(scope, props),
+      header: column.tip ? () => renderColumnHeader(column) : undefined
+    }
+  )
 }
 
 function renderChildColumn(
   column: ProTableColumn<TableRecord>,
   props: Readonly<ProTableColumnRendererProps>
 ) {
-  return h(ProTableColumnRenderer, {
-    key: getProTableColumnKey(column),
-    column,
-    tableSlots: props.tableSlots,
-    dragHandle: props.dragHandle,
-    getEditableState: props.getEditableState,
-    updateEditableValue: props.updateEditableValue,
-    customRenderAfter: props.customRenderAfter
+  return renderColumn({
+    ...props,
+    column
   })
 }
 

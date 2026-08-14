@@ -1,104 +1,111 @@
 // Framebase Design Tokens
-// 风格参考：shadcn/ui —— 大圆角、强阴影、边框替代填充、状态色双值
-// 主色：#2563eb (Tailwind blue-600)，可在此处整体替换色系
+// 风格参考：re-ap 政务/金融风 —— 品牌蓝 #2B62E8、ink 色调阴影、10px 基础圆角
+// 色系来源：re-ap/src/index.css（brand / ink / line / bg / shadow tokens）
 // 注：使用 html:root 提升特异性，覆盖 Element Plus 组件样式运行时注入的 :root 定义
 
 html:root {
-  // ========== 主色 ==========
-  --framebase-color-primary: #2563eb;
-  --framebase-color-primary-rgb: 37, 99, 235;
-  --framebase-color-primary-hover: #1d4ed8; // blue-700
-  --framebase-color-primary-active: #1e40af; // blue-800
-  --framebase-color-primary-light-1: #3b82f6; // blue-500
-  --framebase-color-primary-light-2: #60a5fa; // blue-400
-  --framebase-color-primary-light-3: #93c5fd; // blue-300
-  --framebase-color-primary-light-4: #bfdbfe; // blue-200
-  --framebase-color-primary-light-5: #dbeafe; // blue-100
-  --framebase-color-primary-light-6: #eff6ff; // blue-50
-  --framebase-color-primary-light-7: #f0f6ff;
-  --framebase-color-primary-light-8: #f5f9ff;
-  --framebase-color-primary-light-9: #fafcff;
-  --framebase-color-primary-dark-2: #1d4ed8;
+  // ========== 主色（re-ap brand，政务/金融蓝） ==========
+  --framebase-color-primary: #2b62e8; // brand-500
+  --framebase-color-primary-rgb: 43, 98, 232;
+  --framebase-color-primary-hover: #1e50d6; // brand-600
+  --framebase-color-primary-active: #1a42b0; // brand-700
+  --framebase-color-primary-light-1: #4a76ef; // brand-500 → 400 过渡
+  --framebase-color-primary-light-2: #5b85f2; // brand-400
+  --framebase-color-primary-light-3: #5b85f2; // brand-400，active 态用
+  --framebase-color-primary-light-4: #90adf9;
+  --framebase-color-primary-light-5: #a3bbfa;
+  --framebase-color-primary-light-6: #b6c9fb;
+  --framebase-color-primary-light-7: #c9d8fc;
+  --framebase-color-primary-light-8: #dce7fd; // brand-100
+  --framebase-color-primary-light-9: #eef4ff; // brand-50，最浅背景
+  --framebase-color-primary-dark-2: #1e50d6; // brand-600
 
-  // ========== 背景 ==========
-  --framebase-color-bg: #ffffff;
-  --framebase-color-bg-page: #f8fafc; // slate-50，shadcn 典型页面背景
-  --framebase-color-bg-overlay: #ffffff;
-  --framebase-color-bg-muted: #f1f5f9; // slate-100，hover/muted 用
+  // ========== 背景（re-ap bg-page #F4F6FA） ==========
+  --framebase-color-bg: #ffffff; // bg-surface
+  --framebase-color-bg-page: #f4f6fa; // bg-page
+  --framebase-color-bg-overlay: #ffffff; // bg-elevated
+  --framebase-color-bg-muted: #f1f5f9; // hover/muted 用
   --framebase-color-bg-subtle: #f8fafc;
   --framebase-color-fill-light: #f1f5f9;
   --framebase-color-fill-lighter: #f8fafc;
 
-  // ========== 文字 ==========
-  --framebase-color-text-primary: #0f172a; // slate-900
-  --framebase-color-text-regular: #1e293b; // slate-800
-  --framebase-color-text-secondary: #475569; // slate-600
-  --framebase-color-text-placeholder: #94a3b8; // slate-400
-  --framebase-color-text-muted: #64748b; // slate-500
-  --framebase-color-text-disabled: #94a3b8;
+  // ========== 文字（re-ap ink 三级） ==========
+  --framebase-color-text-primary: #0f1b33; // ink-primary
+  --framebase-color-text-regular: #1f2a44; // ink-primary → ink-secondary 过渡
+  --framebase-color-text-secondary: #47536b; // ink-secondary
+  --framebase-color-text-placeholder: #8a94ab; // ink-tertiary
+  --framebase-color-text-muted: #64748b;
+  --framebase-color-text-disabled: #8a94ab;
 
-  // ========== 边框 ==========
-  --framebase-color-border: #e2e8f0; // slate-200
-  --framebase-color-border-light: #e2e8f0;
+  // ========== 边框（re-ap line） ==========
+  --framebase-color-border: #e4e9f2; // line
+  --framebase-color-border-light: #e4e9f2; // line
   --framebase-color-border-lighter: #f1f5f9;
-  --framebase-color-border-strong: #cbd5e1; // slate-300
+  --framebase-color-border-strong: #cbd5e4; // line-strong
 
-  // ========== 圆角（shadcn 风格，比 Ant 更大） ==========
-  --framebase-radius-sm: 4px;
-  --framebase-radius-base: 6px;
+  // ========== 圆角（re-ap --radius: 0.625rem = 10px 为 base） ==========
+  --framebase-radius-sm: 6px; // radius - 4px
+  --framebase-radius-base: 8px; // radius - 2px（控件 md）
   --framebase-radius-md: 8px;
-  --framebase-radius-lg: 12px;
-  --framebase-radius-xl: 16px;
+  --framebase-radius-lg: 10px; // radius（卡片表面）
+  --framebase-radius-xl: 14px; // radius + 4px
   --framebase-radius-round: 999px;
 
   // 旧别名（向后兼容）
-  --framebase-border-radius-base: var(--framebase-radius-md);
+  --framebase-border-radius-base: var(--framebase-radius-base);
   --framebase-border-radius-small: var(--framebase-radius-sm);
   --framebase-border-radius-large: var(--framebase-radius-lg);
   --framebase-border-radius-round: var(--framebase-radius-round);
 
-  // ========== 阴影（4 档，shadcn 风格） ==========
-  --framebase-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --framebase-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --framebase-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --framebase-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  // ========== 阴影（re-ap ink 色调，比纯黑更柔和） ==========
+  --framebase-shadow-sm: 0 1px 2px rgba(15, 27, 51, 0.05); // shadow-sm
+  --framebase-shadow-md: 0 6px 16px -4px rgba(15, 27, 51, 0.12); // shadow-md / float
+  --framebase-shadow-lg: 0 16px 40px -8px rgba(15, 27, 51, 0.2); // shadow-lg / overlay
+  --framebase-shadow-xl: 0 20px 40px -8px rgba(15, 27, 51, 0.24);
 
   // 旧别名
   --framebase-shadow-light: var(--framebase-shadow-sm);
   --framebase-shadow-base: var(--framebase-shadow-md);
 
-  // ========== 状态色（双值，shadcn 风格：bg 浅 + fg 深） ==========
+  // ========== 状态色（re-ap success/info/warning/danger + violet） ==========
   --framebase-success-bg: #f0fdf4; // green-50
   --framebase-success-fg: #166534; // green-800
   --framebase-success-border: #bbf7d0; // green-200
-  --framebase-success-color: #16a34a; // green-600，纯色用
+  --framebase-success-color: #16a34a; // re-ap success
 
   --framebase-warning-bg: #fffbeb; // amber-50
   --framebase-warning-fg: #92400e; // amber-800
   --framebase-warning-border: #fde68a; // amber-200
-  --framebase-warning-color: #d97706; // amber-600
+  --framebase-warning-color: #d97706; // re-ap warning
 
   --framebase-danger-bg: #fef2f2; // red-50
   --framebase-danger-fg: #991b1b; // red-800
   --framebase-danger-border: #fecaca; // red-200
-  --framebase-danger-color: #dc2626; // red-600
+  --framebase-danger-color: #dc2626; // re-ap danger
 
   --framebase-info-bg: #eff6ff; // blue-50
   --framebase-info-fg: #1e40af; // blue-800
   --framebase-info-border: #bfdbfe; // blue-200
-  --framebase-info-color: #2563eb; // blue-600
+  --framebase-info-color: #0284c7; // re-ap info（sky-600）
 
   --framebase-neutral-bg: #f1f5f9; // slate-100
-  --framebase-neutral-fg: #475569; // slate-600
-  --framebase-neutral-border: #e2e8f0; // slate-200
+  --framebase-neutral-fg: #47536b; // ink-secondary
+  --framebase-neutral-border: #e4e9f2; // line
   --framebase-neutral-color: #64748b; // slate-500
 
-  // ========== 控件高度 ==========
-  --framebase-control-height: 36px;
-  --framebase-control-height-small: 30px;
-  --framebase-control-height-large: 42px;
+  // AI / 强调紫（re-ap violet，AI 助手等场景）
+  --framebase-color-violet: #7c3aed;
 
-  // ========== 卡片专用 ==========
+  // ========== 字体（re-ap font-family） ==========
+  --framebase-font-family: 'Manrope', 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+  --framebase-font-family-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  // ========== 控件高度（re-ap button h-9 = 36px） ==========
+  --framebase-control-height: 36px;
+  --framebase-control-height-small: 32px; // re-ap sm h-8
+  --framebase-control-height-large: 40px; // re-ap lg h-10
+
+  // ========== 卡片专用（re-ap card-surface: bg + 1px line + 10px radius + shadow-sm） ==========
   --framebase-card-padding: 24px;
   --framebase-card-padding-compact: 16px;
   --framebase-card-header-padding: 16px 24px;
@@ -108,25 +115,29 @@ html:root {
   --framebase-card-border: var(--framebase-color-border);
 
   // ========== 表格专用 ==========
-  --framebase-table-header-bg: #f8fafc; // slate-50
-  --framebase-table-header-hover-bg: #f1f5f9; // slate-100
+  --framebase-table-header-bg: #f8fafc; // 浅灰表头
+  --framebase-table-header-hover-bg: #f1f5f9;
   --framebase-table-header-text: var(--framebase-color-text-primary);
-  --framebase-table-row-hover-bg: #f8fafc;
-  --framebase-table-current-row-bg: #eff6ff; // blue-50
+  --framebase-table-row-hover-bg: #f8fafc; // hover:bg-muted/50
+  --framebase-table-current-row-bg: var(--framebase-color-primary-light-9); // brand-50
   --framebase-table-stripe-bg: #fafbfc;
-  --framebase-table-border-color: #f1f5f9; // slate-100，极轻
+  --framebase-table-border-color: var(--framebase-color-border);
   --framebase-table-cell-padding: 12px 16px;
   --framebase-table-cell-padding-small: 8px 12px;
   --framebase-table-cell-padding-large: 16px 16px;
 
   // ========== 菜单 ==========
   --framebase-menu-item-height: 40px;
-  --framebase-menu-radius: var(--framebase-radius-md);
+  --framebase-menu-radius: var(--framebase-radius-base);
 
-  // ========== 焦点环（shadcn 风格） ==========
-  --framebase-ring-color: rgb(37 99 235 / 0.5);
+  // ========== 焦点环（re-ap ring 用 brand 色） ==========
+  --framebase-ring-color: rgb(43 98 232 / 0.5);
   --framebase-ring-offset: 2px;
   --framebase-ring-width: 2px;
+
+  // ========== 侧边栏渐变（re-ap app-sidebar） ==========
+  --framebase-sidebar-grad-from: #0b1f4b;
+  --framebase-sidebar-grad-to: #12306b;
 
   // ========== Element Plus 变量映射 ==========
   --el-bg-color: var(--framebase-color-bg);
@@ -200,6 +211,10 @@ html:root {
 
   --el-select-input-color: var(--framebase-color-text-regular);
 
+  --el-font-family: var(--framebase-font-family);
+  --el-font-family-mono: var(--framebase-font-family-mono);
+
   --el-box-shadow-light: var(--framebase-shadow-sm);
   --el-box-shadow: var(--framebase-shadow-md);
+  --el-box-shadow-dark: var(--framebase-shadow-lg);
 }

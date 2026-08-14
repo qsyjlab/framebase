@@ -1,6 +1,6 @@
 {
   "name": "@framebase/element-plus-pro-components",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "Vue 3 and Element Plus Pro components for forms, tables and data-heavy interfaces.",
   "license": "MIT",
   "author": "qsyjlab",
@@ -50,6 +50,7 @@
   "scripts": {
     "clean": "rimraf dist",
     "build": "pnpm run clean && pnpm run build:types && vite build --config vite.config.ts",
+    "dev": "vite build --config vite.config.ts --watch",
     "build:types": "vue-tsc -p tsconfig.build.json",
     "typecheck": "vue-tsc -p tsconfig.json --noEmit",
     "test": "vitest run src",

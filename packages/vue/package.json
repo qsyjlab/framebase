@@ -1,6 +1,6 @@
 {
   "name": "@framebase/vue",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Vue 3 composables for request, pagination, selection and URL state built on @framebase/core.",
   "license": "MIT",
   "author": "qsyjlab",
@@ -49,6 +49,7 @@
   "scripts": {
     "clean": "rimraf dist",
     "build": "pnpm run clean && pnpm run build:types && vite build --config vite.config.ts",
+    "dev": "vite build --config vite.config.ts --watch",
     "build:types": "vue-tsc -p tsconfig.build.json",
     "typecheck": "vue-tsc -p tsconfig.json --noEmit",
     "test": "vitest run src",

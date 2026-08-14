@@ -10,8 +10,15 @@ import type {
   ProTableColumnState,
   ProTablePageInfo,
   ProTableRequestResult,
+  ProTableRenderScope,
   ProTableRowKey
 } from './pro-table'
+
+export function resolveProTableRenderText<TRecord extends object, TValue = unknown>(
+  scope: ProTableRenderScope<TRecord, TValue>
+) {
+  return scope.column.renderText?.(scope) ?? scope.value
+}
 
 export function getProTableColumnKey<TRecord extends object>(column: ProTableColumn<TRecord>) {
   return String(column.key)

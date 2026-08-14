@@ -1,89 +1,101 @@
-// Dark Mode —— shadcn 暗色：slate-950 系，状态色降饱和
+// Dark Mode —— re-ap 暗色：ink 系降饱和，brand 提亮，状态色适配深背景
+// 色系来源：re-ap/src/index.css .dark 块
 // 注：使用 html.dark:root 提升特异性，覆盖 Element Plus 组件样式运行时注入的 html.dark 定义
 html.dark:root {
-  // 主色保持，但 light 系列适配暗背景
-  --framebase-color-primary-light-1: #3b82f6;
-  --framebase-color-primary-light-2: #60a5fa;
-  --framebase-color-primary-light-3: #93c5fd;
-  --framebase-color-primary-light-4: #bfdbfe;
-  --framebase-color-primary-light-5: #1e3a8a; // blue-900，暗色背景用深色
-  --framebase-color-primary-light-6: #1e40af; // blue-800
-  --framebase-color-primary-light-7: #172554; // blue-950
-  --framebase-color-primary-light-8: #0f172a;
-  --framebase-color-primary-light-9: #020617;
+  // 主色提亮（re-ap dark brand-500 #4D7CFE），light 系列反转为深色背景用
+  --framebase-color-primary: #4d7cfe; // brand-500 dark
+  --framebase-color-primary-rgb: 77, 124, 254;
+  --framebase-color-primary-hover: #3e6ef0; // brand-600 dark
+  --framebase-color-primary-active: #2f5be0; // brand-700 dark
+  --framebase-color-primary-light-1: #6e97f7; // brand-400 dark
+  --framebase-color-primary-light-2: #6e97f7;
+  --framebase-color-primary-light-3: #6e97f7; // active 态用亮色
+  --framebase-color-primary-light-4: #4d7cfe;
+  --framebase-color-primary-light-5: #14264c; // brand-100 dark，背景用深色
+  --framebase-color-primary-light-6: #0e1b38; // brand-50 dark
+  --framebase-color-primary-light-7: #0e1b38;
+  --framebase-color-primary-light-8: #0a1120; // bg-page dark
+  --framebase-color-primary-light-9: #060d1f; // brand-900 dark
+  --framebase-color-primary-dark-2: #3e6ef0;
 
-  // 背景（shadcn 暗色：slate-950 / slate-900）
-  --framebase-color-bg: #0f172a; // slate-900
-  --framebase-color-bg-page: #020617; // slate-950
-  --framebase-color-bg-overlay: #1e293b; // slate-800
-  --framebase-color-bg-muted: #1e293b;
-  --framebase-color-bg-subtle: #1e293b;
-  --framebase-color-fill-light: #1e293b;
-  --framebase-color-fill-lighter: #0f172a;
+  // 背景（re-ap dark：bg-page #0A1120 / bg-surface #101A2F / bg-elevated #16233C）
+  --framebase-color-bg: #101a2f; // bg-surface
+  --framebase-color-bg-page: #0a1120; // bg-page
+  --framebase-color-bg-overlay: #16233c; // bg-elevated
+  --framebase-color-bg-muted: #16233c;
+  --framebase-color-bg-subtle: #16233c;
+  --framebase-color-fill-light: #16233c;
+  --framebase-color-fill-lighter: #101a2f;
 
-  // 文字（shadcn 暗色：slate-50 ~ slate-400）
-  --framebase-color-text-primary: #f8fafc; // slate-50
-  --framebase-color-text-regular: #e2e8f0; // slate-200
-  --framebase-color-text-secondary: #94a3b8; // slate-400
-  --framebase-color-text-placeholder: #64748b; // slate-500
-  --framebase-color-text-muted: #94a3b8;
-  --framebase-color-text-disabled: #475569;
+  // 文字（re-ap dark ink）
+  --framebase-color-text-primary: #e8edf7; // ink-primary dark
+  --framebase-color-text-regular: #c5cee0;
+  --framebase-color-text-secondary: #9aa7c2; // ink-secondary dark
+  --framebase-color-text-placeholder: #5f6e8e; // ink-tertiary dark
+  --framebase-color-text-muted: #9aa7c2;
+  --framebase-color-text-disabled: #5f6e8e;
 
-  // 边框
-  --framebase-color-border: #1e293b; // slate-800
-  --framebase-color-border-light: #1e293b;
-  --framebase-color-border-lighter: #0f172a;
-  --framebase-color-border-strong: #334155; // slate-700
+  // 边框（re-ap dark line）
+  --framebase-color-border: #22304f; // line dark
+  --framebase-color-border-light: #22304f;
+  --framebase-color-border-lighter: #16233c;
+  --framebase-color-border-strong: #32456b; // line-strong dark
 
-  // 阴影（暗色阴影更深）
-  --framebase-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
-  --framebase-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
-  --framebase-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.5);
-  --framebase-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.6), 0 8px 10px -6px rgb(0 0 0 / 0.6);
+  // 阴影（re-ap dark，纯黑更深）
+  --framebase-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.25);
+  --framebase-shadow-md: 0 6px 16px -4px rgba(0, 0, 0, 0.4);
+  --framebase-shadow-lg: 0 16px 40px -8px rgba(0, 0, 0, 0.5);
+  --framebase-shadow-xl: 0 20px 40px -8px rgba(0, 0, 0, 0.6);
 
-  // 状态色（暗色：bg 深 + fg 浅）
-  --framebase-success-bg: rgba(22, 163, 74, 0.15); // green-600 15%
-  --framebase-success-fg: #86efac; // green-300
+  // 状态色（re-ap dark，提亮 + 半透明 bg）
+  --framebase-success-bg: rgba(22, 163, 74, 0.15);
+  --framebase-success-fg: #6ee7b7;
   --framebase-success-border: rgba(22, 163, 74, 0.3);
-  --framebase-success-color: #22c55e; // green-500
+  --framebase-success-color: #34d399; // re-ap dark success
 
-  --framebase-warning-bg: rgba(217, 119, 6, 0.15); // amber-600 15%
-  --framebase-warning-fg: #fcd34d; // amber-300
+  --framebase-warning-bg: rgba(217, 119, 6, 0.15);
+  --framebase-warning-fg: #fcd34d;
   --framebase-warning-border: rgba(217, 119, 6, 0.3);
-  --framebase-warning-color: #f59e0b; // amber-500
+  --framebase-warning-color: #fbbf24; // re-ap dark warning
 
-  --framebase-danger-bg: rgba(220, 38, 38, 0.15); // red-600 15%
-  --framebase-danger-fg: #fca5a5; // red-300
+  --framebase-danger-bg: rgba(220, 38, 38, 0.15);
+  --framebase-danger-fg: #fca5a5;
   --framebase-danger-border: rgba(220, 38, 38, 0.3);
-  --framebase-danger-color: #ef4444; // red-500
+  --framebase-danger-color: #f87171; // re-ap dark danger
 
-  --framebase-info-bg: rgba(37, 99, 235, 0.15); // blue-600 15%
-  --framebase-info-fg: #93c5fd; // blue-300
-  --framebase-info-border: rgba(37, 99, 235, 0.3);
-  --framebase-info-color: #3b82f6; // blue-500
+  --framebase-info-bg: rgba(2, 132, 199, 0.15);
+  --framebase-info-fg: #7dd3fc;
+  --framebase-info-border: rgba(2, 132, 199, 0.3);
+  --framebase-info-color: #38bdf8; // re-ap dark info
 
-  --framebase-neutral-bg: #1e293b;
-  --framebase-neutral-fg: #cbd5e1; // slate-300
-  --framebase-neutral-border: #334155;
-  --framebase-neutral-color: #94a3b8;
+  --framebase-neutral-bg: #16233c;
+  --framebase-neutral-fg: #9aa7c2;
+  --framebase-neutral-border: #22304f;
+  --framebase-neutral-color: #5f6e8e;
+
+  --framebase-color-violet: #a78bfa; // re-ap dark violet
 
   // 卡片
-  --framebase-card-bg: #0f172a;
-  --framebase-card-border: #1e293b;
-  --framebase-card-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.3);
-  --framebase-card-shadow-hover: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+  --framebase-card-bg: #101a2f;
+  --framebase-card-border: #22304f;
+  --framebase-card-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  --framebase-card-shadow-hover: 0 6px 16px -4px rgba(0, 0, 0, 0.4);
 
   // 表格
-  --framebase-table-header-bg: #1e293b;
-  --framebase-table-header-hover-bg: #334155;
-  --framebase-table-header-text: #e2e8f0;
-  --framebase-table-row-hover-bg: #1e293b;
-  --framebase-table-current-row-bg: rgba(37, 99, 235, 0.15);
-  --framebase-table-stripe-bg: #0b1322;
-  --framebase-table-border-color: #1e293b;
+  --framebase-table-header-bg: #16233c;
+  --framebase-table-header-hover-bg: #22304f;
+  --framebase-table-header-text: #e8edf7;
+  --framebase-table-row-hover-bg: #16233c;
+  --framebase-table-current-row-bg: rgba(77, 124, 254, 0.15);
+  --framebase-table-stripe-bg: #0d1628;
+  --framebase-table-border-color: #22304f;
 
   // 焦点环
-  --framebase-ring-color: rgb(59 130 246 / 0.6);
+  --framebase-ring-color: rgb(77 124 254 / 0.6);
+
+  // 侧边栏渐变（re-ap dark sidebar）
+  --framebase-sidebar-grad-from: #060d1f;
+  --framebase-sidebar-grad-to: #0c1830;
 
   // Element Plus 映射（覆盖 tokens.scss 中的浅色值）
   --el-bg-color: var(--framebase-color-bg);

@@ -1,3 +1,13 @@
+.el-select {
+  // 默认占满父容器宽度，避免在表单/筛选场景下宽度不统一
+  width: 100%;
+}
+
+// 分页器内的 select 保持紧凑宽度，不占满
+.el-pagination .el-select {
+  width: auto;
+}
+
 .el-select__popper.el-popper {
   border: 1px solid var(--el-border-color-light);
   border-radius: var(--framebase-border-radius-base);

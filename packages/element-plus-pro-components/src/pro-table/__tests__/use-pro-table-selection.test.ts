@@ -34,6 +34,7 @@ describe('useProTableSelection', () => {
       data,
       tableRef,
       rowKey: () => 'id',
+      mode: () => 'checkbox',
       checkable: () => true,
       reserveSelection: () => false,
       selectedKeys: () => selectedKeysRef.value,
@@ -66,6 +67,7 @@ describe('useProTableSelection', () => {
       data,
       tableRef,
       rowKey: () => 'id',
+      mode: () => 'checkbox',
       checkable: () => true,
       reserveSelection: () => false,
       selectedKeys: () => selectedKeysRef.value,
@@ -91,6 +93,7 @@ describe('useProTableSelection', () => {
       data,
       tableRef,
       rowKey: () => 'id',
+      mode: () => 'checkbox',
       checkable: () => true,
       reserveSelection: () => false,
       selectedKeys: () => selectedKeysRef.value,
@@ -128,6 +131,7 @@ describe('useProTableSelection', () => {
       data,
       tableRef,
       rowKey: () => 'id',
+      mode: () => 'checkbox',
       checkable: () => true,
       reserveSelection: () => false,
       selectedKeys: () => selectedKeysRef.value,
@@ -144,5 +148,33 @@ describe('useProTableSelection', () => {
     // No programmatic re-select of rows after clear.
     expect(toggleRowSelection).not.toHaveBeenCalled()
     expect(selection.getSelectedRows()).toEqual([])
+  })
+
+  it('keeps only one selected row in radio mode', async () => {
+    const data = ref<Row[]>([{ id: 1 }, { id: 2 }])
+    const selectedKeysRef = ref<Array<string | number>>([])
+    const { ref: tableRef } = createTableRefMock()
+    const onChange = vi.fn((keys: Array<string | number>) => {
+      selectedKeysRef.value = [...keys]
+    })
+    const selection = useProTableSelection<Row>({
+      data,
+      tableRef,
+      rowKey: () => 'id',
+      mode: () => 'radio',
+      checkable: () => true,
+      reserveSelection: () => false,
+      selectedKeys: () => selectedKeysRef.value,
+      cacheSelectedData: () => [],
+      onChange
+    })
+
+    selection.selectRow(data.value[0]!)
+    selection.selectRow(data.value[1]!)
+    await nextTick()
+
+    expect(selection.selectedKeyList.value).toEqual([2])
+    expect(selection.getSelectedRows()).toEqual([{ id: 2 }])
+    expect(onChange).toHaveBeenLastCalledWith([2], [{ id: 2 }])
   })
 })

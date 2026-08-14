@@ -65,6 +65,7 @@ export function useProTableData<
   })
   const sorter = shallowRef<ProTableSorter>()
   const filters = shallowRef<ProTableFilters>({})
+  const keyword = ref('')
   const requestState = useProRequest<TResponse>()
   const restoredUrlState = restoreUrlState()
   if (!restoredUrlState) {
@@ -144,8 +145,15 @@ export function useProTableData<
   })
 
   function createRequestParams(): ProTableRequestParams<TQuery> {
+    const searchOption =
+      props.options && typeof props.options === 'object' ? props.options.search : false
+    const keywordName =
+      searchOption && typeof searchOption === 'object'
+        ? (searchOption.name ?? 'keyword')
+        : 'keyword'
     const params = {
       ...props.params,
+      ...(searchOption && keyword.value ? { [keywordName]: keyword.value } : {}),
       ...pageInfo.value,
       sorter: sorter.value,
       filters: filters.value
@@ -252,6 +260,28 @@ export function useProTableData<
     return reloadData ? loadData('reload') : tableData.value
   }
 
+  async function setKeyword(nextKeyword: string, reloadData = true) {
+    keyword.value = nextKeyword
+    pageInfo.value = { ...pageInfo.value, current: 1 }
+    options.beforePageChange()
+    emitPageInfo()
+    persistServerState()
+    return reloadData ? loadData('reload') : tableData.value
+  }
+
+  async function resetTableState(reloadData = true) {
+    keyword.value = ''
+    sorter.value = undefined
+    filters.value = {}
+    pageInfo.value = { ...pageInfo.value, current: 1 }
+    options.beforePageChange()
+    options.onSorterChange(undefined)
+    options.onFiltersChange({})
+    emitPageInfo()
+    persistServerState()
+    return reloadData ? loadData('reload') : tableData.value
+  }
+
   function emitPageInfo() {
     options.onPageChange({ ...pageInfo.value })
   }
@@ -345,6 +375,7 @@ export function useProTableData<
     pageInfo,
     sorter,
     filters,
+    keyword,
     mergedLoading,
     requestLifecycle,
     requestError,
@@ -360,6 +391,8 @@ export function useProTableData<
     setSorter,
     setFilters,
     resetServerState,
+    setKeyword,
+    resetTableState,
     handleCurrentChange,
     handleSizeChange
   }

@@ -11,7 +11,7 @@
   --el-table-header-bg-color: var(--framebase-table-header-bg);
   --el-table-header-text-color: var(--framebase-table-header-text);
 
-  border-radius: var(--framebase-radius-lg);
+  border-radius: 0;
   font-size: 14px;
 
   .el-table__inner-wrapper {
@@ -24,7 +24,7 @@
     color: var(--framebase-table-header-text);
     font-weight: 600;
     font-size: 13px;
-    border-bottom: 1px solid var(--framebase-color-border);
+    border-bottom: 1px solid var(--framebase-table-border-color);
   }
 
   // 行 hover 过渡
