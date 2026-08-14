@@ -1,0 +1,19 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "noEmit": false,
+    "outDir": "./dist/types",
+    "rootDir": "./src",
+    "tsBuildInfoFile": "../../node_modules/.tmp/vue-build.tsbuildinfo",
+    "paths": {
+      "@framebase/core": ["../core/dist/types/index.d.ts"],
+      "@framebase/core/*": ["../core/dist/types/*"],
+      "@framebase/vue": ["./src/index.ts"],
+      "@framebase/vue/*": ["./src/*"]
+    }
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/**/__tests__/**"]
+}

@@ -1,0 +1,4 @@
+.el-drawer {
+  // drawer 默认无主区域 padding，与 dialog 行为对齐
+  --el-drawer-padding-primary: var(--el-dialog-padding-primary, 0px);
+}

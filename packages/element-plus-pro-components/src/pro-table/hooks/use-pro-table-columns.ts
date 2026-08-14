@@ -81,11 +81,15 @@ export function useProTableColumns<TRecord extends object>(
   )
   const toolbarOptions = computed(() => {
     const config = options.tableOptions() ?? true
-    if (config === false) return { reload: false, density: false, setting: false }
+    if (config === false) {
+      return { reload: false, density: false, setting: false, fullscreen: false, search: false }
+    }
     return {
       reload: true,
       density: true,
       setting: true,
+      fullscreen: false,
+      search: false,
       ...(config === true ? {} : config)
     }
   })

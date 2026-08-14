@@ -36,10 +36,17 @@ defineSlots<{
 }>()
 
 const formContext = useFormContext<TModel>()
+// Preserve dependency tracking when `effects` is declared so the effect
+// watcher has access to the full dependency list. The previous behavior
+// (stripping dependencies/shouldUpdate when `show` is not a function) is
+// kept for fields that only need static visibility resolution.
+const needsContext = computed(
+  () => typeof props.schema.show === 'function' || typeof props.schema.effects === 'function'
+)
 const visibilitySchema = computed(() => ({
   ...props.schema,
-  dependencies: typeof props.schema.show === 'function' ? props.schema.dependencies : [],
-  shouldUpdate: typeof props.schema.show === 'function' ? props.schema.shouldUpdate : undefined
+  dependencies: needsContext.value ? props.schema.dependencies : [],
+  shouldUpdate: needsContext.value ? props.schema.shouldUpdate : undefined
 }))
 const { context, resolve } = useFormField<TModel>(visibilitySchema)
 const visible = computed(() => resolve(props.schema.show, true))

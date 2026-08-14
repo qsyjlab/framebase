@@ -12,6 +12,15 @@ Framebase 按使用场景将组件分为四类。下表列出全部组件及其�
 | [ProList](/components/pro-list)                 | 列表,支持选择、分页与自定义渲染。     |
 | [ProEmpty](/components/pro-empty)               | 空状态占位。                          |
 | [ProResult](/components/pro-result)             | 结果页,统一成功/失败/警告反馈。       |
+| [ProStatus](/components/pro-status)             | 状态点、状态标签与自定义语义颜色。    |
+| [ProBadge](/components/pro-badge)               | 通知红点、数量徽标与自定义颜色。      |
+
+## 操作反馈
+
+| 组件                                               | 说明                                   |
+| -------------------------------------------------- | -------------------------------------- |
+| [ProAsyncButton](/components/pro-async-button)     | 自动加载、防重复执行与异步结果反馈。   |
+| [ProConfirmButton](/components/pro-confirm-button) | 危险操作确认、异步执行与显式权限控制。 |
 
 ## 数据录入
 

@@ -9,43 +9,83 @@
       'has-drag-handle': Boolean(resolvedDragSort?.handleColumnKey)
     }"
   >
-    <div
-      v-if="showToolbar || $slots.headerTitle || $slots.toolbar"
-      ref="toolbarRef"
-      class="pro-table__toolbar"
-    >
+    <div v-if="resolvedShowToolbar" ref="toolbarRef" class="pro-table__toolbar">
       <div class="pro-table__title">
         <slot name="headerTitle">{{ headerTitle }}</slot>
       </div>
       <div class="pro-table__actions">
-        <slot name="toolbar" />
-        <el-tooltip v-if="toolbarOptions.reload" content="刷新" placement="top">
-          <el-button text circle :icon="RefreshRight" @click="refresh" />
-        </el-tooltip>
-        <el-dropdown
-          v-if="toolbarOptions.density"
-          trigger="click"
-          :popper-class="resolvedPopperClass"
-          @command="setTableSize"
+        <el-input
+          v-if="toolbarOptions.search"
+          v-model="keyword"
+          class="pro-table__keyword"
+          :placeholder="keywordSearchOptions.placeholder"
+          :clearable="keywordSearchOptions.clearable"
+          :style="{ width: keywordSearchOptions.width }"
+          @keyup.enter="submitKeyword"
+          @clear="submitKeyword"
         >
-          <el-button text circle :icon="Operation" aria-label="表格密度" />
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item command="large">宽松</el-dropdown-item>
-              <el-dropdown-item command="default">默认</el-dropdown-item>
-              <el-dropdown-item command="small">紧凑</el-dropdown-item>
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
+          <template #prefix
+            ><el-icon><Search /></el-icon
+          ></template>
+        </el-input>
+        <slot
+          name="toolbar"
+          :action="tableAction"
+          :selected-keys="selectedKeyList"
+          :selected-rows="getSelectedRows()"
+          :loading="mergedLoading"
+          :size="currentSize"
+        />
+        <el-tooltip v-if="toolbarOptions.reload" content="刷新" placement="top">
+          <button type="button" class="pro-table__tool-icon" aria-label="刷新" @click="refresh">
+            <ProTableIcon name="reload" />
+          </button>
+        </el-tooltip>
+        <el-tooltip v-if="toolbarOptions.density" content="表格密度" placement="top">
+          <el-dropdown trigger="click" :popper-class="resolvedPopperClass" @command="setTableSize">
+            <button type="button" class="pro-table__tool-icon" aria-label="表格密度">
+              <ProTableIcon name="columnHeight" />
+            </button>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item command="large" :class="{ 'is-active': currentSize === 'large' }">
+                  宽松
+                </el-dropdown-item>
+                <el-dropdown-item
+                  command="default"
+                  :class="{ 'is-active': !currentSize || currentSize === 'default' }"
+                >
+                  中等
+                </el-dropdown-item>
+                <el-dropdown-item command="small" :class="{ 'is-active': currentSize === 'small' }">
+                  紧凑
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </el-tooltip>
+        <el-tooltip v-if="toolbarOptions.fullscreen" content="全屏" placement="top">
+          <button
+            type="button"
+            class="pro-table__tool-icon"
+            aria-label="全屏"
+            @click="tableAction.fullScreen"
+          >
+            <el-icon><FullScreen /></el-icon>
+          </button>
+        </el-tooltip>
         <el-popover
           v-if="toolbarOptions.setting"
           placement="bottom-end"
-          :width="320"
+          :width="224"
+          :show-arrow="false"
           trigger="click"
           :popper-class="resolvedPopperClass"
         >
           <template #reference>
-            <el-button text circle :icon="Setting" aria-label="列设置" />
+            <button type="button" class="pro-table__tool-icon" aria-label="列设置" title="列设置">
+              <ProTableIcon name="setting" />
+            </button>
           </template>
           <pro-table-column-setting
             :columns="configurableColumns"
@@ -59,16 +99,36 @@
       </div>
     </div>
 
+    <div v-if="$slots.extra" ref="extraRef" class="pro-table__extra">
+      <slot name="extra" :data="tableData" :loading="mergedLoading" :action="tableAction" />
+    </div>
+
     <div
-      v-if="showAlert && (alwaysShowAlert || selectedKeyList.length)"
+      v-if="showAlert && (resolvedAlwaysShowAlert || selectedKeyList.length)"
       ref="alertRef"
       class="pro-table__alert"
     >
-      <slot name="alert" :selected-keys="selectedKeyList" :selected-rows="getSelectedRows()">
+      <slot
+        name="alert"
+        :selected-keys="selectedKeyList"
+        :selected-rows="getSelectedRows()"
+        :clear-selection="clearSelection"
+      >
         <el-alert type="info" show-icon :closable="false">
           <template #title>
-            已选择 {{ selectedKeyList.length }} 项
-            <el-button type="primary" link @click="clearSelection">取消全部</el-button>
+            <span class="pro-table__alert-content">
+              <span>已选择 {{ selectedKeyList.length }} 项</span>
+              <span class="pro-table__alert-options">
+                <slot
+                  name="alert-options"
+                  :selected-keys="selectedKeyList"
+                  :selected-rows="getSelectedRows()"
+                  :clear-selection="clearSelection"
+                >
+                  <el-button type="primary" link @click="clearSelection">取消全部</el-button>
+                </slot>
+              </span>
+            </span>
           </template>
         </el-alert>
       </slot>
@@ -99,15 +159,38 @@
         :size="currentSize"
         :table-layout="tableLayout"
         @selection-change="handleSelectionChange"
+        @select="handleTableSelect"
+        @select-all="handleTableSelectAll"
         @sort-change="handleTableSortChange"
         @filter-change="handleTableFilterChange"
       >
         <el-table-column
-          v-if="checkable"
+          v-if="resolvedRowSelection.enabled && resolvedRowSelection.type === 'checkbox'"
           type="selection"
-          width="44"
-          :reserve-selection="reserveSelection"
+          :label="resolvedRowSelection.columnTitle"
+          :width="resolvedRowSelection.columnWidth"
+          :fixed="resolvedRowSelection.fixed"
+          :align="resolvedRowSelection.align"
+          :selectable="resolvedRowSelection.selectable"
+          :reserve-selection="resolvedRowSelection.reserveSelection"
         />
+        <el-table-column
+          v-else-if="resolvedRowSelection.enabled"
+          :label="resolvedRowSelection.columnTitle"
+          :width="resolvedRowSelection.columnWidth"
+          :fixed="resolvedRowSelection.fixed"
+          :align="resolvedRowSelection.align"
+        >
+          <template #default="{ row, $index }">
+            <el-radio
+              :model-value="selectedKeyList[0] ?? false"
+              :value="getSelectionRowKey(row)"
+              :disabled="resolvedRowSelection.selectable?.(row, $index) === false"
+              :aria-label="`选择第 ${$index + 1} 行`"
+              @update:model-value="selectRadioRow(row, $index)"
+            />
+          </template>
+        </el-table-column>
         <pro-table-column
           v-for="column in visibleColumns"
           :key="getProTableColumnKey(column)"
@@ -165,12 +248,13 @@
     TResponse = ProTableRequestResult<TRecord>
   "
 >
-import { computed } from 'vue'
-import { Operation, RefreshRight, Setting } from '@element-plus/icons-vue'
+import { computed, useSlots } from 'vue'
+import { FullScreen, Search } from '@element-plus/icons-vue'
 import ProEmpty from '../pro-empty/pro-empty.vue'
 import { useProConfigProvider } from '../pro-config-provider/pro-config-provider-context'
 import { resolveProConfigProviderPopperClass } from '../pro-config-provider/pro-config-provider-utils'
 import ProTableColumnSetting from './components/pro-table-column-setting.vue'
+import ProTableIcon from './components/pro-table-icons.vue'
 import { ProTableColumnRenderer as ProTableColumn } from './components/pro-table-column'
 import { getProTableColumnKey } from './pro-table-utils'
 import { useProTableStore, type ProTableStoreEmitMap } from './store'
@@ -197,16 +281,19 @@ const props = withDefaults(defineProps<ProTableProps<TRecord, TQuery, TResponse>
   showAlert: true,
   alwaysShowAlert: false,
   autoFitHeight: false,
+  toolbar: true,
   border: true,
   tableLayout: 'fixed'
 })
 const emit = defineEmits<ProTableStoreEmitMap<TRecord>>()
 defineSlots<Record<string, (scope?: any) => unknown>>()
+const slots = useSlots()
 const proConfig = useProConfigProvider()
 const store = useProTableStore({ props, emit, proConfig })
 const {
   wrapperRef,
   toolbarRef,
+  extraRef,
   alertRef,
   paginationRef,
   tableRef,
@@ -222,6 +309,8 @@ const {
   requestError,
   paginationProps,
   refresh,
+  keyword,
+  setKeyword,
   handleCurrentChange,
   handleSizeChange,
   columnStateMap,
@@ -236,6 +325,11 @@ const {
   updateEditableValue,
   selectedKeyList,
   handleSelectionChange,
+  handleTableSelect,
+  handleTableSelectAll,
+  selectRadioRow,
+  getSelectionRowKey,
+  resolvedRowSelection,
   handleTableSortChange,
   handleTableFilterChange,
   clearSelection,
@@ -245,7 +339,26 @@ const {
   dragSortReady,
   isDragHandleColumn
 } = store
+const tableAction = store.exposed
+const resolvedShowToolbar = computed(
+  () =>
+    props.toolbar !== false &&
+    (showToolbar.value || Boolean(slots.headerTitle) || Boolean(slots.toolbar))
+)
+const keywordSearchOptions = computed(() => {
+  const search = toolbarOptions.value.search
+  const config = search && typeof search === 'object' ? search : {}
+  const width = config.width ?? 200
+  return {
+    placeholder: config.placeholder ?? '请输入关键词',
+    clearable: config.clearable ?? true,
+    width: typeof width === 'number' ? `${width}px` : width
+  }
+})
 const resolvedBorder = computed(() => props.border ?? proConfig.value.table?.border ?? true)
+const resolvedAlwaysShowAlert = computed(
+  () => resolvedRowSelection.value.alwaysShowAlert ?? props.alwaysShowAlert
+)
 const retryText = computed(() => props.retryText ?? '重试')
 const resolvedRequestErrorText = computed(() => {
   if (typeof props.errorText === 'function') return props.errorText(requestError.value)
@@ -258,6 +371,7 @@ const resolvedRequestErrorText = computed(() => {
 const hasQueryState = computed(
   () =>
     Object.keys(props.params ?? {}).length > 0 ||
+    Boolean(keyword.value) ||
     Boolean(store.sorter.value) ||
     Object.values(store.filters.value).some(values => values.length > 0)
 )
@@ -283,6 +397,14 @@ async function handleRetryRequest() {
   }
 }
 
+async function submitKeyword() {
+  try {
+    await setKeyword(keyword.value)
+  } catch {
+    return
+  }
+}
+
 defineExpose(store.exposed)
 </script>
 
@@ -297,6 +419,11 @@ defineExpose(store.exposed)
     height: 100%;
     min-height: 0;
     flex: 1 1 auto;
+  }
+
+  &:fullscreen {
+    padding: 16px;
+    background: var(--el-bg-color);
   }
 
   &.is-drag-sort:not(.has-drag-handle) {
@@ -314,11 +441,22 @@ defineExpose(store.exposed)
 
   :deep(.pro-table-drag-handle__icon) {
     flex: none;
-    color: var(--el-text-color-secondary);
+    color: var(--el-text-color-placeholder);
     cursor: grab;
+    border-radius: 4px;
+    transition:
+      color 0.2s,
+      background-color 0.2s;
+    padding: 2px;
+
+    &:hover {
+      color: var(--el-text-color-primary);
+      background-color: var(--el-fill-color-light);
+    }
 
     &:active {
       cursor: grabbing;
+      color: var(--el-color-primary);
     }
   }
 
@@ -347,9 +485,62 @@ defineExpose(store.exposed)
     gap: 8px;
   }
 
+  &__tool-icon {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 32px;
+    margin: 0 4px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--el-text-color-regular);
+    font-size: 16px;
+    cursor: pointer;
+    transition: color 0.2s;
+
+    &:hover {
+      color: var(--el-color-primary);
+    }
+
+    &:active {
+      color: var(--el-color-primary-dark-2);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--el-color-primary-light-5);
+      outline-offset: 2px;
+    }
+  }
+
   &__alert {
     flex: none;
     padding-bottom: 12px;
+  }
+
+  &__extra {
+    flex: none;
+    padding-bottom: 12px;
+  }
+
+  &__alert-content {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  &__alert-options {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__keyword {
+    flex: none;
   }
 
   &__request-error {
@@ -380,7 +571,7 @@ defineExpose(store.exposed)
 
 :global(.pro-table-column-header__tip) {
   color: var(--el-text-color-secondary);
-  cursor: help;
+  cursor: pointer;
 }
 
 :global(.pro-table-editable-cell) {

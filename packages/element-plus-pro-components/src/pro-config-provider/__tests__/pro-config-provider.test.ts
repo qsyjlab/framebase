@@ -72,4 +72,28 @@ describe('mergeProConfig', () => {
     )
     expect(resolveProConfigProviderPopperClass(false, 'project-popper')).toBe('project-popper')
   })
+
+  it('merges dictionaries with local entries overriding parent entries', () => {
+    const parentDict = { gender: { M: '男' }, status: { active: '启用' } }
+    const localDict = { status: { active: '运行中' }, priority: { high: '高' } }
+
+    const result = mergeProConfig({ dictionaries: parentDict }, { dictionaries: localDict })
+
+    expect(result.dictionaries).toEqual({
+      gender: { M: '男' },
+      status: { active: '运行中' },
+      priority: { high: '高' }
+    })
+  })
+
+  it('leaves dictionaries undefined when neither side declares any', () => {
+    const result = mergeProConfig({ size: 'small' }, { dark: true })
+    expect(result.dictionaries).toBeUndefined()
+  })
+
+  it('inherits parent dictionaries when only the parent declares them', () => {
+    const parentDict = { gender: { M: '男' } }
+    const result = mergeProConfig({ dictionaries: parentDict }, { dark: true })
+    expect(result.dictionaries).toEqual(parentDict)
+  })
 })

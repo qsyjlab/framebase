@@ -1,6 +1,20 @@
 import type { CSSProperties, VNodeChild } from 'vue'
 
-export type ProResultStatus = 'success' | 'error' | 'warning' | 'info' | '403' | '404' | '500'
+/**
+ * Registry interface for result statuses. Extensible via declaration merging so
+ * applications can register custom error-page statuses.
+ */
+export interface ProResultStatuses {
+  success: true
+  error: true
+  warning: true
+  info: true
+  '403': true
+  '404': true
+  '500': true
+}
+
+export type ProResultStatus = keyof ProResultStatuses
 
 export interface ProResultProps {
   status?: ProResultStatus

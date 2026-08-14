@@ -4,6 +4,8 @@ Framebase is a monorepo for reusable frontend foundations, including UI componen
 
 ## Packages
 
+- `@framebase/core`: Framework-agnostic pure utilities for path access and paginated data sources.
+- `@framebase/vue`: Vue 3 composables for request, pagination, selection and URL state built on `@framebase/core`.
 - `@framebase/element-plus-pro-components`: Vue 3 and Element Plus business-level components.
 - `@framebase/element-plus-theme`: Optional Element Plus visual theme for light and dark mode.
 

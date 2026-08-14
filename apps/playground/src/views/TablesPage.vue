@@ -6,10 +6,39 @@
         :columns="columns"
         :request="requestRows"
         row-key="id"
-        checkable
+        :row-selection="rowSelection"
         header-title="订单列表"
-        :options="{ reload: true, density: true, setting: true }"
+        :options="{
+          reload: true,
+          density: true,
+          setting: true,
+          fullscreen: true,
+          search: { placeholder: '搜索订单或负责人' }
+        }"
         :pagination="{ pageSize: 5 }"
+      >
+        <template #toolbar="{ action }">
+          <el-button link @click="action.reset()">重置</el-button>
+        </template>
+        <template #extra="{ data }">
+          <div class="table-summary">当前页 {{ data.length }} 条订单</div>
+        </template>
+        <template #alert-options="{ selectedRows, clearSelection }">
+          <el-button type="primary" link @click="exportRows(selectedRows)">批量导出</el-button>
+          <el-button link @click="clearSelection">清空</el-button>
+        </template>
+      </ProTable>
+    </DemoBlock>
+
+    <DemoBlock title="ProTable 多级表头" description="嵌套表头、子列显隐与列设置树。">
+      <ProTable
+        :columns="groupedColumns"
+        :data="rows.slice(0, 5)"
+        row-key="id"
+        header-title="多级订单列表"
+        :row-selection="{ type: 'radio', columnWidth: 48 }"
+        :index-border="false"
+        :pagination="false"
       />
     </DemoBlock>
 
@@ -48,6 +77,7 @@ import {
   ProTable,
   type ProDragSortTableEnd,
   type ProTableColumns,
+  type ProTableRowSelection,
   type ProTableRequestParams,
   type ProTableRequestResult
 } from '@framebase/element-plus-pro-components'
@@ -60,6 +90,9 @@ interface Row {
   amount: number
   status: 'pending' | 'processing' | 'completed'
 }
+interface RowQuery {
+  keyword?: string
+}
 const rows: Row[] = Array.from({ length: 12 }, (_, index) => ({
   id: index + 1,
   name: `项目订单 ${index + 1}`,
@@ -68,6 +101,11 @@ const rows: Row[] = Array.from({ length: 12 }, (_, index) => ({
   status: ['pending', 'processing', 'completed'][index % 3] as Row['status']
 }))
 const selectedKeys = ref<Array<string | number>>([])
+const rowSelection: ProTableRowSelection<Row> = {
+  type: 'checkbox',
+  reserveSelection: true,
+  selectable: row => row.status !== 'completed'
+}
 const editableRows = ref<Row[]>(rows.slice(0, 3).map(row => ({ ...row })))
 const sortableRows = ref<Row[]>(rows.slice(3, 8).map(row => ({ ...row })))
 const statusEnum = {
@@ -76,8 +114,14 @@ const statusEnum = {
   completed: { text: '已完成', type: 'success' }
 } as const
 const columns: ProTableColumns<Row> = [
-  { key: 'name', dataIndex: 'name', title: '订单名称', minWidth: 180 },
-  { key: 'owner', dataIndex: 'owner', title: '负责人', width: 110 },
+  { key: 'name', dataIndex: 'name', title: '订单名称', minWidth: 180, copyable: true },
+  {
+    key: 'owner',
+    dataIndex: 'owner',
+    title: '负责人',
+    width: 110,
+    renderText: ({ value }) => String(value ?? '').trim()
+  },
   {
     key: 'amount',
     dataIndex: 'amount',
@@ -95,6 +139,38 @@ const columns: ProTableColumns<Row> = [
     valueEnum: statusEnum
   }
 ]
+const groupedColumns: ProTableColumns<Row> = [
+  {
+    key: 'orderInfo',
+    title: '订单信息',
+    children: [
+      { key: 'name', dataIndex: 'name', title: '订单名称', minWidth: 180 },
+      {
+        key: 'ownership',
+        title: '归属信息',
+        children: [
+          { key: 'owner', dataIndex: 'owner', title: '负责人', width: 120 },
+          {
+            key: 'status',
+            dataIndex: 'status',
+            title: '状态',
+            width: 120,
+            valueType: 'status',
+            valueEnum: statusEnum
+          }
+        ]
+      }
+    ]
+  },
+  {
+    key: 'amount',
+    dataIndex: 'amount',
+    title: '金额',
+    width: 150,
+    align: 'right',
+    valueType: { type: 'money', currency: 'CNY' }
+  }
+]
 const editableColumns: ProTableColumns<Row> = columns.map(column => ({
   ...column,
   editable: column.key !== 'status' ? true : true
@@ -102,11 +178,22 @@ const editableColumns: ProTableColumns<Row> = columns.map(column => ({
 const dragColumns: ProTableColumns<Row> = columns.filter(column => column.key !== 'amount')
 
 async function requestRows(
-  params: ProTableRequestParams<Record<string, never>>
+  params: ProTableRequestParams<RowQuery>
 ): Promise<ProTableRequestResult<Row>> {
   await new Promise(resolve => setTimeout(resolve, 180))
+  const keyword = params.keyword?.trim().toLowerCase()
+  const filteredRows = keyword
+    ? rows.filter(row => `${row.name} ${row.owner}`.toLowerCase().includes(keyword))
+    : rows
   const start = (params.current - 1) * params.pageSize
-  return { data: rows.slice(start, start + params.pageSize), total: rows.length, success: true }
+  return {
+    data: filteredRows.slice(start, start + params.pageSize),
+    total: filteredRows.length,
+    success: true
+  }
+}
+function exportRows(selectedRows: Row[]) {
+  ElMessage.success(`已导出 ${selectedRows.length} 条订单`)
 }
 function createRow(): Row {
   return { id: Date.now(), name: '', owner: '', amount: 0, status: 'pending' }
@@ -121,3 +208,10 @@ function onDragEnd(event: ProDragSortTableEnd<Row>) {
   ElMessage.success(`${event.row.name} 已移动到第 ${event.newIndex + 1} 位`)
 }
 </script>
+
+<style scoped>
+.table-summary {
+  color: var(--el-text-color-secondary);
+  font-size: 13px;
+}
+</style>

@@ -1,82 +1,129 @@
 <template>
   <div class="pro-table-column-setting">
-    <div class="pro-table-column-setting__header">
+    <div class="pro-table-column-setting__title">
       <el-checkbox
-        :model-value="allVisible"
-        :indeterminate="partiallyVisible"
-        @change="setAllVisible(Boolean($event))"
+        v-if="checkable"
+        :model-value="allChecked"
+        :indeterminate="indeterminate"
+        @change="setAllSelectAction(Boolean($event))"
       >
         列展示
       </el-checkbox>
-      <el-button link type="primary" @click="$emit('reset')">重置</el-button>
+      <div v-else />
+      <a class="pro-table-column-setting__reset" @click="$emit('reset')">重置</a>
     </div>
 
-    <el-tree
-      :data="columns"
-      node-key="key"
-      default-expand-all
-      draggable
-      :expand-on-click-node="false"
-      :allow-drop="allowDrop"
-      @node-drop="handleNodeDrop"
-    >
-      <template #default="{ data }">
-        <div class="pro-table-column-setting__node">
-          <el-icon class="pro-table-column-setting__drag" aria-label="拖拽调整列顺序">
-            <Rank />
-          </el-icon>
-          <el-checkbox
-            class="pro-table-column-setting__checkbox"
-            :model-value="columnState[data.key]?.show !== false"
-            @click.stop
-            @change="$emit('visible-change', data.key, Boolean($event))"
+    <div class="pro-table-column-setting__list" :class="{ 'is-group': hasFixed }">
+      <template v-for="group in groups" :key="group.key">
+        <div
+          v-if="group.list.length || group.key === 'normal'"
+          class="pro-table-column-setting__group"
+        >
+          <span v-if="hasFixed" class="pro-table-column-setting__group-title">{{
+            group.title
+          }}</span>
+          <el-tree
+            v-if="group.list.length"
+            :data="group.list"
+            node-key="key"
+            default-expand-all
+            :draggable="draggable"
+            :expand-on-click-node="false"
+            :allow-drop="allowDrop"
+            @node-drop="(drag: any, drop: any) => handleNodeDrop(group.key, drop)"
           >
-            {{ data.title || data.key }}
-          </el-checkbox>
-          <span class="pro-table-column-setting__fixed" @mousedown.stop @click.stop>
-            <el-tooltip content="固定在列首" placement="top">
-              <el-button
-                text
-                circle
-                size="small"
-                :class="{ 'is-active': columnState[data.key]?.fixed === 'left' }"
-                :icon="Top"
-                @click="toggleFixed(data.key, 'left')"
-              />
-            </el-tooltip>
-            <el-tooltip content="固定在列尾" placement="top">
-              <el-button
-                text
-                circle
-                size="small"
-                :class="{ 'is-active': columnState[data.key]?.fixed === 'right' }"
-                :icon="Bottom"
-                @click="toggleFixed(data.key, 'right')"
-              />
-            </el-tooltip>
-          </span>
+            <template #default="{ data }">
+              <div class="pro-table-column-setting__item">
+                <ProTableIcon
+                  class="pro-table-column-setting__drag"
+                  name="holder"
+                  aria-label="拖拽调整列顺序"
+                />
+                <el-checkbox
+                  v-if="checkable"
+                  class="pro-table-column-setting__checkbox"
+                  :model-value="columnState[data.key]?.show !== false"
+                  @click.stop
+                  @change="$emit('visible-change', data.key, Boolean($event))"
+                >
+                  <span class="pro-table-column-setting__checkbox-label">
+                    {{ data.title || data.key }}
+                  </span>
+                </el-checkbox>
+                <span v-else class="pro-table-column-setting__checkbox-label">
+                  {{ data.title || data.key }}
+                </span>
+                <span
+                  v-if="data.isTopLevel"
+                  class="pro-table-column-setting__option"
+                  @mousedown.stop
+                  @click.stop
+                >
+                  <el-tooltip v-if="data.fixed !== 'left'" content="固定在列首" placement="top">
+                    <span
+                      class="pro-table-column-setting__option-icon"
+                      @click="$emit('fixed-change', data.key, 'left')"
+                    >
+                      <ProTableIcon name="verticalAlignTop" />
+                    </span>
+                  </el-tooltip>
+                  <el-tooltip v-if="data.fixed" content="不固定" placement="top">
+                    <span
+                      class="pro-table-column-setting__option-icon"
+                      @click="$emit('fixed-change', data.key, undefined)"
+                    >
+                      <ProTableIcon name="verticalAlignMiddle" />
+                    </span>
+                  </el-tooltip>
+                  <el-tooltip v-if="data.fixed !== 'right'" content="固定在列尾" placement="top">
+                    <span
+                      class="pro-table-column-setting__option-icon"
+                      @click="$emit('fixed-change', data.key, 'right')"
+                    >
+                      <ProTableIcon name="verticalAlignBottom" />
+                    </span>
+                  </el-tooltip>
+                </span>
+              </div>
+            </template>
+          </el-tree>
         </div>
       </template>
-    </el-tree>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { Bottom, Rank, Top } from '@element-plus/icons-vue'
+import ProTableIcon from './pro-table-icons.vue'
 import type { ProTableColumnState } from '../pro-table'
 import type { ProTableColumnSettingNode } from '../hooks/use-pro-table-columns'
 
+interface NormalizedColumn extends ProTableColumnSettingNode {
+  fixed?: 'left' | 'right' | undefined
+  order: number
+  isTopLevel: boolean
+  children?: NormalizedColumn[]
+}
+
 interface TreeNodeLike {
-  data: ProTableColumnSettingNode
+  data: NormalizedColumn
   parent?: TreeNodeLike
   childNodes: TreeNodeLike[]
 }
 
-const props = defineProps<{
-  columns: ProTableColumnSettingNode[]
-  columnState: Record<string, ProTableColumnState>
-}>()
+const props = withDefaults(
+  defineProps<{
+    columns: ProTableColumnSettingNode[]
+    columnState: Record<string, ProTableColumnState>
+    checkable?: boolean
+    draggable?: boolean
+  }>(),
+  {
+    checkable: true,
+    draggable: true
+  }
+)
 
 const emit = defineEmits<{
   reset: []
@@ -85,34 +132,63 @@ const emit = defineEmits<{
   reorder: [keys: string[]]
 }>()
 
-const flatColumns = computed(() => flattenColumns(props.columns))
-const visibleCount = computed(
-  () => flatColumns.value.filter(column => props.columnState[column.key]?.show !== false).length
-)
-const allVisible = computed(
-  () => flatColumns.value.length > 0 && visibleCount.value === flatColumns.value.length
-)
-const partiallyVisible = computed(
-  () => visibleCount.value > 0 && visibleCount.value < flatColumns.value.length
-)
-
-function flattenColumns(columns: ProTableColumnSettingNode[]): ProTableColumnSettingNode[] {
+function flattenColumns(columns: NormalizedColumn[]): NormalizedColumn[] {
   return columns.flatMap(column => [column, ...flattenColumns(column.children ?? [])])
 }
 
-function setAllVisible(visible: boolean) {
-  flatColumns.value.forEach(column => emit('visible-change', column.key, visible))
+function normalizeColumns(
+  columns: ProTableColumnSettingNode[],
+  isTopLevel = true
+): NormalizedColumn[] {
+  return columns.map((column, index) => {
+    const rawFixed = props.columnState[column.key]?.fixed
+    return {
+      ...column,
+      fixed: rawFixed === 'left' || rawFixed === 'right' ? rawFixed : undefined,
+      order: props.columnState[column.key]?.order ?? index,
+      isTopLevel,
+      children: column.children?.length ? normalizeColumns(column.children, false) : undefined
+    }
+  })
 }
 
-function toggleFixed(key: string, fixed: 'left' | 'right') {
-  emit('fixed-change', key, props.columnState[key]?.fixed === fixed ? undefined : fixed)
+const normalizedColumns = computed(() => normalizeColumns(props.columns))
+const flatColumns = computed(() => flattenColumns(normalizedColumns.value))
+const topLevelColumns = computed(() =>
+  [...normalizedColumns.value].sort((a, b) => a.order - b.order)
+)
+
+const groups = computed(() => [
+  { key: 'left', title: '固定在左侧', list: orderedList('left') },
+  { key: 'normal', title: '不固定', list: orderedList(undefined) },
+  { key: 'right', title: '固定在右侧', list: orderedList('right') }
+])
+
+function orderedList(fixed: 'left' | 'right' | undefined): NormalizedColumn[] {
+  return topLevelColumns.value.filter(column => column.fixed === fixed)
+}
+
+const hasFixed = computed(() => orderedList('left').length > 0 || orderedList('right').length > 0)
+
+const visibleCount = computed(
+  () => flatColumns.value.filter(c => props.columnState[c.key]?.show !== false).length
+)
+const allChecked = computed(
+  () => flatColumns.value.length > 0 && visibleCount.value === flatColumns.value.length
+)
+const indeterminate = computed(
+  () => visibleCount.value > 0 && visibleCount.value < flatColumns.value.length
+)
+
+function setAllSelectAction(show: boolean) {
+  flatColumns.value.forEach(column => emit('visible-change', column.key, show))
 }
 
 function allowDrop(draggingNode: TreeNodeLike, dropNode: TreeNodeLike, type: string) {
   return type !== 'inner' && draggingNode.parent === dropNode.parent
 }
 
-function handleNodeDrop(_draggingNode: TreeNodeLike, dropNode: TreeNodeLike) {
+function handleNodeDrop(_groupKey: string, dropNode: TreeNodeLike) {
   const keys = dropNode.parent?.childNodes.map(node => node.data.key) ?? []
   if (keys.length) emit('reorder', keys)
 }
@@ -120,43 +196,77 @@ function handleNodeDrop(_draggingNode: TreeNodeLike, dropNode: TreeNodeLike) {
 
 <style scoped lang="scss">
 .pro-table-column-setting {
-  &__header {
+  width: 200px;
+
+  &__title {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 4px 8px;
-    border-bottom: 1px solid var(--el-border-color-lighter);
+    height: 32px;
   }
 
-  :deep(.el-tree) {
-    max-height: 360px;
-    padding-top: 6px;
-    overflow-y: auto;
-    color: var(--el-text-color-primary);
+  &__reset {
+    color: var(--el-color-primary);
+    cursor: pointer;
   }
 
-  :deep(.el-tree-node__content) {
-    height: 36px;
-    border-radius: var(--el-border-radius-base);
+  &__list {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding-top: 8px;
 
-    &:hover {
-      background: var(--el-fill-color-light);
+    &.is-group {
+      padding-top: 0;
     }
   }
 
-  &__node {
+  &__group-title {
+    display: block;
+    margin-top: 6px;
+    margin-bottom: 6px;
+    padding-left: 24px;
+    color: var(--el-text-color-secondary);
+    font-size: 12px;
+  }
+
+  :deep(.el-tree) {
+    background: transparent;
+  }
+
+  :deep(.el-tree-node__content) {
+    height: 24px;
+    border-radius: var(--framebase-radius-sm);
+  }
+
+  :deep(.el-tree-node__content > .el-tree-node__expand-icon) {
+    display: none;
+  }
+
+  &__item {
     display: flex;
     min-width: 0;
     flex: 1;
     align-items: center;
-    gap: 8px;
+    gap: 4px;
     padding-right: 2px;
+
+    &:hover .pro-table-column-setting__option {
+      display: inline-flex;
+    }
   }
 
   &__drag {
     flex: none;
     color: var(--el-text-color-placeholder);
     cursor: grab;
+    border-radius: 4px;
+    padding: 2px;
+
+    &:active {
+      cursor: grabbing;
+      color: var(--el-color-primary);
+    }
   }
 
   &__checkbox {
@@ -164,18 +274,33 @@ function handleNodeDrop(_draggingNode: TreeNodeLike, dropNode: TreeNodeLike) {
     flex: 1;
   }
 
-  &__fixed {
-    display: inline-flex;
+  &__checkbox-label {
+    display: inline-block;
+    min-width: 0;
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    word-break: break-all;
+  }
+
+  // 右侧固定按钮组：默认隐藏，hover 显示（照抄 Ant Design）
+  &__option {
+    display: none;
     flex: none;
     align-items: center;
+    gap: 4px;
+    cursor: pointer;
+  }
 
-    :deep(.el-button) {
-      color: var(--el-text-color-secondary);
+  &__option-icon {
+    display: inline-flex;
+    align-items: center;
+    color: var(--el-color-primary);
+    cursor: pointer;
 
-      &.is-active {
-        color: var(--el-color-primary);
-        background: var(--el-color-primary-light-9);
-      }
+    &:hover {
+      opacity: 0.8;
     }
   }
 }

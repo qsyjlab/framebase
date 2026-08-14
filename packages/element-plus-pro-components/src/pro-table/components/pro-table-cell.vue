@@ -1,6 +1,6 @@
 <template>
-  <div v-if="dragHandle" class="pro-table-drag-handle">
-    <el-icon class="pro-table-drag-handle__icon"><Rank /></el-icon>
+  <div :class="['pro-table-cell', { 'pro-table-drag-handle': dragHandle }]">
+    <ProTableIcon v-if="dragHandle" class="pro-table-drag-handle__icon" name="holder" />
     <div class="pro-table-cell__content">
       <pro-table-render-content v-if="slot" :content="slotContent" />
       <div v-else-if="isEditing" class="pro-table-editable-cell" :class="{ 'is-error': error }">
@@ -8,13 +8,13 @@
           :is="editorComponent"
           v-if="editorComponent"
           v-bind="editorProps"
-          :model-value="value"
+          :model-value="rawValue"
           @update:model-value="updateValue"
         />
         <pro-field
           v-else
           v-bind="editorProps"
-          :model-value="value"
+          :model-value="rawValue"
           :value-type="valueType"
           :value-enum="valueEnum"
           mode="edit"
@@ -22,62 +22,48 @@
         />
         <div v-if="error" class="pro-table-editable-cell__error">{{ error }}</div>
       </div>
-      <pro-table-render-content v-else-if="column.render" :content="renderedContent" />
-      <pro-field
-        v-else
-        :model-value="value"
-        :value-type="valueType"
-        :value-enum="valueEnum"
-        :field-props="column.fieldProps"
-        :empty-text="column.emptyText"
-        :formatter="column.formatter"
-        mode="read"
-      />
+      <span v-else class="pro-table-cell__read">
+        <pro-table-render-content v-if="column.render" :content="renderedContent" />
+        <pro-field
+          v-else
+          :model-value="value"
+          :value-type="valueType"
+          :value-enum="valueEnum"
+          :field-props="column.fieldProps"
+          :empty-text="column.emptyText"
+          :formatter="column.formatter"
+          mode="read"
+        />
+        <el-tooltip v-if="column.copyable" content="复制" placement="top">
+          <button
+            type="button"
+            class="pro-table-cell__copy"
+            :aria-label="`复制${column.title ?? String(column.key)}`"
+            @click.stop="copyValue"
+          >
+            <el-icon><DocumentCopy /></el-icon>
+          </button>
+        </el-tooltip>
+      </span>
     </div>
   </div>
-
-  <template v-else>
-    <pro-table-render-content v-if="slot" :content="slotContent" />
-    <div v-else-if="isEditing" class="pro-table-editable-cell" :class="{ 'is-error': error }">
-      <component
-        :is="editorComponent"
-        v-if="editorComponent"
-        v-bind="editorProps"
-        :model-value="value"
-        @update:model-value="updateValue"
-      />
-      <pro-field
-        v-else
-        v-bind="editorProps"
-        :model-value="value"
-        :value-type="valueType"
-        :value-enum="valueEnum"
-        mode="edit"
-        @update:model-value="updateValue"
-      />
-      <div v-if="error" class="pro-table-editable-cell__error">{{ error }}</div>
-    </div>
-    <pro-table-render-content v-else-if="column.render" :content="renderedContent" />
-    <pro-field
-      v-else
-      :model-value="value"
-      :value-type="valueType"
-      :value-enum="valueEnum"
-      :field-props="column.fieldProps"
-      :empty-text="column.emptyText"
-      :formatter="column.formatter"
-      mode="read"
-    />
-  </template>
 </template>
 
 <script setup lang="ts" generic="TRecord extends object = Record<string, unknown>">
 import { computed, resolveDynamicComponent, type Slots, type VNodeChild } from 'vue'
-import { Rank } from '@element-plus/icons-vue'
+import { DocumentCopy } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
+import ProTableIcon from './pro-table-icons.vue'
 import { ProField } from '../../pro-field'
 import { getProPathValue } from '../../shared/pro-path'
-import type { ProTableColumn, ProTableEditableRowState, ProTableRenderScope } from '../pro-table'
-import { getProTableColumnKey } from '../pro-table-utils'
+import { copyProText } from '../../shared/pro-copy'
+import type {
+  ProTableColumn,
+  ProTableCopyConfig,
+  ProTableEditableRowState,
+  ProTableRenderScope
+} from '../pro-table'
+import { getProTableColumnKey, resolveProTableRenderText } from '../pro-table-utils'
 import { ProTableRenderContent } from './pro-table-render-content'
 
 const props = defineProps<{
@@ -92,15 +78,20 @@ const props = defineProps<{
 }>()
 
 const source = computed(() => props.editableState?.data ?? props.row)
-const value = computed(() =>
+const rawValue = computed(() =>
   getProPathValue(source.value, props.column.dataIndex ?? String(props.column.key))
 )
-const scope = computed<ProTableRenderScope<TRecord>>(() => ({
+const rawScope = computed<ProTableRenderScope<TRecord>>(() => ({
   row: props.row,
-  value: value.value,
+  value: rawValue.value,
   index: props.index,
   column: props.column,
   editableState: props.editableState
+}))
+const value = computed(() => resolveProTableRenderText(rawScope.value))
+const scope = computed<ProTableRenderScope<TRecord>>(() => ({
+  ...rawScope.value,
+  value: value.value
 }))
 const slot = computed(() => props.tableSlots?.[getProTableColumnKey(props.column)])
 const slotContent = computed(() => slot.value?.(scope.value))
@@ -141,11 +132,54 @@ const renderedContent = computed(() => {
 function updateValue(nextValue: unknown) {
   props.updateEditableValue?.(props.row, props.column, nextValue)
 }
+
+async function copyValue() {
+  const config: ProTableCopyConfig<TRecord> =
+    typeof props.column.copyable === 'object' ? props.column.copyable : {}
+  const text =
+    typeof config.text === 'function'
+      ? config.text(scope.value)
+      : (config.text ?? String(value.value ?? ''))
+
+  try {
+    await copyProText(text)
+    ElMessage.success(config.successText ?? '复制成功')
+  } catch {
+    ElMessage.error('复制失败')
+  }
+}
 </script>
 
 <style scoped lang="scss">
+.pro-table-cell {
+  width: 100%;
+}
+
 .pro-table-cell__content {
   min-width: 0;
   flex: 1;
+}
+
+.pro-table-cell__read {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
+  gap: 6px;
+}
+
+.pro-table-cell__copy {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--el-text-color-secondary);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--el-color-primary);
+  }
 }
 </style>

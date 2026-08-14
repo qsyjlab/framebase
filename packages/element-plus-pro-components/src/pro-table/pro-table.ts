@@ -49,6 +49,11 @@ export interface ProTableRenderScope<TRecord extends object, TValue = unknown> {
   editableState?: ProTableEditableRowState<TRecord>
 }
 
+export interface ProTableCopyConfig<TRecord extends object, TValue = unknown> {
+  text?: string | ((scope: ProTableRenderScope<TRecord, TValue>) => string)
+  successText?: string
+}
+
 export type ProTableDynamicValue<TRecord extends object, TValue> =
   | TValue
   | ((scope: ProTableRenderScope<TRecord>) => TValue)
@@ -126,6 +131,8 @@ export interface ProTableColumn<TRecord extends object, TValue = unknown>
   fieldProps?: ProFieldProps<TValue>['fieldProps']
   emptyText?: string
   formatter?: ProFieldProps<TValue>['formatter']
+  copyable?: boolean | ProTableCopyConfig<TRecord, TValue>
+  renderText?: (scope: ProTableRenderScope<TRecord, TValue>) => unknown
   editable?: boolean | ((scope: ProTableRenderScope<TRecord, TValue>) => boolean)
   editableRules?: ProTableEditableRule<TRecord, TValue>[]
   rowComponent?: ProTableEditRowComponent<TRecord, TValue>
@@ -158,6 +165,22 @@ export interface ProTableColumnsState {
   onChange?: (state: Record<string, ProTableColumnState>) => void
 }
 
+export interface ProTableRowSelection<TRecord extends object> {
+  type?: 'checkbox' | 'radio'
+  selectedKeys?: Array<string | number>
+  cacheSelectedData?: TRecord[]
+  reserveSelection?: boolean
+  selectable?: (row: TRecord, index: number) => boolean
+  columnTitle?: string
+  columnWidth?: number | string
+  fixed?: boolean | 'left' | 'right'
+  align?: 'left' | 'center' | 'right'
+  alwaysShowAlert?: boolean
+  onChange?: (keys: Array<string | number>, rows: TRecord[]) => void
+  onSelect?: (row: TRecord, selected: boolean, rows: TRecord[]) => void
+  onSelectAll?: (selected: boolean, rows: TRecord[]) => void
+}
+
 export interface ProTableStatePersistence {
   key: string
   type?: 'localStorage' | 'sessionStorage'
@@ -179,7 +202,32 @@ export interface ProTableOptions {
   reload?: boolean
   density?: boolean
   setting?: boolean
+  fullscreen?: boolean
+  search?: boolean | ProTableKeywordSearch
+  /**
+   * Allow applications to register custom toolbar options (e.g. `export`,
+   * `fullscreen`, `refresh`). Built-in options are `reload`, `density` and
+   * `setting`; any additional keys are passed through to the `toolbar` slot
+   * for custom rendering.
+   */
+  [key: string]: unknown
 }
+
+export interface ProTableKeywordSearch {
+  name?: string
+  placeholder?: string
+  clearable?: boolean
+  width?: string | number
+}
+
+export type ProTableScrollTarget =
+  | number
+  | {
+      top?: number
+      left?: number
+      index?: number
+      key?: string | number
+    }
 
 export interface ProTableDragSortEnd<TRecord extends object> {
   oldIndex: number
@@ -217,10 +265,12 @@ export interface ProTableProps<
   loading?: boolean
   rowKey?: ProTableRowKey<TRecord>
   checkable?: boolean
+  rowSelection?: false | ProTableRowSelection<TRecord>
   reserveSelection?: boolean
   selectedKeys?: Array<string | number>
   cacheSelectedData?: TRecord[]
   headerTitle?: string
+  toolbar?: boolean
   options?: boolean | ProTableOptions
   columnsState?: ProTableColumnsState
   statePersistence?: ProTableStatePersistence
@@ -249,8 +299,13 @@ export interface ProTableExpose<TRecord extends object> extends ProRequestContro
   getTotal: () => number
   getServerState: () => ProTableServerState
   getSelectedKeys: () => Array<string | number>
+  getKeyword: () => string
   reload: (resetPage?: boolean) => Promise<TRecord[]>
   refresh: () => Promise<TRecord[]>
+  reset: () => Promise<TRecord[]>
+  fullScreen: () => Promise<void>
+  scrollTo: (target: ProTableScrollTarget) => Promise<void>
+  setKeyword: (keyword: string, reload?: boolean) => Promise<TRecord[]>
   setPageInfo: (pageInfo: Partial<ProTablePageInfo>, reload?: boolean) => Promise<TRecord[]>
   setSorter: (sorter?: ProTableSorter, reload?: boolean) => Promise<TRecord[]>
   setFilters: (filters: ProTableFilters, reload?: boolean) => Promise<TRecord[]>

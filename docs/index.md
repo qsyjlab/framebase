@@ -26,8 +26,9 @@ features:
     details: pnpm monorepo，组件、主题、核心工具各自独立，按需安装，互不耦合。
     link: /guide/architecture
   - icon: 🔧
-    title: 核心工具（规划中）
-    details: 不依赖 Element Plus 的通用 Hook 与工具，请求封装、状态管理、类型工具等。
+    title: 核心工具
+    details: '@framebase/core 提供框架无关的路径与分页工具，@framebase/vue 在其之上构建 useRequest / usePagination / useSelection / useUrlState 等组合式 API。'
+    link: /guide/architecture
   - icon: 📊
     title: ProTable 请求驱动表格
     details: 基于 request 函数自动管理分页、加载态、刷新、密度与列设置，内置选择与可编辑能力。

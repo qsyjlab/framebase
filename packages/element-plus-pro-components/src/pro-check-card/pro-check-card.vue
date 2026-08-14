@@ -85,7 +85,7 @@ defineExpose(exposed)
   padding: 18px;
   overflow: hidden;
   border: 1px solid var(--el-border-color);
-  border-radius: var(--el-border-radius-base);
+  border-radius: var(--framebase-radius-lg);
   background: var(--el-bg-color-overlay);
   color: var(--el-text-color-primary);
   cursor: pointer;

@@ -41,7 +41,22 @@
       </header>
 
       <main class="app-content">
-        <RouterView />
+        <ProConfigProvider
+          :hooks="{
+            request: { retry: 1 },
+            pagination: { defaultPageSize: 5 },
+            pagedList: { immediate: true }
+          }"
+          :dictionaries="{
+            status: {
+              active: { text: '启用', type: 'success' },
+              disabled: { text: '禁用', type: 'danger' },
+              pending: { text: '待审核', type: 'warning' }
+            }
+          }"
+        >
+          <RouterView />
+        </ProConfigProvider>
       </main>
     </div>
   </div>
@@ -51,6 +66,7 @@
 import { Moon, Sunny } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
+import { ProConfigProvider } from '@framebase/element-plus-pro-components'
 import { navigation } from './router'
 
 const route = useRoute()

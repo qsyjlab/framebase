@@ -1,6 +1,17 @@
 import type { CSSProperties, VNodeChild } from 'vue'
 
-export type ProEmptyStatus = 'empty' | 'search' | 'error' | 'forbidden'
+/**
+ * Registry interface for empty statuses. Extensible via declaration merging so
+ * applications can register custom statuses (e.g. `loading`, `no-permission`).
+ */
+export interface ProEmptyStatuses {
+  empty: true
+  search: true
+  error: true
+  forbidden: true
+}
+
+export type ProEmptyStatus = keyof ProEmptyStatuses
 
 export interface ProEmptyProps {
   status?: ProEmptyStatus

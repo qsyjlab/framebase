@@ -1,14 +1,84 @@
-.el-button.el-button {
-  border-radius: var(--framebase-border-radius-base);
+// Form Controls —— shadcn 风格：边框替代填充、focus ring、hover 边框加深
+
+// Button
+.el-button {
+  border-radius: var(--framebase-radius-md);
   font-weight: 500;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    color 0.15s ease;
+
+  // 默认按钮 hover：边框加深 + 浅灰背景
+  &:not(.is-text):not(.is-link):not(.el-button--primary):not(.el-button--success):not(
+      .el-button--warning
+    ):not(.el-button--danger):not(.el-button--info):hover {
+    border-color: var(--framebase-color-border-strong);
+    background-color: var(--framebase-color-bg-muted);
+  }
+
+  // 主色按钮 focus 环
+  &.el-button--primary:focus-visible,
+  &.el-button--success:focus-visible,
+  &.el-button--warning:focus-visible,
+  &.el-button--danger:focus-visible,
+  &.el-button--info:focus-visible {
+    outline: var(--framebase-ring-width) solid var(--framebase-ring-color);
+    outline-offset: var(--framebase-ring-offset);
+  }
 }
 
+// Input / Select —— border 风格，不再用 inset shadow
 .el-input .el-input__wrapper,
-.el-select .el-select__wrapper {
-  border-radius: var(--framebase-border-radius-base);
-  box-shadow: inset 0 0 0 1px var(--framebase-color-border);
+.el-select .el-select__wrapper,
+.el-date-editor.el-input .el-input__wrapper {
+  border-radius: var(--framebase-radius-md);
+  box-shadow: 0 0 0 1px var(--framebase-color-border) inset;
+  background-color: var(--framebase-color-bg);
+  transition: box-shadow 0.15s ease;
+
+  &:hover {
+    box-shadow: 0 0 0 1px var(--framebase-color-border-strong) inset;
+  }
+
+  // 聚焦：仅增强 EP 原生 inset 边框为主色，不套外层 ring
+  &.is-focus,
+  &:focus-within {
+    box-shadow: 0 0 0 1px var(--framebase-color-primary) inset;
+  }
 }
 
+// Textarea 单独处理
 .el-textarea .el-textarea__inner {
-  border-radius: var(--framebase-border-radius-base);
+  border-radius: var(--framebase-radius-md);
+  box-shadow: 0 0 0 1px var(--framebase-color-border) inset;
+  background-color: var(--framebase-color-bg);
+  transition: box-shadow 0.15s ease;
+
+  &:hover {
+    box-shadow: 0 0 0 1px var(--framebase-color-border-strong) inset;
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 1px var(--framebase-color-primary) inset;
+  }
+}
+
+// Checkbox / Radio —— 焦点环
+.el-checkbox__input.is-focus .el-checkbox__inner,
+.el-radio__input.is-focus .el-radio__inner {
+  outline: var(--framebase-ring-width) solid var(--framebase-ring-color);
+  outline-offset: var(--framebase-ring-offset);
+}
+
+// Switch
+.el-switch.is-checked .el-switch__core {
+  border-color: var(--framebase-color-primary);
+  background-color: var(--framebase-color-primary);
+}
+
+// InputNumber
+.el-input-number .el-input__wrapper {
+  border-radius: var(--framebase-radius-md);
 }

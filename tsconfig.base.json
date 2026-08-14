@@ -20,12 +20,14 @@
     "esModuleInterop": true,
     "lib": ["ESNext", "DOM"],
     "paths": {
+      "@framebase/core": ["packages/core/src/index.ts"],
+      "@framebase/core/*": ["packages/core/src/*"],
+      "@framebase/vue": ["packages/vue/src/index.ts"],
+      "@framebase/vue/*": ["packages/vue/src/*"],
       "@framebase/element-plus-pro-components": [
         "packages/element-plus-pro-components/src/index.ts"
       ],
-      "@framebase/element-plus-pro-components/*": [
-        "packages/element-plus-pro-components/src/*"
-      ]
+      "@framebase/element-plus-pro-components/*": ["packages/element-plus-pro-components/src/*"]
     }
   }
 }

@@ -132,6 +132,40 @@ describe('use-pro-table-data', () => {
     })
   })
 
+  it('submits toolbar keywords with a configurable name and clears them on reset', async () => {
+    const request = vi.fn(async () => ({ data: [], total: 0 }))
+    const props = reactive<ProTableProps<Row, { query?: string }>>({
+      columns: [],
+      request,
+      pagination: { current: 2, pageSize: 20 },
+      autoRequest: false,
+      options: { search: { name: 'query' } }
+    })
+    const { state } = setup(props as ProTableProps<Row, Record<string, never>>)
+
+    await state.setKeyword('orders')
+    expect(request).toHaveBeenLastCalledWith(
+      expect.objectContaining({ query: 'orders', current: 1 }),
+      expect.any(Object)
+    )
+
+    await state.setSorter({ key: 'name', order: 'ascending' }, false)
+    await state.setFilters({ status: ['active'] }, false)
+    await state.resetTableState()
+
+    expect(state.keyword.value).toBe('')
+    expect(state.getServerState()).toEqual({
+      current: 1,
+      pageSize: 20,
+      sorter: undefined,
+      filters: {}
+    })
+    expect(request).toHaveBeenLastCalledWith(
+      expect.not.objectContaining({ query: expect.anything() }),
+      expect.any(Object)
+    )
+  })
+
   it('uses restored URL pagination for the first request without resetting it', async () => {
     const storage = createStorage()
     storage.setItem(

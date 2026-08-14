@@ -24,6 +24,8 @@ pro-config-provider/basic
 | descriptions | ProDescriptions 默认配置 | `ProConfigProviderDescriptionsConfig` | —      |
 | card         | ProCard 默认配置         | `ProConfigProviderCardConfig`         | —      |
 | list         | ProList 默认配置         | `ProConfigProviderListConfig`         | —      |
+| hooks        | Hook 默认配置            | `HookConfig`                          | —      |
+| dictionaries | 字典注册表               | `Record<string, ProFieldValueEnum>`   | —      |
 
 ### 子配置说明
 
@@ -66,3 +68,29 @@ pro-config-provider/basic
 | size          | 默认尺寸     | `ComponentSize`              |
 | labelPosition | 默认标签位置 | `'left' \| 'right' \| 'top'` |
 | labelWidth    | 默认标签宽度 | `string \| number`           |
+
+## Hook 默认配置
+
+通过 `hooks` 字段为子树内所有 `useRequest` / `usePagination` / `usePagedList` 设置默认值，调用方显式传入的参数优先级更高。详见 [useHookConfig](../vue/use-hook-config)。
+
+```vue
+<template>
+  <ProConfigProvider
+    :hooks="{
+      request: { debounce: 300, retry: 2 },
+      pagination: { defaultPageSize: 20 },
+      pagedList: { immediate: true }
+    }"
+  >
+    <App />
+  </ProConfigProvider>
+</template>
+```
+
+### HookConfig
+
+| 属性         | 类型                   | 说明                 |
+| ------------ | ---------------------- | -------------------- |
+| `request`    | `HookRequestConfig`    | 请求默认配置         |
+| `pagination` | `HookPaginationConfig` | 分页默认配置         |
+| `pagedList`  | `HookPagedListConfig`  | 分页列表请求默认配置 |

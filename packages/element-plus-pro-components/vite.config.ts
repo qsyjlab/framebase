@@ -16,7 +16,7 @@ const external = new Set([
   'sortablejs'
 ])
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   plugins: [
     vue(),
     vueJsx(),
@@ -30,6 +30,17 @@ export default defineConfig({
       ignoreComponents: ['LoadingDirective', 'PopoverDirective', 'InfiniteScroll']
     })
   ],
+  // `@framebase/core` is a workspace package. During build we resolve to its
+  // emitted dist (via tsconfig paths + node_modules); during dev/test we alias
+  // to source so HMR and vitest pick up edits without a rebuild.
+  resolve: {
+    alias:
+      command === 'build'
+        ? {}
+        : {
+            '@framebase/core': fileURLToPath(new URL('../core/src/index.ts', import.meta.url))
+          }
+  },
   build: {
     copyPublicDir: false,
     emptyOutDir: false,
@@ -50,4 +61,4 @@ export default defineConfig({
       }
     }
   }
-})
+}))

@@ -9,3 +9,6 @@ coverage/
 .DS_Store
 playwright-report/
 test-results/
+
+apps/pro-components-master
+pro-components-master.zip

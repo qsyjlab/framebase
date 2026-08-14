@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import { getProPathValue } from '../../shared/pro-path'
-import { getProTableColumnKey, getProTableColumnProp } from '../pro-table-utils'
+import {
+  getProTableColumnKey,
+  getProTableColumnProp,
+  resolveProTableRenderText
+} from '../pro-table-utils'
 
 interface Row {
   user: {
@@ -24,5 +28,21 @@ describe('ProTableColumn', () => {
   it('keeps nested columns available for recursive SFC rendering', () => {
     const parent = { key: 'user', children: [column] }
     expect(parent.children.map(getProTableColumnKey)).toEqual(['user-name'])
+  })
+
+  it('transforms text before the value is passed to field and render handlers', () => {
+    const row = { user: { name: 'activity' } }
+    const transformedColumn = {
+      ...column,
+      renderText: ({ value }: { value?: string }) => value?.toUpperCase()
+    }
+    const value = resolveProTableRenderText<Row, string>({
+      row,
+      value: row.user.name,
+      index: 0,
+      column: transformedColumn
+    })
+
+    expect(value).toBe('ACTIVITY')
   })
 })

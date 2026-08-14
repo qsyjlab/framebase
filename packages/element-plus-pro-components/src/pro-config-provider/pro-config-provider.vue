@@ -13,6 +13,7 @@
 <script setup lang="ts">
 import { computed, inject, provide, type CSSProperties } from 'vue'
 import { ElConfigProvider } from 'element-plus'
+import { provideHookConfig, provideDictionaries } from '@framebase/vue'
 import { mergeProConfig, proConfigProviderContextKey } from './pro-config-provider-context'
 import type { ProConfigProviderProps } from './pro-config-provider'
 
@@ -34,6 +35,13 @@ const themeStyle = computed<CSSProperties>(() => {
 })
 
 provide(proConfigProviderContextKey, config)
+// 透传 hooks 配置到 @framebase/vue 的 inject/provide 体系
+provideHookConfig(() => config.value.hooks ?? {})
+// 桥接 dictionaries 到 @framebase/vue 的字典 inject 体系，供 useDictionary 读取
+// 运行时 dictionaries 值为 Record/Map（string 仅用于字段 valueEnum 引用，不会出现在此处）
+provideDictionaries(
+  () => config.value.dictionaries as Record<string, import('@framebase/vue').ValueEnum> | undefined
+)
 </script>
 
 <style>

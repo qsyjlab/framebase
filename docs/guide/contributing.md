@@ -21,16 +21,16 @@ pnpm install
 
 在仓库根目录执行：
 
-| 命令                  | 说明                             |
-| --------------------- | -------------------------------- |
-| `pnpm dev`            | 构建包并启动 playground 示例     |
-| `pnpm docs:dev`       | 启动文档站点（VitePress）        |
-| `pnpm build:packages` | 构建组件库与主题包               |
-| `pnpm build`          | 构建包 + playground              |
-| `pnpm typecheck`      | 类型检查                         |
-| `pnpm lint`           | ESLint 检查                      |
-| `pnpm test`           | 单元测试（Vitest）               |
-| `pnpm verify`         | typecheck + lint + test 全量校验 |
+| 命令                  | 说明                                                   |
+| --------------------- | ------------------------------------------------------ |
+| `pnpm dev`            | 构建包并启动 playground 示例                           |
+| `pnpm docs:dev`       | 启动文档站点（VitePress）                              |
+| `pnpm build:packages` | 构建 core → vue → pro-components / theme（按依赖顺序） |
+| `pnpm build`          | 构建包 + playground                                    |
+| `pnpm typecheck`      | 先构建包，再对全部包与 playground 做类型检查           |
+| `pnpm lint`           | 全部包与 playground 的 ESLint 检查                     |
+| `pnpm test`           | 全部包的单元测试（Vitest）                             |
+| `pnpm verify`         | typecheck + lint + test 全量校验                       |
 
 ### 开发建议
 

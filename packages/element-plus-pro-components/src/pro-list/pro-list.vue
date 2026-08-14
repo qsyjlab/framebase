@@ -113,7 +113,7 @@ import { ElAlert, ElAvatar, ElButton, ElCheckbox, ElPagination, ElSkeleton } fro
 import { ProEmpty } from '../pro-empty'
 import { resolveProCardColumns } from '../pro-card'
 import { useProConfigProvider } from '../pro-config-provider/pro-config-provider-context'
-import { resolveProConfigProviderPopperClass } from '../pro-config-provider/pro-config-provider-utils'
+import { resolveProPagination } from '../shared/pro-pagination'
 import { isProRequestAbort, useProRequest, type ProRequestAction } from '../shared/pro-request'
 import {
   getProListErrorText,
@@ -176,10 +176,6 @@ const wrapperRef = ref<HTMLElement>()
 const layoutWidth = ref(1200)
 const listData = shallowRef<TRecord[]>([])
 const total = ref(0)
-const pageInfo = ref<ProListPageInfo>({
-  current: typeof props.pagination === 'object' ? (props.pagination.current ?? 1) : 1,
-  pageSize: typeof props.pagination === 'object' ? (props.pagination.pageSize ?? 10) : 10
-})
 let resizeObserver: ResizeObserver | undefined
 const {
   selectedKeyList,
@@ -205,6 +201,15 @@ const resolvedLayout = computed(() => props.layout ?? proConfig.value.list?.layo
 const resolvedSize = computed(
   () => props.size ?? proConfig.value.list?.size ?? proConfig.value.size
 )
+const initialPagination = resolveProPagination(props.pagination, proConfig.value.list?.pagination, {
+  defaultPageSizes: [10, 20, 50],
+  small: resolvedSize.value === 'small',
+  dark: proConfig.value.dark
+})
+const pageInfo = ref<ProListPageInfo>({
+  current: initialPagination.current,
+  pageSize: initialPagination.pageSize
+})
 const resolvedBordered = computed(() => props.bordered ?? proConfig.value.list?.bordered ?? true)
 const resolvedEmptyText = computed(
   () => props.emptyText ?? proConfig.value.list?.emptyText ?? '暂无列表数据'
@@ -219,19 +224,13 @@ const requestLifecycle = computed(() => ({
 }))
 const requestError = computed(() => requestState.error.value)
 const resolvedErrorText = computed(() => getProListErrorText(requestError.value, props.errorText))
-const paginationProps = computed(() => {
-  const config = typeof props.pagination === 'object' ? props.pagination : {}
-  return {
-    pageSizes: config.pageSizes ?? [10, 20, 50],
-    layout: Array.isArray(config.layout)
-      ? config.layout.join(',')
-      : (config.layout ?? 'total, sizes, prev, pager, next, jumper'),
-    background: config.background ?? true,
-    small: config.small ?? resolvedSize.value === 'small',
-    popperClass: resolveProConfigProviderPopperClass(proConfig.value.dark, config.popperClass),
-    teleported: config.teleported ?? true
-  }
-})
+const paginationProps = computed(() =>
+  resolveProPagination(props.pagination, proConfig.value.list?.pagination, {
+    defaultPageSizes: [10, 20, 50],
+    small: resolvedSize.value === 'small',
+    dark: proConfig.value.dark
+  })
+)
 const itemsStyle = computed(() => ({
   '--pro-list-columns':
     resolvedLayout.value === 'grid'
@@ -444,7 +443,7 @@ defineExpose(exposed)
 
   &.is-bordered &__item {
     border: 1px solid var(--el-border-color-light);
-    border-radius: var(--el-border-radius-base);
+    border-radius: var(--framebase-radius-lg);
   }
 
   &.is-list.is-split &__item + &__item {

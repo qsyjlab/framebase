@@ -31,8 +31,10 @@
         v-bind="fieldProps"
       />
 
+      <pro-status v-else-if="resolvedValueType.type === 'status' && !empty" v-bind="statusProps" />
+
       <el-tag
-        v-else-if="['tag', 'status'].includes(resolvedValueType.type) && !empty"
+        v-else-if="resolvedValueType.type === 'tag' && !empty"
         :type="enumItem?.type"
         :color="enumItem?.color"
         effect="light"
@@ -75,6 +77,7 @@ import {
 import { ProCheckboxGroup } from '../pro-checkbox-group'
 import { ProRadioGroup } from '../pro-radio-group'
 import { ProSelect } from '../pro-select'
+import { ProStatus, type ProStatusProps, type ProStatusTone } from '../pro-status'
 import { ProUploadList } from '../pro-upload-list'
 import { useProConfigProvider } from '../pro-config-provider/pro-config-provider-context'
 import { resolveProConfigProviderPopperClass } from '../pro-config-provider/pro-config-provider-utils'
@@ -90,6 +93,7 @@ import {
   getProFieldEnumItem,
   isProFieldEmpty,
   proFieldEnumToOptions,
+  resolveProFieldValueEnum,
   resolveProFieldValueType
 } from './pro-field-utils'
 
@@ -145,9 +149,14 @@ const mergedOptionFields = computed<ProOptionFields<TOption>>(() => ({
   ...props.optionFields
 }))
 const empty = computed(() => isProFieldEmpty(props.modelValue))
-const enumItem = computed(() => getProFieldEnumItem(props.valueEnum, props.modelValue))
+const resolvedValueEnum = computed(() =>
+  resolveProFieldValueEnum(props.valueEnum, proConfig.value.dictionaries)
+)
+const enumItem = computed(() => getProFieldEnumItem(resolvedValueEnum.value, props.modelValue))
 const normalizedOptions = computed(() =>
-  props.options.length ? props.options : (proFieldEnumToOptions(props.valueEnum) as TOption[])
+  props.options.length
+    ? props.options
+    : (proFieldEnumToOptions(resolvedValueEnum.value) as TOption[])
 )
 
 const readText = computed(() => {
@@ -163,6 +172,19 @@ const readText = computed(() => {
   return props.formatter
     ? props.formatter(props.modelValue as TValue, renderContext.value)
     : defaultText
+})
+
+const statusProps = computed<ProStatusProps>(() => {
+  const fieldProps = props.fieldProps as Partial<ProStatusProps>
+  const enumTone = enumItem.value?.type || 'default'
+  return {
+    variant: 'tag',
+    effect: 'light',
+    ...fieldProps,
+    text: String(readText.value),
+    tone: fieldProps.tone ?? (enumTone as ProStatusTone),
+    color: fieldProps.color ?? enumItem.value?.color
+  }
 })
 
 const resolvedEmptyText = computed(() => props.emptyText ?? proConfig.value.field?.emptyText ?? '-')
@@ -239,7 +261,7 @@ const renderContext = computed<ProFieldRenderContext<TValue, TOption>>(() => ({
   value: props.modelValue,
   mode: props.mode,
   valueType: resolvedValueType.value,
-  valueEnum: props.valueEnum,
+  valueEnum: resolvedValueEnum.value,
   options: normalizedOptions.value,
   optionFields: mergedOptionFields.value,
   fieldProps: props.fieldProps,
