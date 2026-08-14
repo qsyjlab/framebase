@@ -32,8 +32,10 @@ export type ProCardInstance = ProCardExpose
 
 export type ProStatisticTrend = 'up' | 'down' | 'flat'
 
-export interface ProStatisticCardProps<TValue extends string | number = number>
-  extends Omit<ProCardProps, 'title'> {
+export interface ProStatisticCardProps<TValue extends string | number = number> extends Omit<
+  ProCardProps,
+  'title'
+> {
   title?: string
   value?: TValue
   precision?: number

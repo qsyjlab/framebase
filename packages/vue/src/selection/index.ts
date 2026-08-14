@@ -10,9 +10,7 @@ import { ref, type Ref } from 'vue'
 
 export type SelectionKey = string | number
 export type RowKeyResolver<TRecord> =
-  | string
-  | number
-  | ((record: TRecord, index: number) => SelectionKey | undefined)
+  string | number | ((record: TRecord, index: number) => SelectionKey | undefined)
 
 export interface UseSelectionOptions<TRecord> {
   /** Visible records (reactive). */

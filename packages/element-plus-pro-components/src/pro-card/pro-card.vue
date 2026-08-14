@@ -104,11 +104,11 @@ const resolvedCollapsible = computed(
 const hasHeader = computed(() =>
   Boolean(
     props.title ||
-      props.subtitle ||
-      slots.title ||
-      slots.subtitle ||
-      slots.extra ||
-      resolvedCollapsible.value
+    props.subtitle ||
+    slots.title ||
+    slots.subtitle ||
+    slots.extra ||
+    resolvedCollapsible.value
   )
 )
 const resolvedBodyStyle = computed(() => ({

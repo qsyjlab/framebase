@@ -5,8 +5,7 @@ export type ProOption = object
 export type ProChoiceValue = string | number | boolean
 
 export type ProOptionFieldPath<TOption extends object> =
-  | ProLiteralUnion<Extract<keyof TOption, string>>
-  | readonly ProPathSegment[]
+  ProLiteralUnion<Extract<keyof TOption, string>> | readonly ProPathSegment[]
 
 export interface ProOptionFields<TOption extends object> {
   label: ProOptionFieldPath<TOption>

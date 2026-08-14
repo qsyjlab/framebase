@@ -272,7 +272,12 @@
         <el-table-column prop="name" label="名称" />
         <el-table-column label="操作" width="180">
           <template #default="{ row }">
-            <el-button size="small" link :loading="crud.updating.value" @click="onCrudUpdate(row)">
+            <el-button
+              size="small"
+              link
+              :loading="crud.updating.value"
+              @click="onCrudUpdate(row as CrudUser)"
+            >
               改名
             </el-button>
             <el-button
@@ -280,7 +285,7 @@
               link
               type="danger"
               :loading="crud.removing.value"
-              @click="onCrudRemove(row)"
+              @click="onCrudRemove(row as CrudUser)"
             >
               删除
             </el-button>
@@ -436,7 +441,9 @@
         <el-table-column label="操作" width="160">
           <template #default="{ row }">
             <template v-if="rowEdit.isEditing(row.id)">
-              <el-button size="small" type="primary" @click="onRowSave(row)">保存</el-button>
+              <el-button size="small" type="primary" @click="onRowSave(row as RowEditItem)"
+                >保存</el-button
+              >
               <el-button size="small" @click="rowEdit.stopEdit(row.id)">取消</el-button>
             </template>
             <el-button v-else size="small" @click="rowEdit.startEdit(row.id)">编辑</el-button>

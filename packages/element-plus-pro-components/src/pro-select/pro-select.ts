@@ -12,8 +12,7 @@ export type ProSelectValue = string | number | boolean | Record<string, unknown>
 export type ProSelectParams = object
 
 export type ProSelectModelValue<TValue extends ProSelectValue, TMultiple extends boolean> =
-  | (TMultiple extends true ? TValue[] : TValue)
-  | undefined
+  (TMultiple extends true ? TValue[] : TValue) | undefined
 
 export type ProSelectFieldPath<TOption extends object> = ProOptionFieldPath<TOption>
 

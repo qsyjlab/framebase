@@ -37,8 +37,7 @@ export interface ProStatusMeta {
 }
 
 export type ProStatusValueEnum<TValue extends PropertyKey = PropertyKey> =
-  | Partial<Record<TValue, string | ProStatusMeta>>
-  | Map<TValue, string | ProStatusMeta>
+  Partial<Record<TValue, string | ProStatusMeta>> | Map<TValue, string | ProStatusMeta>
 
 export interface ProStatusRenderContext<TValue extends PropertyKey = PropertyKey> {
   value?: TValue | null

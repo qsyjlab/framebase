@@ -10,8 +10,7 @@ import type {
 
 export type ProDescriptionsBreakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 export type ProDescriptionsResponsiveNumber =
-  | number
-  | Partial<Record<ProDescriptionsBreakpoint, number>>
+  number | Partial<Record<ProDescriptionsBreakpoint, number>>
 
 export interface ProDescriptionsRenderScope<
   TRecord extends object,

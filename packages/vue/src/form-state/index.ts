@@ -45,7 +45,7 @@ export function useFormState<T extends object>(
   const values = reactive(cloneDeep(initial)) as T
   const initialValues = reactive(cloneDeep(initial)) as T
 
-  const isDirty = computed(() => !isEqual(toRaw(values), toRaw(initialValues)))
+  const isDirty = computed(() => !isEqual(values, initialValues))
 
   const dirtyFields = computed(() => {
     const result: Record<string, boolean> = {}

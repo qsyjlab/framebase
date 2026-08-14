@@ -1,6 +1,6 @@
 {
   "name": "@framebase/element-plus-pro-components",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Vue 3 and Element Plus Pro components for forms, tables and data-heavy interfaces.",
   "license": "MIT",
   "author": "qsyjlab",
@@ -60,24 +60,24 @@
     "prepublishOnly": "pnpm run verify"
   },
   "peerDependencies": {
-    "@framebase/vue": "workspace:^",
     "@element-plus/icons-vue": "^2.3.0",
+    "@framebase/vue": "workspace:^",
     "dayjs": "^1.11.0",
     "element-plus": "^2.9.0",
     "lodash-es": "^4.17.0",
     "sortablejs": "^1.15.0",
     "vue": "^3.5.0",
-    "vue-router": "^4.5.0"
+    "vue-router": "^5.0.0"
   },
   "devDependencies": {
+    "@element-plus/icons-vue": "2.3.2",
     "@framebase/core": "workspace:*",
     "@framebase/vue": "workspace:*",
-    "@element-plus/icons-vue": "2.3.1",
-    "dayjs": "1.11.13",
-    "element-plus": "2.9.7",
-    "lodash-es": "4.17.21",
-    "sortablejs": "1.15.0",
-    "vue": "3.5.13",
-    "vue-router": "4.5.0"
+    "dayjs": "1.11.21",
+    "element-plus": "2.14.4",
+    "lodash-es": "4.18.1",
+    "sortablejs": "1.15.7",
+    "vue": "3.5.41",
+    "vue-router": "5.2.0"
   }
 }

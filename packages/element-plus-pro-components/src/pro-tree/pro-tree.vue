@@ -191,7 +191,7 @@ function filterNode(value: string, data: Record<string, unknown>) {
 }
 function handleCheck(
   _: TNode,
-  state: { checkedKeys: Array<string | number>; checkedNodes: TNode[] }
+  state: { checkedKeys: Array<string | number>; checkedNodes: any[] }
 ) {
   emit('update:model-value', state.checkedKeys)
   emit('check', state.checkedNodes, state.checkedKeys)

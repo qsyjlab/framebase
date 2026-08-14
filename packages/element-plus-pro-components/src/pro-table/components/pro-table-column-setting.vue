@@ -184,7 +184,7 @@ function setAllSelectAction(show: boolean) {
   flatColumns.value.forEach(column => emit('visible-change', column.key, show))
 }
 
-function allowDrop(draggingNode: TreeNodeLike, dropNode: TreeNodeLike, type: string) {
+function allowDrop(draggingNode: { parent: unknown }, dropNode: { parent: unknown }, type: string) {
   return type !== 'inner' && draggingNode.parent === dropNode.parent
 }
 

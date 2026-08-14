@@ -14,20 +14,6 @@
         <slot name="headerTitle">{{ headerTitle }}</slot>
       </div>
       <div class="pro-table__actions">
-        <el-input
-          v-if="toolbarOptions.search"
-          v-model="keyword"
-          class="pro-table__keyword"
-          :placeholder="keywordSearchOptions.placeholder"
-          :clearable="keywordSearchOptions.clearable"
-          :style="{ width: keywordSearchOptions.width }"
-          @keyup.enter="submitKeyword"
-          @clear="submitKeyword"
-        >
-          <template #prefix
-            ><el-icon><Search /></el-icon
-          ></template>
-        </el-input>
         <slot
           name="toolbar"
           :action="tableAction"
@@ -63,16 +49,6 @@
               </el-dropdown-menu>
             </template>
           </el-dropdown>
-        </el-tooltip>
-        <el-tooltip v-if="toolbarOptions.fullscreen" content="全屏" placement="top">
-          <button
-            type="button"
-            class="pro-table__tool-icon"
-            aria-label="全屏"
-            @click="tableAction.fullScreen"
-          >
-            <el-icon><FullScreen /></el-icon>
-          </button>
         </el-tooltip>
         <el-popover
           v-if="toolbarOptions.setting"
@@ -249,7 +225,6 @@
   "
 >
 import { computed, useSlots } from 'vue'
-import { FullScreen, Search } from '@element-plus/icons-vue'
 import ProEmpty from '../pro-empty/pro-empty.vue'
 import { useProConfigProvider } from '../pro-config-provider/pro-config-provider-context'
 import { resolveProConfigProviderPopperClass } from '../pro-config-provider/pro-config-provider-utils'
@@ -309,8 +284,6 @@ const {
   requestError,
   paginationProps,
   refresh,
-  keyword,
-  setKeyword,
   handleCurrentChange,
   handleSizeChange,
   columnStateMap,
@@ -345,16 +318,6 @@ const resolvedShowToolbar = computed(
     props.toolbar !== false &&
     (showToolbar.value || Boolean(slots.headerTitle) || Boolean(slots.toolbar))
 )
-const keywordSearchOptions = computed(() => {
-  const search = toolbarOptions.value.search
-  const config = search && typeof search === 'object' ? search : {}
-  const width = config.width ?? 200
-  return {
-    placeholder: config.placeholder ?? '请输入关键词',
-    clearable: config.clearable ?? true,
-    width: typeof width === 'number' ? `${width}px` : width
-  }
-})
 const resolvedBorder = computed(() => props.border ?? proConfig.value.table?.border ?? true)
 const resolvedAlwaysShowAlert = computed(
   () => resolvedRowSelection.value.alwaysShowAlert ?? props.alwaysShowAlert
@@ -371,7 +334,6 @@ const resolvedRequestErrorText = computed(() => {
 const hasQueryState = computed(
   () =>
     Object.keys(props.params ?? {}).length > 0 ||
-    Boolean(keyword.value) ||
     Boolean(store.sorter.value) ||
     Object.values(store.filters.value).some(values => values.length > 0)
 )
@@ -397,14 +359,6 @@ async function handleRetryRequest() {
   }
 }
 
-async function submitKeyword() {
-  try {
-    await setKeyword(keyword.value)
-  } catch {
-    return
-  }
-}
-
 defineExpose(store.exposed)
 </script>
 
@@ -419,11 +373,6 @@ defineExpose(store.exposed)
     height: 100%;
     min-height: 0;
     flex: 1 1 auto;
-  }
-
-  &:fullscreen {
-    padding: 16px;
-    background: var(--el-bg-color);
   }
 
   &.is-drag-sort:not(.has-drag-handle) {
@@ -537,10 +486,6 @@ defineExpose(store.exposed)
     display: inline-flex;
     align-items: center;
     gap: 8px;
-  }
-
-  &__keyword {
-    flex: none;
   }
 
   &__request-error {

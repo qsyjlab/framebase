@@ -47,8 +47,9 @@ export interface FormFieldDependencyContext<TModel extends FormModel = FormModel
  * typically produce already-valid programmatic values rather than raw user
  * input.
  */
-export interface FormFieldEffectContext<TModel extends FormModel = FormModel>
-  extends FormFieldDependencyContext<TModel> {
+export interface FormFieldEffectContext<
+  TModel extends FormModel = FormModel
+> extends FormFieldDependencyContext<TModel> {
   /** Previous value of the field itself (undefined on the immediate run). */
   previousValue: unknown
   /** Previous dependency values, aligned with `dependencyValues` (undefined on the immediate run). */
@@ -81,8 +82,7 @@ export interface FormFieldError<TModel extends FormModel = FormModel> {
 }
 
 export type FormFieldErrorsInput<TModel extends FormModel = FormModel> =
-  | FormFieldError<TModel>[]
-  | Record<string, string | string[]>
+  FormFieldError<TModel>[] | Record<string, string | string[]>
 
 export interface GetFormValuesOptions {
   transform?: boolean
@@ -103,9 +103,7 @@ export type FormContextResolver<TModel extends FormModel, TValue> = FormCallback
 >
 
 export type FormDynamicValue<TModel extends FormModel, TValue> =
-  | TValue
-  | FormLegacyResolver<TModel, TValue>
-  | FormContextResolver<TModel, TValue>
+  TValue | FormLegacyResolver<TModel, TValue> | FormContextResolver<TModel, TValue>
 
 export interface FormSchema<
   TModel extends FormModel = FormModel,
@@ -181,8 +179,9 @@ export type ProFormSchema<
 export type FormFieldProp = string | string[]
 export type FormValidationCallback = (isValid: boolean, invalidFields?: unknown) => void
 
-export interface FormMethodsType<TModel extends FormModel = FormModel>
-  extends ProRequestControl<TModel> {
+export interface FormMethodsType<
+  TModel extends FormModel = FormModel
+> extends ProRequestControl<TModel> {
   submit: () => Promise<boolean>
   reset: () => void
   validate: (handle?: (model: TModel) => void) => Promise<boolean>
@@ -211,8 +210,10 @@ export interface FormMethodsType<TModel extends FormModel = FormModel>
   markClean: () => void
 }
 
-export interface ProFormProps<TModel extends FormModel = FormModel>
-  extends Omit<Partial<EpFormProps>, 'inline' | 'model'> {
+export interface ProFormProps<TModel extends FormModel = FormModel> extends Omit<
+  Partial<EpFormProps>,
+  'inline' | 'model'
+> {
   fields?: FormSchema<TModel>[]
   model?: TModel
   loading?: boolean

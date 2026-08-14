@@ -54,10 +54,10 @@
     "prepublishOnly": "pnpm run verify"
   },
   "dependencies": {
-    "lodash-es": "^4.17.21"
+    "lodash-es": "^4.18.1"
   },
   "devDependencies": {
     "@types/lodash-es": "^4.17.12",
-    "vue-tsc": "2.2.0"
+    "vue-tsc": "3.3.9"
   }
 }

@@ -36,7 +36,6 @@ export interface ProTableStoreEmitMap<TRecord extends object> {
   'editable-change': [data: TRecord[]]
   'drag-sort-end': [event: ProTableDragSortEnd<TRecord>]
   'size-change': [size: 'small' | 'default' | 'large']
-  'keyword-change': [keyword: string]
 }
 
 type ProTableStoreEmit<TRecord extends object> = <
@@ -170,10 +169,8 @@ export function useProTableStore<
       Boolean(props.headerTitle) ||
       Boolean(
         columnsState.toolbarOptions.value.reload ||
-          columnsState.toolbarOptions.value.density ||
-          columnsState.toolbarOptions.value.setting ||
-          columnsState.toolbarOptions.value.fullscreen ||
-          columnsState.toolbarOptions.value.search
+        columnsState.toolbarOptions.value.density ||
+        columnsState.toolbarOptions.value.setting
       )
   )
   const resolvedCustomRenderAfter = computed(
@@ -196,22 +193,10 @@ export function useProTableStore<
     void nextTick(() => tableRef.value?.doLayout())
   }
 
-  async function setKeyword(keyword: string, reload = true) {
-    emit('keyword-change', keyword)
-    return dataState.setKeyword(keyword, reload)
-  }
-
   async function reset() {
     clearEditing()
     selectionState.clearSelection()
-    emit('keyword-change', '')
     return dataState.resetTableState()
-  }
-
-  async function fullScreen() {
-    if (typeof document === 'undefined' || !wrapperRef.value || !document.fullscreenEnabled) return
-    if (document.fullscreenElement === wrapperRef.value) await document.exitFullscreen()
-    else await wrapperRef.value.requestFullscreen()
   }
 
   async function scrollTo(target: import('../pro-table').ProTableScrollTarget) {
@@ -243,7 +228,7 @@ export function useProTableStore<
 
   async function handleTableSortChange(payload: {
     column?: { columnKey?: string; property?: string }
-    prop?: string
+    prop?: string | null
     order?: 'ascending' | 'descending' | null
   }) {
     const key = payload.column?.columnKey
@@ -298,13 +283,10 @@ export function useProTableStore<
     retryRequest: dataState.retryRequest,
     cancelRequest: dataState.cancelRequest,
     getSelectedKeys: () => [...selectionState.selectedKeyList.value],
-    getKeyword: () => dataState.keyword.value,
     reload: dataState.reload,
     refresh: dataState.refresh,
     reset,
-    fullScreen,
     scrollTo,
-    setKeyword,
     setPageInfo: dataState.setPageInfo,
     setSorter: dataState.setSorter,
     setFilters: dataState.setFilters,

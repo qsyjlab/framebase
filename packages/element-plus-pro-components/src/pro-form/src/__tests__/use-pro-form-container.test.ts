@@ -43,7 +43,7 @@ function createForm(
     load: vi.fn(async () => ({ name: 'loaded' })),
     getLoading: vi.fn(() => false),
     getRequestLifecycle: vi.fn(() => ({
-      phase: 'idle',
+      phase: 'idle' as const,
       loading: false,
       initialLoading: false,
       refreshing: false
