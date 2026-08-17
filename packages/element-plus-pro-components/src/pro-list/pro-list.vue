@@ -135,6 +135,8 @@ defineOptions({ name: 'ProList' })
 const props = withDefaults(defineProps<ProListProps<TRecord, TQuery, TResponse>>(), {
   data: () => [],
   params: () => ({}) as TQuery,
+  // 显式 default: undefined，避免 Boolean prop 未传时被解析为 false 覆盖内部请求 loading
+  loading: undefined,
   autoRequest: true,
   pagination: true,
   rowKey: 'id',

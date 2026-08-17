@@ -1,5 +1,12 @@
 # @framebase/element-plus-pro-components
 
+## 1.1.1
+
+### Patch Changes
+
+- Bug 修复
+  - 修复 ProTable / ProList 未传 `loading` 时内部请求 loading 失效的问题：Boolean prop 未传时被 Vue 解析为 `false`，导致 `props.loading ?? requestState.loading` 永远取到 `false`，请求期间不显示 `.el-loading-mask`。现通过 `withDefaults` 显式声明 `loading: undefined`（等价于 `loading: { type: Boolean, default: undefined }`），未传时内部请求 loading 正常生效，显式传入时仍可外部接管
+
 ## 1.1.0
 
 ### Minor Changes

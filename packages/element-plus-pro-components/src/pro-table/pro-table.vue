@@ -243,6 +243,8 @@ defineOptions({
 const props = withDefaults(defineProps<ProTableProps<TRecord, TQuery, TResponse>>(), {
   data: () => [],
   params: () => ({}) as TQuery,
+  // 显式 default: undefined，避免 Boolean prop 未传时被解析为 false 覆盖内部请求 loading
+  loading: undefined,
   pagination: true,
   autoRequest: true,
   rowKey: 'id',
