@@ -40,6 +40,31 @@
       />
     </DemoBlock>
 
+    <DemoBlock
+      title="ProTable 展开行 + 省略号 + 边框"
+      description="展开图标与单元格同行、show-overflow-tooltip 在 ProField 场景下生效、最后一行保留底边框。"
+    >
+      <ProTable
+        :columns="expandColumns"
+        :data="longRows"
+        row-key="id"
+        header-title="内容明细"
+        type="expand"
+        :pagination="false"
+        :options="{ setting: true }"
+      >
+        <template #expand="{ data }">
+          <div class="expand-row">
+            <strong>描述：</strong>{{ data.description }}
+            <div class="expand-row__meta">
+              <span>创建人：{{ data.owner }}</span>
+              <span>分类：{{ data.category }}</span>
+            </div>
+          </div>
+        </template>
+      </ProTable>
+    </DemoBlock>
+
     <DemoBlock title="ProEditableTable" description="行编辑、新增、校验、保存和删除。">
       <ProEditableTable
         v-model="editableRows"
@@ -88,6 +113,12 @@ interface Row {
   amount: number
   status: 'pending' | 'processing' | 'completed'
 }
+interface LongRow extends Row {
+  category: string
+  description: string
+  summary: string
+  tags: string
+}
 interface RowQuery {
   keyword?: string
 }
@@ -98,6 +129,57 @@ const rows: Row[] = Array.from({ length: 12 }, (_, index) => ({
   amount: 12800 + index * 1350,
   status: ['pending', 'processing', 'completed'][index % 3] as Row['status']
 }))
+const longRows: LongRow[] = Array.from({ length: 4 }, (_, index) => ({
+  id: index + 1,
+  name: `PRJ-${20240000 + index * 7}-${['平台基础设施重构', '用户增长投放计划', '财务自动化合规方案', '数据中台指标治理'][index]!}`,
+  owner: ['张伟-平台架构组', '李娜-用户增长部', '王强-财务中心', '赵敏-数据智能'][index % 4]!,
+  amount: 128000 + index * 13500,
+  status: ['pending', 'processing', 'completed', 'processing'][index % 4] as Row['status'],
+  category: ['基础设施', '营销投放', '财务合规', '数据治理'][index]!,
+  description:
+    '本项目覆盖从需求评审、架构设计、编码测试到正式发布的完整生命周期；跨团队协作涉及架构组、前端、后端、QA、产品、设计、运维等多个角色，交付物包含设计文档、API 契约、测试报告、上线清单、灰度观察计划及应急预案。',
+  summary:
+    '本项目以季度 OKR 为牵引，以季度末作为交付里程碑，验收要点包含：性能达标率、覆盖率、线上异常率、NPS 满意度、ROI 指标五部分。',
+  tags: `高优先级,跨团队,季度交付,OKR-${index + 1},里程碑${index + 1},合规审查${index % 2 === 0 ? ',双周汇报' : ''}`
+}))
+const expandColumns: ProTableColumns<LongRow> = [
+  {
+    key: 'name',
+    dataIndex: 'name',
+    title: '项目标识',
+    minWidth: 220,
+    showOverflowTooltip: true
+  },
+  {
+    key: 'owner',
+    dataIndex: 'owner',
+    title: '归属团队',
+    width: 180,
+    showOverflowTooltip: true,
+    valueType: 'text'
+  },
+  {
+    key: 'category',
+    dataIndex: 'category',
+    title: '分类',
+    width: 100
+  },
+  {
+    key: 'tags',
+    dataIndex: 'tags',
+    title: '标签（逗号分隔）',
+    minWidth: 200,
+    showOverflowTooltip: true
+  },
+  {
+    key: 'summary',
+    dataIndex: 'summary',
+    title: '交付摘要',
+    minWidth: 260,
+    showOverflowTooltip: true,
+    valueType: 'text'
+  }
+]
 const selectedKeys = ref<Array<string | number>>([])
 const rowSelection: ProTableRowSelection<Row> = {
   type: 'checkbox',
@@ -209,6 +291,19 @@ function onDragEnd(event: ProDragSortTableEnd<Row>) {
 
 <style scoped>
 .table-summary {
+  color: var(--el-text-color-secondary);
+  font-size: 13px;
+}
+
+.expand-row {
+  padding: 8px 16px;
+  color: var(--el-text-color-regular);
+  line-height: 1.6;
+}
+.expand-row__meta {
+  display: flex;
+  gap: 24px;
+  margin-top: 8px;
   color: var(--el-text-color-secondary);
   font-size: 13px;
 }

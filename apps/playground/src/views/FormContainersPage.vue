@@ -2,17 +2,19 @@
   <div class="demo-stack">
     <DemoBlock
       title="ProModalForm / ProDrawerForm"
-      description="统一加载、提交、脏数据拦截和关闭流程。"
+      description="统一加载、提交、脏数据拦截和关闭流程（修改后关闭触发 Element Plus ElMessageBox 确认）。"
     >
       <div class="button-row">
         <el-button type="primary" @click="modalVisible = true">打开 Modal 表单</el-button>
-        <el-button @click="drawerVisible = true">打开 Drawer 表单</el-button>
+        <el-button @click="drawerVisible = true">打开 Drawer 表单（Padding 20px 修复）</el-button>
+        <el-button @click="bareDrawerVisible = true">打开 el-drawer（纯组件对照）</el-button>
       </div>
       <ProModalForm
         v-model="modalVisible"
         title="新建项目"
         :fields="containerFields"
         :initial-values="initialValues"
+        :warn-when-dirty="true"
         :on-finish="finishContainer"
       />
       <ProDrawerForm
@@ -20,8 +22,36 @@
         title="编辑项目"
         :fields="containerFields"
         :initial-values="initialValues"
+        :warn-when-dirty="true"
         :on-finish="finishContainer"
       />
+      <el-drawer v-model="bareDrawerVisible" title="Drawer 原生对照" size="540px">
+        <div class="bare-drawer-body">
+          <p>
+            theme 修复后 header / body / footer 默认 padding 均为 20px（与 Element Plus 默认一致）。
+          </p>
+          <el-form :model="initialValues" label-width="90px">
+            <el-form-item label="项目名称">
+              <el-input v-model="initialValues.name" />
+            </el-form-item>
+            <el-form-item label="负责人">
+              <el-input v-model="initialValues.owner" />
+            </el-form-item>
+            <el-form-item label="数量">
+              <el-input-number v-model="inputNumber" :min="0" />
+              <span class="hint-note">
+                InputNumber 默认宽度由内容决定（width: auto），不再固定 120px。
+              </span>
+            </el-form-item>
+          </el-form>
+        </div>
+        <template #footer>
+          <div style="text-align: right">
+            <el-button @click="bareDrawerVisible = false">取消</el-button>
+            <el-button type="primary" @click="bareDrawerVisible = false">确认</el-button>
+          </div>
+        </template>
+      </el-drawer>
     </DemoBlock>
 
     <DemoBlock title="ProStepsForm" description="分步校验、值合并、上一步和最终提交。">
@@ -50,6 +80,8 @@ interface ProjectForm {
 }
 const modalVisible = ref(false)
 const drawerVisible = ref(false)
+const bareDrawerVisible = ref(false)
+const inputNumber = ref(3)
 const initialValues: ProjectForm = {
   name: 'Framebase',
   owner: '平台团队',
@@ -96,3 +128,11 @@ async function finishSteps(values: ProjectForm) {
   return values
 }
 </script>
+
+<style scoped>
+.hint-note {
+  margin-left: 12px;
+  color: var(--el-text-color-secondary);
+  font-size: 13px;
+}
+</style>

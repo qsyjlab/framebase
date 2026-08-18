@@ -1,6 +1,6 @@
 {
   "name": "@framebase/element-plus-theme",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Customizable Element Plus tokens and component theme for light and dark mode.",
   "license": "MIT",
   "author": "qsyjlab",
@@ -49,7 +49,7 @@
     "watch:tokens": "sass src/tokens.scss dist/tokens.css --no-source-map --watch",
     "watch:dark": "sass src/dark.scss dist/dark.css --no-source-map --watch",
     "watch:components": "sass src/components/index.scss dist/components.css --no-source-map --watch",
-    "dev": "pnpm run clean && pnpm run build && concurrently -n style,tokens,dark,components \"pnpm run watch:style\" \"pnpm run watch:tokens\" \"pnpm run watch:dark\" \"pnpm run watch:components\"",
+    "dev": "pnpm run build && concurrently -n style,tokens,dark,components \"pnpm run watch:style\" \"pnpm run watch:tokens\" \"pnpm run watch:dark\" \"pnpm run watch:components\"",
     "check": "sass src/index.scss .cache/style.css --no-source-map && rimraf .cache",
     "typecheck": "pnpm run check",
     "lint": "pnpm run check",

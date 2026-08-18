@@ -1,5 +1,7 @@
 <template>
-  <div :class="['pro-table-cell', { 'pro-table-drag-handle': dragHandle }]">
+  <div
+    :class="['pro-table-cell', { 'is-editing': isEditing, 'pro-table-drag-handle': dragHandle }]"
+  >
     <ProTableIcon v-if="dragHandle" class="pro-table-drag-handle__icon" name="holder" />
     <div class="pro-table-cell__content">
       <pro-table-render-content v-if="slot" :content="slotContent" />
@@ -151,20 +153,41 @@ async function copyValue() {
 </script>
 
 <style scoped lang="scss">
+// inline-flex 保证与展开图标等同级行内元素同行展示，
+// 并让 .cell.el-tooltip（show-overflow-tooltip）的 white-space: nowrap 正常继承生效
 .pro-table-cell {
-  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  min-width: 0;
+  vertical-align: middle;
+
+  // 编辑态恢复占满列宽，编辑控件不受省略号链路影响
+  &.is-editing {
+    display: block;
+  }
 }
 
 .pro-table-cell__content {
   min-width: 0;
   flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .pro-table-cell__read {
   display: inline-flex;
   max-width: 100%;
+  min-width: 0;
   align-items: center;
   gap: 6px;
+  overflow: hidden;
+
+  :deep(.pro-field) {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 .pro-table-cell__copy {

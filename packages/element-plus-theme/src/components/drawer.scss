@@ -1,4 +1,6 @@
 .el-drawer {
-  // drawer 默认无主区域 padding，与 dialog 行为对齐
-  --el-drawer-padding-primary: var(--el-dialog-padding-primary, 0px);
+  // 保持 Element Plus 默认内边距（20px）。
+  // 注意：--el-dialog-padding-primary 仅在 .el-dialog 内部定义，
+  // drawer 中引用该变量不会命中，fallback 必须给 20px 而非 0px。
+  --el-drawer-padding-primary: var(--el-dialog-padding-primary, 20px);
 }

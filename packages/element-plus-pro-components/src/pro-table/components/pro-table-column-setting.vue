@@ -232,10 +232,12 @@ function handleNodeDrop(_groupKey: string, dropNode: TreeNodeLike) {
 
   :deep(.el-tree) {
     background: transparent;
+    // 同步 drag 指示线的高度计算基准，必须与下面 __content height 一致
+    --el-tree-node-content-height: 24px;
   }
 
   :deep(.el-tree-node__content) {
-    height: 24px;
+    height: var(--el-tree-node-content-height);
     border-radius: var(--framebase-radius-sm);
   }
 

@@ -35,6 +35,6 @@ export function resolveProCardColumns(
 
 export function normalizeProCardSpacing(value: number | string | boolean | undefined) {
   if (value === false) return '0px'
-  if (value === true || value === undefined) return '20px'
+  if (value === true || value === undefined) return '24px'
   return typeof value === 'number' ? `${value}px` : value
 }

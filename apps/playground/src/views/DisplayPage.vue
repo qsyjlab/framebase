@@ -35,21 +35,43 @@
           :loading="loading"
         />
       </div>
-      <ProCard
-        title="交付阶段"
-        subtitle="响应式网格与折叠"
-        collapsible
-        header-bordered
-        :columns="3"
-        :loading="loading"
-        class="delivery-card"
-      >
-        <div v-for="item in stages" :key="item.name" class="stage-item">
-          <span>{{ item.name }}</span
-          ><strong>{{ item.value }}</strong
-          ><el-progress :percentage="item.progress" :show-text="false" />
-        </div>
-      </ProCard>
+      <div class="card-grid">
+        <ProCard
+          title="交付阶段"
+          subtitle="响应式网格与折叠（默认 headerBordered）"
+          collapsible
+          :columns="3"
+          :loading="loading"
+          class="delivery-card"
+        >
+          <template #extra>
+            <el-button size="default" link>查看全部</el-button>
+            <el-button size="default" type="primary">新建阶段</el-button>
+          </template>
+          <div v-for="item in stages" :key="item.name" class="stage-item">
+            <span>{{ item.name }}</span
+            ><strong>{{ item.value }}</strong
+            ><el-progress :percentage="item.progress" :show-text="false" />
+          </div>
+        </ProCard>
+
+        <ProCard
+          title="交付阶段（无边框分隔线）"
+          :subtitle="'header-bordered=false 场景：header 与 body 视觉融合'"
+          :header-bordered="false"
+          :columns="3"
+          class="delivery-card"
+        >
+          <template #extra>
+            <el-tag size="default" type="info">Header-Bordered: false</el-tag>
+          </template>
+          <div v-for="item in stages" :key="item.name" class="stage-item">
+            <span>{{ item.name }}</span
+            ><strong>{{ item.value }}</strong
+            ><el-progress :percentage="item.progress" :show-text="false" />
+          </div>
+        </ProCard>
+      </div>
     </DemoBlock>
 
     <DemoBlock title="ProDescriptions" description="字段类型、状态映射、复制与分组展示。">
@@ -153,8 +175,14 @@ function notify(message: string) {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
-.delivery-card {
+.card-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   margin-top: 14px;
+}
+.delivery-card {
+  margin-top: 0;
 }
 .stage-item {
   display: grid;
@@ -168,6 +196,9 @@ function notify(message: string) {
 }
 @media (max-width: 800px) {
   .stat-grid {
+    grid-template-columns: 1fr;
+  }
+  .card-grid {
     grid-template-columns: 1fr;
   }
 }

@@ -1,5 +1,6 @@
 import { onBeforeUnmount, onMounted, type Ref } from 'vue'
 import { onBeforeRouteLeave } from 'vue-router'
+import { epConfirm } from '../../shared/ep-confirm'
 import type { FormMethodsType, FormModel } from './types/form'
 
 export interface UseProFormDirtyGuardOptions {
@@ -17,7 +18,8 @@ export function useProFormDirtyGuard<TModel extends FormModel>(
 
   async function canLeave() {
     if (options.enabled?.() === false || !formRef.value?.isDirty()) return true
-    return options.confirm ? options.confirm(message) : window.confirm(message)
+    if (options.confirm) return options.confirm(message)
+    return epConfirm(message, { confirmButtonText: '确认离开' })
   }
 
   function handleBeforeUnload(event: BeforeUnloadEvent) {

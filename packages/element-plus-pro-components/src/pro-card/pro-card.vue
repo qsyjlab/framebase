@@ -69,7 +69,7 @@ const props = withDefaults(defineProps<ProCardProps<TMeta>>(), {
   loading: false,
   collapsed: undefined,
   defaultCollapsed: false,
-  headerBordered: false,
+  headerBordered: true,
   split: false,
   direction: 'vertical',
   columns: 1,
@@ -161,33 +161,39 @@ defineExpose(exposed)
 
   &__header {
     display: flex;
-    min-height: 52px;
+    min-height: 56px;
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    padding: 10px 20px;
+    padding: 0 24px;
   }
 
   &.is-header-bordered &__header {
-    border-bottom: 1px solid var(--el-border-color-lighter);
+    border-bottom: 1px solid var(--el-border-color-light);
   }
 
   &__heading {
+    display: flex;
+    flex-direction: column;
     min-width: 0;
+    line-height: 1.4;
   }
 
   &__title {
     overflow: hidden;
-    font-size: var(--el-font-size-medium);
+    font-size: 16px;
     font-weight: 600;
+    line-height: 1.4;
+    color: var(--el-text-color-primary);
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
   &__subtitle {
-    margin-top: 3px;
+    margin-top: 4px;
     color: var(--el-text-color-secondary);
-    font-size: var(--el-font-size-small);
+    font-size: 14px;
+    line-height: 1.4;
   }
 
   &__extra {

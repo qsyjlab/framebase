@@ -27,15 +27,10 @@
     border-bottom: 1px solid var(--framebase-table-border-color);
   }
 
-  // 行 hover 过渡
+  // 行分隔线 + hover 过渡
   .el-table__body tr > td.el-table__cell {
     transition: background-color 0.15s ease;
     border-bottom: 1px solid var(--framebase-table-border-color);
-  }
-
-  // 最后一行不显示底边框（外层圆角包边）
-  .el-table__body tr:last-child > td.el-table__cell {
-    border-bottom: 0;
   }
 
   // 表尾

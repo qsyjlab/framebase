@@ -1,5 +1,6 @@
 import { computed, nextTick, ref, type Ref } from 'vue'
 import { cloneDeep } from 'lodash-es'
+import { epConfirm } from '../../shared/ep-confirm'
 import type { FormMethodsType, FormModel } from './types/form'
 import type { ProFormContainerBehavior, ProFormContainerOpenOptions } from './pro-form-container'
 import { useProForm } from './use-pro-form'
@@ -112,7 +113,7 @@ export function useProFormContainer<TModel extends FormModel, TResult = unknown>
     }
     const message = behavior.dirtyConfirmMessage ?? '表单存在未保存的修改，确认关闭吗？'
     if (behavior.confirmDirtyClose) return behavior.confirmDirtyClose(message)
-    return typeof window === 'undefined' ? false : window.confirm(message)
+    return epConfirm(message, { confirmButtonText: '确认关闭' })
   }
 
   return {

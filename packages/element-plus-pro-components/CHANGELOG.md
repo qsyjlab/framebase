@@ -1,5 +1,16 @@
 # @framebase/element-plus-pro-components
 
+## 1.1.2
+
+### Patch Changes
+
+- Bug 修复
+  - **ProTable / ProList 省略号与展开行布局**：`.pro-table-cell` 由块级 div 改为 `inline-flex`，修复展开行按钮与单元格内容被迫分行、以及 ProField 包装后 `showOverflowTooltip` 不显示省略号的问题（新增 ellipsis 透传链并对编辑态切换回 block 占满列宽）
+  - **ProTable 列设置拖拽指示线偏移**：列设置面板的 `<el-tree draggable>` 默认 `--el-tree-node-content-height: 26px`，但覆盖的 `__content height` 是 24px，导致拖拽线向上偏移「跑到上一行中间」。现把变量与内容高度统一为 24px
+  - **ProCard 标题对齐 Ant Design 风格**：`headerBordered` 默认改为 `true`；`__header` 最小高度 52→56px、padding 10px 20px→0 24px；`__title` 字号 medium(14px)→16px、加 `line-height:1.4`；subtitle 字号 12px→14px、margin-top 3→4px；分隔线颜色 `lighter`→`light`；body padding 默认 20→24px；heading 改为 flex column 保证主副标题独立行
+  - **ProForm 脏表单关闭确认替换原生 confirm**：`use-pro-form-container` 与 `use-pro-form-dirty-guard` 的脏表单关闭二次确认 fallback 由浏览器原生 `window.confirm` 改为 `ElMessageBox.confirm`，统一 Element Plus 视觉风格；新增 `src/shared/ep-confirm.ts` 用 dynamic import + 可替换 impl 避免 vitest 环境 element-plus CSS sideEffects 报错
+  - **ProTableColumns / ProTableInstance 泛型默认值**：`ProTableColumns<TRecord = Record<string, unknown>>` / `ProTableInstance<TRecord = Record<string, unknown>>` 补齐默认泛型参数，直接声明类型不传泛型不再报错
+
 ## 1.1.1
 
 ### Patch Changes

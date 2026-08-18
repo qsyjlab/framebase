@@ -138,7 +138,8 @@ export interface ProTableColumn<TRecord extends object, TValue = unknown> extend
   children?: ProTableColumn<TRecord>[]
 }
 
-export type ProTableColumns<TRecord extends object> = ProTableColumn<TRecord>[]
+export type ProTableColumns<TRecord extends object = Record<string, unknown>> =
+  ProTableColumn<TRecord>[]
 
 export interface ProTablePagination extends Partial<ProTablePageInfo> {
   total?: number
@@ -334,4 +335,5 @@ export interface ProTableExpose<TRecord extends object> extends ProRequestContro
   }
 }
 
-export type ProTableInstance<TRecord extends object> = ProTableExpose<TRecord>
+export type ProTableInstance<TRecord extends object = Record<string, unknown>> =
+  ProTableExpose<TRecord>
