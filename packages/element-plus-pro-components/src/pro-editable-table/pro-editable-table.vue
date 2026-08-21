@@ -68,6 +68,7 @@ const resolvedTableProps = computed(() => ({
   ...props.tableProps,
   loading: props.loading ?? props.tableProps?.loading,
   checkable: props.checkable ?? props.tableProps?.checkable,
+  rowSelection: props.rowSelection ?? props.tableProps?.rowSelection,
   reserveSelection: props.reserveSelection ?? props.tableProps?.reserveSelection,
   selectedKeys: props.selectedKeys ?? props.tableProps?.selectedKeys,
   cacheSelectedData: props.cacheSelectedData ?? props.tableProps?.cacheSelectedData,

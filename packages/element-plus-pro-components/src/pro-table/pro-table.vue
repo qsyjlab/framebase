@@ -245,6 +245,8 @@ const props = withDefaults(defineProps<ProTableProps<TRecord, TQuery, TResponse>
   params: () => ({}) as TQuery,
   // 显式 default: undefined，避免 Boolean prop 未传时被解析为 false 覆盖内部请求 loading
   loading: undefined,
+  // 同上：rowSelection 含 Boolean 类型，未传时需保持 undefined，否则 checkable 会被 enabled 判断短路
+  rowSelection: undefined,
   pagination: true,
   autoRequest: true,
   rowKey: 'id',

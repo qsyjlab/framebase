@@ -12,6 +12,7 @@ export type ProEditableTableTableProps<TRecord extends object> = Pick<
   ProTableProps<TRecord, Record<string, never>>,
   | 'loading'
   | 'checkable'
+  | 'rowSelection'
   | 'reserveSelection'
   | 'selectedKeys'
   | 'cacheSelectedData'

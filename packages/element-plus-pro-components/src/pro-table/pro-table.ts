@@ -254,8 +254,15 @@ export interface ProTableProps<
   requestRetryDelay?: ProRequestExecuteOptions['retryDelay']
   loading?: boolean
   rowKey?: ProTableRowKey<TRecord>
+  /**
+   * @deprecated 请使用 `rowSelection` 代替（`true` 即等价于开启默认勾选列），下个大版本将移除
+   */
   checkable?: boolean
-  rowSelection?: false | ProTableRowSelection<TRecord>
+  /**
+   * 行选择配置：`true` 开启默认勾选列；对象形式进行完整配置（选中类型、回调、列宽等）；
+   * `false` 显式关闭（优先级最高，会覆盖 checkable）
+   */
+  rowSelection?: boolean | ProTableRowSelection<TRecord>
   reserveSelection?: boolean
   selectedKeys?: Array<string | number>
   cacheSelectedData?: TRecord[]
