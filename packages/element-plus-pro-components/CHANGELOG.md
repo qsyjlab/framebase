@@ -1,5 +1,16 @@
 # @framebase/element-plus-pro-components
 
+## 1.1.3
+
+### Patch Changes
+
+- Bug 修复
+  - **ProTable `checkable` 失效**：`rowSelection` prop 类型含 `Boolean` 且未写 `default`，未传时被 Vue 的 Boolean 转换规则解析为 `false` 而非 `undefined`，导致内部 `enabled` 判断中 `rowSelection !== false` 短路，仅传 `checkable` 时选中列永远不渲染。现通过 `withDefaults` 显式声明 `rowSelection: undefined` 修复（与 1.1.1 的 `loading` 修复同源）
+- API 优化
+  - **行选择入口统一**：`rowSelection` 类型由 `false | ProTableRowSelection` 拓宽为 `boolean | ProTableRowSelection`，`true` 即开启默认勾选列，对齐 `pagination` 的统一模式；优先级为 `rowSelection: false`（显式关闭）> `rowSelection: true / {...}` > `checkable`
+  - `checkable` 标记 `@deprecated`（仍可用，下个大版本移除）
+  - ProEditableTable 的 `tableProps` 透传补齐 `rowSelection`
+
 ## 1.1.2
 
 ### Patch Changes
