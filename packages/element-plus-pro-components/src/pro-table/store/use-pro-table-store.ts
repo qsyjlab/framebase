@@ -120,7 +120,8 @@ export function useProTableStore<
       reserveSelection: config.reserveSelection ?? props.reserveSelection ?? false,
       columnTitle: config.columnTitle ?? '',
       columnWidth: config.columnWidth ?? 44,
-      fixed: config.fixed,
+      // 默认固定在列首：避免数据列设置 fixed: 'left' 后覆盖勾选列；显式传 false 可取消固定
+      fixed: config.fixed ?? 'left',
       align: config.align ?? 'center'
     }
   })
@@ -273,6 +274,40 @@ export function useProTableStore<
 
   const exposed: ProTableExpose<TRecord> = {
     getTable: () => tableRef.value,
+    // --- 响应式状态（getter 内部读取 ref，经 defineExpose 代理访问时保持依赖追踪） ---
+    get data() {
+      return dataState.tableData.value
+    },
+    get loading() {
+      return dataState.mergedLoading.value
+    },
+    get total() {
+      return dataState.total.value
+    },
+    get pageInfo() {
+      return { ...dataState.pageInfo.value }
+    },
+    get sorter() {
+      return dataState.sorter.value ? { ...dataState.sorter.value } : undefined
+    },
+    get filters() {
+      return dataState.getFilters()
+    },
+    get selectedKeys() {
+      return [...selectionState.selectedKeyList.value]
+    },
+    get selectedRows() {
+      return selectionState.getSelectedRows()
+    },
+    get serverState() {
+      return dataState.getServerState()
+    },
+    get requestLifecycle() {
+      return { ...dataState.requestLifecycle.value }
+    },
+    get error() {
+      return dataState.requestError.value
+    },
     getData: () => cloneDeep(dataState.tableData.value),
     getLoading: () => dataState.mergedLoading.value,
     getPageInfo: () => ({ ...dataState.pageInfo.value }),

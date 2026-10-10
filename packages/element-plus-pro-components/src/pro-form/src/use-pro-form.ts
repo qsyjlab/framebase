@@ -1,4 +1,5 @@
-import { nextTick, unref, type Ref } from 'vue'
+import { nextTick, shallowRef, unref, type Ref } from 'vue'
+import { cloneDeep, isEqual, omitBy } from 'lodash-es'
 import type {
   FormFieldProp,
   FormMethodsType,
@@ -6,10 +7,37 @@ import type {
   FormValidationCallback
 } from './types/form'
 
-type ProFormRef<TModel extends FormModel> = Readonly<Ref<FormMethodsType<TModel> | null>>
+export type ProFormRef<TModel extends FormModel> = Readonly<Ref<FormMethodsType<TModel> | null>>
+
+function isEmptyParamsValue(value: unknown): boolean {
+  return (
+    value === '' ||
+    value === null ||
+    value === undefined ||
+    (Array.isArray(value) && value.length === 0)
+  )
+}
+
+export interface UseProFormOptions<TModel extends FormModel> {
+  /** 初始查询参数，默认 `{}`。 */
+  initialValues?: Partial<TModel>
+  /**
+   * 提交/重置值写入 `params` 前的最后加工（如改写 key、补充派生参数），
+   * 返回值整体替换 `params`。
+   */
+  transform?: (values: TModel) => TModel
+  /**
+   * 是否移除空值（`''` / `null` / `undefined` / `[]`）后再写入 `params`，默认 false。
+   * 避免把空字符串当作查询条件发给后端。
+   */
+  removeEmpty?: boolean
+}
 
 /** Typed form commands backed by a Vue 3.5 template ref. */
-export function useProForm<TModel extends FormModel = FormModel>(templateRef: ProFormRef<TModel>) {
+export function useProForm<TModel extends FormModel = FormModel>(
+  templateRef: ProFormRef<TModel>,
+  options: UseProFormOptions<TModel> = {}
+) {
   const formInstance = templateRef
 
   async function getForm() {
@@ -20,17 +48,70 @@ export function useProForm<TModel extends FormModel = FormModel>(templateRef: Pr
     return form
   }
 
+  // --- 查询参数：把提交/重置的表单值收拢为 params ---
+
+  const transform = options.transform ?? ((values: TModel) => values)
+  const removeEmpty = options.removeEmpty ?? false
+
+  function resolveValues(values: TModel): TModel {
+    let next = cloneDeep(values)
+    if (removeEmpty) next = omitBy(next, isEmptyParamsValue) as TModel
+    return transform(next)
+  }
+
+  const params = shallowRef<TModel>(
+    resolveValues((options.initialValues ?? {}) as TModel)
+  ) as Ref<TModel>
+
+  function applyParams(values: TModel): boolean {
+    const next = resolveValues(values)
+    // 值未变化时跳过更新，避免重复触发表格请求
+    if (isEqual(next, params.value)) return false
+    params.value = next
+    return true
+  }
+
+  /**
+   * 查询。两种用法：
+   * - 作为 `@submit` 事件处理器：`<pro-form @submit="search">`，
+   *   事件携带的表单值直接写入 `params`（提交前表单已完成校验）；
+   * - 程序化调用 `search()`：校验通过后读取表单值写入 `params`。
+   * 返回是否发生更新（值未变化时为 false）。
+   */
+  async function search(values?: TModel) {
+    if (values !== undefined) return applyParams(values)
+    const instance = await getForm()
+    const valid = await instance.validate()
+    if (!valid) return false
+    return applyParams(await instance.getFieldsValue())
+  }
+
+  // --- 表单命令 ---
+
   async function forceUpdateModel(model?: Partial<TModel>) {
     const instance = await getForm()
     instance.forceUpdateModel(model)
   }
 
   async function submit() {
-    return (await getForm()).submit()
+    const instance = await getForm()
+    const ok = await instance.submit()
+    if (ok) applyParams(await instance.getFieldsValue())
+    return ok
   }
 
-  async function reset() {
-    ;(await getForm()).reset()
+  /**
+   * 重置。两种用法：
+   * - 作为 `@reset` 事件处理器：`<pro-form @reset="reset">`，事件携带的重置值直接写入
+   *   `params`（表单已自行重置，不会二次 reset 造成事件循环）；
+   * - 程序化调用 `reset()`：重置表单后把重置值写入 `params`。
+   * 返回是否发生更新（值未变化时为 false）。
+   */
+  async function reset(values?: TModel) {
+    if (values !== undefined) return applyParams(values)
+    const instance = await getForm()
+    instance.reset()
+    return applyParams(await instance.getFieldsValue())
   }
 
   async function resetFields() {
@@ -170,6 +251,9 @@ export function useProForm<TModel extends FormModel = FormModel>(templateRef: Pr
     cancelRequest,
     getSubmitting,
     isDirty,
-    markClean
+    markClean,
+    // --- 查询参数 ---
+    params,
+    search
   }
 }

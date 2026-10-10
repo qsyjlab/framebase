@@ -67,6 +67,8 @@ export function useProTableColumns<TRecord extends object>(
       title: '序号',
       width: 72,
       align: 'center',
+      // 默认固定在列首，与勾选列保持一致；可通过 indexBorder={{ fixed: false }} 取消
+      fixed: 'left',
       render: ({ index }) =>
         (options.pageInfo.value.current - 1) * options.pageInfo.value.pageSize + index + 1,
       ...(typeof indexBorder === 'object' ? indexBorder : {})

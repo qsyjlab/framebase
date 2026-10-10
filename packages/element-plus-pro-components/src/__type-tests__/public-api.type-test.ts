@@ -9,6 +9,7 @@ import {
   ProField,
   ProForm,
   ProList,
+  ProPageContainer,
   ProSelect,
   ProStatus,
   ProTable,
@@ -27,9 +28,11 @@ import {
   type ProFormInstance,
   type ProFormSchema,
   type ProListInstance,
+  type ProPageContainerProps,
   type ProSelectInstance,
   type ProTableColumns,
   type ProTableInstance,
+  type ProTablePageInfo,
   type ProTableRequestParams,
   type ProTableRequestResult,
   type ProTreeInstance,
@@ -83,10 +86,24 @@ const descriptionColumns = [
 
 const tableRef = shallowRef<ProTableInstance<UserRecord> | null>(null)
 const table = useProTable(tableRef)
-type TableDataResult = Expect<Equal<Awaited<ReturnType<typeof table.getData>>, UserRecord[]>>
-type TableServerStateResult = Expect<
-  Equal<Awaited<ReturnType<typeof table.getServerState>>['filters'], Record<string, unknown[]>>
+type TableDataResult = Expect<Equal<(typeof table)['data']['value'], UserRecord[]>>
+type TableLoadingResult = Expect<Equal<(typeof table)['loading']['value'], boolean>>
+type TablePageInfoResult = Expect<
+  Equal<NonNullable<(typeof table)['pageInfo']['value']>, ProTablePageInfo>
 >
+type TableServerStateResult = Expect<
+  Equal<NonNullable<(typeof table)['serverState']['value']>['filters'], Record<string, unknown[]>>
+>
+type TableReloadResult = Expect<Equal<ReturnType<(typeof table)['reload']>, Promise<UserRecord[]>>>
+type LegacyTableDataResult = Expect<
+  Equal<Awaited<ReturnType<(typeof table)['getData']>>, UserRecord[]>
+>
+
+const pageContainerProps: ProPageContainerProps = {
+  title: '用户详情',
+  breadcrumb: ['首页', { text: '用户', to: '/users' }],
+  footerAlign: 'right'
+}
 
 const listRef = shallowRef<ProListInstance<UserRecord> | null>(null)
 const list = useProList(listRef)
@@ -159,6 +176,7 @@ void [
   ProField,
   ProForm,
   ProList,
+  ProPageContainer,
   ProSelect,
   ProStatus,
   ProTable,
@@ -168,6 +186,7 @@ void [
   formSchema,
   requestUsers,
   table,
+  pageContainerProps,
   list,
   descriptions,
   select,
@@ -189,6 +208,10 @@ export type {
   SelectOptionsResult,
   SelectRequestPhaseResult,
   TableDataResult,
+  TableLoadingResult,
+  LegacyTableDataResult,
+  TablePageInfoResult,
+  TableReloadResult,
   TableServerStateResult,
   TreeSelectDataResult,
   TreeDataResult

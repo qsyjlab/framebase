@@ -290,6 +290,31 @@ export interface ProTableProps<
 
 export interface ProTableExpose<TRecord extends object> extends ProRequestControl<TRecord[]> {
   getTable: () => TableInstance | undefined
+  /**
+   * 响应式状态：读取即建立依赖追踪（经模板 ref / useProTable 访问时），
+   * 可直接在模板或 computed/watch 中消费，请勿直接修改。
+   */
+  data: TRecord[]
+  /** 请求加载状态（含外部 loading prop 合并结果）。 */
+  loading: boolean
+  /** 数据总条数。 */
+  total: number
+  /** 当前分页信息。 */
+  pageInfo: ProTablePageInfo
+  /** 当前服务端排序状态。 */
+  sorter: ProTableSorter | undefined
+  /** 当前服务端筛选状态。 */
+  filters: ProTableFilters
+  /** 选中行 key 列表。 */
+  selectedKeys: Array<string | number>
+  /** 选中行数据（按 selectedKeys 顺序）。 */
+  selectedRows: TRecord[]
+  /** 分页 + 排序 + 筛选的完整服务端状态。 */
+  serverState: ProTableServerState
+  /** 请求生命周期（含 phase/action/loading 等快照）。 */
+  requestLifecycle: ProTableRequestLifecycle
+  /** 最近一次请求错误。 */
+  error: unknown
   getData: () => TRecord[]
   getLoading: () => boolean
   getPageInfo: () => ProTablePageInfo

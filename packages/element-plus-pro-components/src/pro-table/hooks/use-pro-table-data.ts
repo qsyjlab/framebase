@@ -362,6 +362,7 @@ export function useProTableData<
     requestError,
     paginationProps,
     getServerState,
+    getFilters: () => cloneFilters(filters.value),
     getRequestLifecycle: () => ({ ...requestLifecycle.value }),
     getError: () => requestError.value,
     retryRequest,
