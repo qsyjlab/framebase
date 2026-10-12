@@ -84,18 +84,16 @@ const descriptionColumns = [
 
 const tableRef = shallowRef<ProTableInstance<UserRecord> | null>(null)
 const table = useProTable(tableRef)
-export type TableDataResult = Expect<Equal<(typeof table)['data']['value'], UserRecord[]>>
-export type TableLoadingResult = Expect<Equal<(typeof table)['loading']['value'], boolean>>
-export type TablePageInfoResult = Expect<
+type TableDataResult = Expect<Equal<(typeof table)['data']['value'], UserRecord[]>>
+type TableLoadingResult = Expect<Equal<(typeof table)['loading']['value'], boolean>>
+type TablePageInfoResult = Expect<
   Equal<NonNullable<(typeof table)['pageInfo']['value']>, ProTablePageInfo>
 >
 type TableServerStateResult = Expect<
   Equal<NonNullable<(typeof table)['serverState']['value']>['filters'], Record<string, unknown[]>>
 >
-export type TableReloadResult = Expect<
-  Equal<ReturnType<(typeof table)['reload']>, Promise<UserRecord[]>>
->
-export type LegacyTableDataResult = Expect<
+type TableReloadResult = Expect<Equal<ReturnType<(typeof table)['reload']>, Promise<UserRecord[]>>>
+type LegacyTableDataResult = Expect<
   Equal<Awaited<ReturnType<(typeof table)['getData']>>, UserRecord[]>
 >
 
@@ -195,11 +193,15 @@ export type {
   FormDirtyResult,
   FormInstanceContract,
   FormValuesResult,
+  LegacyTableDataResult,
   ListDataResult,
   ListRequestPhaseResult,
   SelectOptionsResult,
   SelectRequestPhaseResult,
   TableDataResult,
+  TableLoadingResult,
+  TablePageInfoResult,
+  TableReloadResult,
   TableServerStateResult,
   TreeSelectDataResult,
   TreeDataResult
