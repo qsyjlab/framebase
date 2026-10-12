@@ -10,6 +10,35 @@ ProTable 是基于 Element Plus Table 封装的高级表格组件，内置分页
 pro-table/basic
 :::
 
+## 命令式调用 useProTable
+
+`useProTable` 把组件实例包装为「响应式状态 + 命令方法」两层，状态可直接在模板、`computed` 或 `watch` 中消费，命令方法在组件挂载后转发到内部实现：
+
+```ts
+import { shallowRef } from 'vue'
+import { useProTable, type ProTableInstance } from '@framebase/element-plus-pro-components'
+
+const tableRef = shallowRef<ProTableInstance<Row> | null>(null)
+const table = useProTable(tableRef)
+// 模板：<ProTable ref="tableRef" :columns="columns" :request="request" />
+
+table.loading.value // boolean —— 响应式，watch/模板直接用
+table.data.value // Row[] 当前页数据
+await table.reload() // 命令：重置到第一页并重新请求
+await table.setPageInfo({ current: 2 })
+```
+
+| 分类     | 成员                                                                                                                                                                                    |
+| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 状态     | `data`、`loading`、`total`、`pageInfo`、`sorter`、`filters`、`selectedKeys`、`selectedRows`、`serverState`、`requestLifecycle`、`error`（均为 `ComputedRef`，实例挂载前提供安全默认值） |
+| 数据命令 | `reload`、`refresh`、`reset`、`scrollTo`、`setPageInfo`、`setSorter`、`setFilters`、`resetServerState`、`retryRequest`、`cancelRequest`、`clearSelection`、`doLayout`、`doHeight`       |
+| 编辑命令 | `startEditable`、`cancelEditable`、`saveEditable`、`deleteEditable`、`clearEditRows`、`validateEditable`、`saveAllEditable`、`cancelAllEditable`                                        |
+| 实例     | `tableRef`（绑定模板 ref）、`getTable()`（获取原始实例，覆盖其余低频能力）                                                                                                              |
+
+:::demo 通过 useProTable 读取 loading/total/selectedKeys 等响应式状态，并调用 reload/setPageInfo 命令
+pro-table/use-pro-table
+:::
+
 ## Props
 
 | 参数             | 说明                                | 类型                                      | 默认值  |
