@@ -72,6 +72,20 @@
   outline-offset: var(--framebase-ring-offset);
 }
 
+// Checkbox —— 尺寸与圆角必须覆盖在 .el-checkbox 上：
+// EP 2.14 在 .el-checkbox 处声明 --el-checkbox-*（14px / radius-small），
+// 写在 html:root 的同名词会被就近遮蔽；16px + radius-xs 避免方框趋近正圆。
+.el-checkbox {
+  --el-checkbox-border-radius: var(--framebase-radius-xs);
+  --el-checkbox-input-width: 16px;
+  --el-checkbox-input-height: 16px;
+}
+
+.el-checkbox__inner {
+  width: var(--el-checkbox-input-width);
+  height: var(--el-checkbox-input-height);
+}
+
 // Switch
 .el-switch.is-checked .el-switch__core {
   border-color: var(--framebase-color-primary);

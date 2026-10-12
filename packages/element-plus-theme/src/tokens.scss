@@ -44,6 +44,7 @@ html:root {
   --framebase-color-border-strong: #cbd5e4; // line-strong
 
   // ========== 圆角（re-ap --radius: 0.625rem = 10px 为 base） ==========
+  --framebase-radius-xs: 4px; // 小控件（checkbox 等）
   --framebase-radius-sm: 6px; // radius - 4px
   --framebase-radius-base: 8px; // radius - 2px（控件 md）
   --framebase-radius-md: 8px;
