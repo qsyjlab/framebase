@@ -165,6 +165,10 @@ export default defineConfig({
             { text: 'ProPreviewFile 文件预览', link: '/components/pro-preview-file' },
             { text: 'ProConfigProvider 全局配置', link: '/components/pro-config-provider' }
           ]
+        },
+        {
+          text: '布局',
+          items: [{ text: 'ProLayout 布局', link: '/components/pro-layout' }]
         }
       ]
     },
