@@ -1,10 +1,10 @@
 <template>
   <template v-if="!hasChildren(item)">
     <el-menu-item :index="item.key" :disabled="item.disabled" :route="routeFor(item)">
-      <span v-if="renderIcon(item.icon)" class="pro-layout-menu__icon">
+      <el-icon v-if="renderIcon(item.icon)" class="pro-layout-menu__icon">
         <component :is="renderIcon(item.icon)" v-if="typeof item.icon !== 'string'" />
         <span v-else>{{ item.icon }}</span>
-      </span>
+      </el-icon>
       <template #title>
         <span class="pro-layout-menu__title">{{ item.title }}</span>
       </template>
@@ -14,10 +14,10 @@
   <template v-else>
     <el-sub-menu :index="item.key" :disabled="item.disabled" :popper-style="navigationStyle">
       <template #title>
-        <span v-if="renderIcon(item.icon)" class="pro-layout-menu__icon">
+        <el-icon v-if="renderIcon(item.icon)" class="pro-layout-menu__icon">
           <component :is="renderIcon(item.icon)" v-if="typeof item.icon !== 'string'" />
           <span v-else>{{ item.icon }}</span>
-        </span>
+        </el-icon>
         <span class="pro-layout-menu__title">{{ item.title }}</span>
       </template>
       <template v-for="child in item.children" :key="child.key">
@@ -29,7 +29,7 @@
 
 <script setup lang="ts">
 import type { Component, VNodeChild } from 'vue'
-import { ElMenuItem, ElSubMenu } from 'element-plus'
+import { ElIcon, ElMenuItem, ElSubMenu } from 'element-plus'
 import { useNavigationStyle } from './use-navigation-style'
 import type { LayoutMenuItem } from './types'
 import { renderLayoutIcon } from './utils'

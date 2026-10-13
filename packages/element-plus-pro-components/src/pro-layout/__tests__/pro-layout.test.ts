@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { createApp, h, nextTick, ref, type VNodeChild } from 'vue'
+import { createApp, defineComponent, h, nextTick, ref, type VNodeChild } from 'vue'
 import ProLayout from '../pro-layout.vue'
 import { createProLayoutStore } from '../store'
 import {
@@ -35,6 +35,32 @@ function mount(render: () => VNodeChild) {
 }
 
 describe('ProLayout 集成', () => {
+  it('折叠侧栏的子菜单保留标准图标节点，避免被 Element Plus 隐藏', () => {
+    const MenuIcon = defineComponent({
+      name: 'MenuIcon',
+      setup: () => () => h('svg', { viewBox: '0 0 16 16' })
+    })
+    const container = mount(() =>
+      h(ProLayout, {
+        height: '400px',
+        collapsed: true,
+        showHeader: false,
+        showSettings: false,
+        menus: [
+          {
+            key: 'system',
+            title: '系统管理',
+            icon: MenuIcon,
+            children: [{ key: 'users', title: '用户管理' }]
+          }
+        ]
+      })
+    )
+    const submenuTitle = container.querySelector('.el-sub-menu__title') as HTMLElement
+    expect(submenuTitle.querySelector(':scope > .el-icon.pro-layout-menu__icon')).not.toBeNull()
+    expect(submenuTitle.querySelector(':scope > span.pro-layout-menu__icon')).toBeNull()
+  })
+
   it('外部 html 接管主题时根节点和设置抽屉不重复绑定，开关动态恢复局部绑定', async () => {
     const store = createProLayoutStore({ syncDocumentTheme: false, defaults: { theme: 'dark' } })
     cleanups.push(store.destroy)
