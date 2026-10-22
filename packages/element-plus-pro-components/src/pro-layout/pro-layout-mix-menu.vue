@@ -14,14 +14,30 @@
         :title="item.title"
         @click="onClick(item)"
       >
-        <div :class="['pro-layout-mix-menu__icon', !renderIcon(item.icon) ? 'no-icon' : '']">
-          <component
-            :is="renderIcon(item.icon)"
-            v-if="typeof item.icon !== 'string' && renderIcon(item.icon)"
-          />
-          <span v-else>{{ resolveLayoutBrandInitial(item.title) }}</span>
-        </div>
-        <div class="pro-layout-mix-menu__label">{{ item.title }}</div>
+        <slot
+          name="menu-icon"
+          :item="item"
+          :level="0"
+          :active="item.key === activeRootKey"
+          :has-children="Boolean(item.children?.length)"
+        >
+          <div :class="['pro-layout-mix-menu__icon', !renderIcon(item.icon) ? 'no-icon' : '']">
+            <component
+              :is="renderIcon(item.icon)"
+              v-if="typeof item.icon !== 'string' && renderIcon(item.icon)"
+            />
+            <span v-else>{{ resolveLayoutBrandInitial(item.title) }}</span>
+          </div>
+        </slot>
+        <slot
+          name="menu-title"
+          :item="item"
+          :level="0"
+          :active="item.key === activeRootKey"
+          :has-children="Boolean(item.children?.length)"
+        >
+          <div class="pro-layout-mix-menu__label">{{ item.title }}</div>
+        </slot>
         <span
           v-show="item.key === activeRootKey"
           class="pro-layout-mix-menu__line"
@@ -63,8 +79,19 @@
               v-for="child in activeChildren"
               :key="child.key"
               :item="child"
+              :active-key="activeKey"
               :router="router"
-            />
+            >
+              <template v-if="$slots['menu-icon']" #icon="slotData">
+                <slot name="menu-icon" v-bind="slotData" />
+              </template>
+              <template v-if="$slots['menu-title']" #title="slotData">
+                <slot name="menu-title" v-bind="slotData" />
+              </template>
+              <template v-if="$slots['menu-extra']" #extra="slotData">
+                <slot name="menu-extra" v-bind="slotData" />
+              </template>
+            </ProLayoutMenuItem>
           </el-menu>
         </div>
       </div>

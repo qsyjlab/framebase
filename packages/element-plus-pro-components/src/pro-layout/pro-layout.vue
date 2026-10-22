@@ -33,81 +33,93 @@
             v-for="menu in normalizedMenus"
             :key="menu.key"
             :item="menu"
+            :active-key="localActiveMenuKey"
             :router="router"
-          />
+          >
+            <template v-if="$slots['menu-title']" #title="slotData">
+              <slot name="menu-title" v-bind="{ ...slotData, store }" />
+            </template>
+            <template v-if="$slots['menu-extra']" #extra="slotData">
+              <slot name="menu-extra" v-bind="{ ...slotData, store }" />
+            </template>
+          </ProLayoutMenuItem>
         </el-menu>
       </slot>
     </el-drawer>
 
     <!-- 侧栏（Side 全量；TopMix 未开 splitMenu 全量、开启后为分割子菜单） -->
-    <slot name="aside" v-bind="menuSlotProps">
-      <ProLayoutAside
-        v-if="metrics.showAside && config.layoutMode !== 'sideMix' && !isMobile"
-        class="pro-layout-navigation"
-        :class="{ 'is-dark-navigation': isDarkSidebar }"
-        :layout-mode="config.layoutMode"
-        :collapsed="config.collapsed"
-        :collapsible="true"
-        :width="metrics.asideWidth"
-        :aside-width="config.asideWidth"
-        :collapsed-width="60"
-        :mix-width="60"
-        :aside-padding-top="metrics.asidePaddingTop"
-        :header-height="config.headerHeight"
-        :is-dark-sidebar="isDarkSidebar"
-        :title="title"
-        :logo="logo"
-        :logo-width="logoWidth"
-        :logo-show-title="showLogoTitle"
-        :mix-logo-width="46"
-        :menus="asideMenus"
-        :active-key="localActiveMenuKey"
-        :router="router"
-        :unique-opened="true"
-        :toggle-collapsed="toggleCollapsed"
-        @select="onElMenuSelect"
-      >
-        <template v-for="name in asideSlotNames" :key="name" #[name]="slotData">
-          <slot
-            :name="
-              name === 'menu'
-                ? $slots['aside-menu']
-                  ? 'aside-menu'
-                  : 'menu'
-                : name === 'trigger'
-                  ? 'aside-trigger'
-                  : name
-            "
-            v-bind="slotData ?? menuSlotProps"
-          />
-        </template>
-      </ProLayoutAside>
+    <ProLayoutAside
+      v-if="metrics.showAside && config.layoutMode !== 'sideMix' && !isMobile"
+      class="pro-layout-navigation"
+      :class="{ 'is-dark-navigation': isDarkSidebar }"
+      :layout-mode="config.layoutMode"
+      :collapsed="config.collapsed"
+      :collapsible="true"
+      :width="metrics.asideWidth"
+      :aside-width="config.asideWidth"
+      :collapsed-width="60"
+      :mix-width="60"
+      :aside-padding-top="metrics.asidePaddingTop"
+      :header-height="config.headerHeight"
+      :is-dark-sidebar="isDarkSidebar"
+      :title="title"
+      :logo="logo"
+      :logo-width="logoWidth"
+      :logo-show-title="showLogoTitle"
+      :mix-logo-width="46"
+      :menus="asideMenus"
+      :active-key="localActiveMenuKey"
+      :router="router"
+      :unique-opened="true"
+      :toggle-collapsed="toggleCollapsed"
+      @select="onElMenuSelect"
+    >
+      <template v-for="name in asideSlotNames" :key="name" #[name]="slotData">
+        <slot
+          :name="
+            name === 'menu'
+              ? $slots['aside-menu']
+                ? 'aside-menu'
+                : 'menu'
+              : name === 'trigger'
+                ? 'aside-trigger'
+                : name
+          "
+          v-bind="{ ...menuSlotProps, ...(slotData ?? {}) }"
+        />
+      </template>
+    </ProLayoutAside>
 
-      <!-- SideMix 模式：图标列 + 子菜单面板 -->
-      <ProLayoutMixSidebar
-        v-if="config.layoutMode === 'sideMix' && !isMobile"
-        class="pro-layout-navigation"
-        :class="{ 'is-dark-navigation': isDarkSidebar }"
-        :title="title"
-        :logo="logo"
-        :logo-width="46"
-        :width="60"
-        :aside-width="config.asideWidth"
-        :header-height="config.headerHeight"
-        :menus="normalizedMenus"
-        :active-key="localActiveMenuKey"
-        :fixed="config.sideMixFixedMenu"
-        :router="router"
-        @select="onMenuSelect"
-        @update:fixed="onSideMixFixedChange"
-        @children-visible="mixChildrenVisible = $event"
-      >
-        <template v-if="$slots.logo" #logo><slot name="logo" v-bind="defaultSlotProps" /></template>
-      </ProLayoutMixSidebar>
-    </slot>
+    <!-- SideMix 模式：图标列 + 子菜单面板 -->
+    <ProLayoutMixSidebar
+      v-if="config.layoutMode === 'sideMix' && !isMobile"
+      class="pro-layout-navigation"
+      :class="{ 'is-dark-navigation': isDarkSidebar }"
+      :title="title"
+      :logo="logo"
+      :logo-width="46"
+      :width="60"
+      :aside-width="config.asideWidth"
+      :header-height="config.headerHeight"
+      :menus="normalizedMenus"
+      :active-key="localActiveMenuKey"
+      :fixed="config.sideMixFixedMenu"
+      :router="router"
+      @select="onMenuSelect"
+      @update:fixed="onSideMixFixedChange"
+      @children-visible="mixChildrenVisible = $event"
+    >
+      <template v-if="$slots.logo" #logo><slot name="logo" v-bind="defaultSlotProps" /></template>
+      <template v-if="$slots['menu-title']" #menu-title="slotData">
+        <slot name="menu-title" v-bind="{ ...slotData, store }" />
+      </template>
+      <template v-if="$slots['menu-extra']" #menu-extra="slotData">
+        <slot name="menu-extra" v-bind="{ ...slotData, store }" />
+      </template>
+    </ProLayoutMixSidebar>
 
     <!-- 头部 -->
-    <slot v-if="showHeader" name="header" v-bind="menuSlotProps">
+    <slot v-if="showHeader" name="header" v-bind="headerSlotProps">
       <ProLayoutHeader
         v-if="showHeader"
         :active-key="
@@ -148,24 +160,28 @@
       >
         <!-- 透传 header 的所有插槽 -->
         <template v-for="name in headerSlotNames" :key="name" #[name]="slotData">
-          <slot :name="name" v-bind="slotData ?? {}" />
+          <slot :name="name" v-bind="{ ...headerSlotProps, ...(slotData ?? {}) }" />
         </template>
       </ProLayoutHeader>
     </slot>
 
     <!-- 标签栏 -->
     <div v-if="config.showTabs" class="pro-layout__tabs" :style="tabsStyle">
-      <slot name="tabs" v-bind="tabsSlotProps">
-        <ProLayoutTabs
-          :tabs="normalizedTabs"
-          :active-key="localActiveTabKey"
-          :height="config.tabHeight"
-          @change="onTabChange"
-          @close="onTabClose"
-          @action="(action, key, keys) => emit('tabAction', action, key, keys)"
-          @reorder="keys => emit('tabReorder', keys)"
-        />
-      </slot>
+      <slot name="tabs-prefix" v-bind="tabsSlotProps" />
+      <div class="pro-layout__tabs-main">
+        <slot name="tabs" v-bind="tabsSlotProps">
+          <ProLayoutTabs
+            :tabs="normalizedTabs"
+            :active-key="localActiveTabKey"
+            :height="config.tabHeight"
+            @change="onTabChange"
+            @close="onTabClose"
+            @action="onTabAction"
+            @reorder="onTabReorder"
+          />
+        </slot>
+      </div>
+      <slot name="tabs-extra" v-bind="tabsSlotProps" />
     </div>
 
     <!-- 内容区 -->
@@ -200,7 +216,7 @@
         @reset="onSettingReset"
       >
         <template v-if="$slots['settings-extra']" #default="slotData">
-          <slot name="settings-extra" v-bind="slotData" />
+          <slot name="settings-extra" v-bind="{ ...slotData, store }" />
         </template>
       </ProLayoutSettings>
     </slot>
@@ -618,6 +634,7 @@ const watermarkStyle = computed(() => {
 
 /* 透传到插槽的载荷 */
 const defaultSlotProps = computed(() => ({
+  store,
   layoutMode: config.value.layoutMode,
   collapsed: config.value.collapsed,
   isMobile: isMobile.value,
@@ -632,13 +649,25 @@ const defaultSlotProps = computed(() => ({
 const menuSlotProps = computed(() => ({
   ...defaultSlotProps.value,
   menus: normalizedMenus.value,
-  activeKey: localActiveMenuKey.value
+  activeKey: localActiveMenuKey.value,
+  select: onElMenuSelect
 }))
 
 const tabsSlotProps = computed(() => ({
   ...defaultSlotProps.value,
   tabs: normalizedTabs.value,
-  activeKey: localActiveTabKey.value
+  activeKey: localActiveTabKey.value,
+  change: onTabChange,
+  close: onTabClose,
+  action: onTabAction,
+  reorder: onTabReorder
+}))
+
+const headerSlotProps = computed(() => ({
+  ...menuSlotProps.value,
+  openMobileMenu: openMobileDrawer,
+  openSettings,
+  toggleTheme: onToggleTheme
 }))
 
 const settingsSlotProps = computed(() => ({
@@ -650,23 +679,20 @@ const settingsSlotProps = computed(() => ({
 
 /* 透传 header 的插槽白名单 */
 const HEADER_SLOT_WHITELIST = [
-  'header-left',
   'logo',
   'breadcrumb',
   'header-menu',
-  'header-right',
   'notification',
-  'fullscreen',
-  'theme-toggle',
-  'setting-button',
   'user-menu',
-  'header-actions'
+  'header-actions',
+  'menu-title',
+  'menu-extra'
 ]
 const headerSlotNames = computed(() =>
   Object.keys(slots).filter(name => HEADER_SLOT_WHITELIST.includes(name))
 )
 const asideSlotNames = computed(() =>
-  ['logo', 'menu', 'trigger'].filter(name =>
+  ['logo', 'menu', 'trigger', 'menu-title', 'menu-extra'].filter(name =>
     name === 'menu'
       ? slots['aside-menu'] || slots.menu
       : slots[name === 'trigger' ? 'aside-trigger' : name]
@@ -706,6 +732,14 @@ function onTabChange(key: string) {
 
 function onTabClose(key: string, index: number) {
   emit('tabClose', key, index)
+}
+
+function onTabAction(action: LayoutTabAction, key: string, keys: string[]) {
+  emit('tabAction', action, key, keys)
+}
+
+function onTabReorder(keys: string[]) {
+  emit('tabReorder', keys)
 }
 
 function onSideMixFixedChange(v: boolean) {
@@ -828,10 +862,17 @@ defineExpose({
     right: 0;
     left: 0;
     z-index: 999;
+    display: flex;
+    align-items: stretch;
     box-sizing: border-box;
     background-color: var(--pro-layout-header-bg);
     border-bottom: 1px solid var(--pro-layout-line);
     transition: padding-left 0.2s ease-in-out;
+  }
+
+  &__tabs-main {
+    flex: 1 1 0;
+    min-width: 0;
   }
 
   &__main {

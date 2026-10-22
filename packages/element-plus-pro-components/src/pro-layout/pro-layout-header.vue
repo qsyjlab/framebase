@@ -68,9 +68,20 @@
                 v-for="menu in topLevelMenus"
                 :key="menu.key"
                 :item="menu"
+                :active-key="activeKey"
                 mode="horizontal"
                 :router="router"
-              />
+              >
+                <template v-if="$slots['menu-icon']" #icon="slotData">
+                  <slot name="menu-icon" v-bind="slotData" />
+                </template>
+                <template v-if="$slots['menu-title']" #title="slotData">
+                  <slot name="menu-title" v-bind="slotData" />
+                </template>
+                <template v-if="$slots['menu-extra']" #extra="slotData">
+                  <slot name="menu-extra" v-bind="slotData" />
+                </template>
+              </ProLayoutMenuItem>
             </el-menu>
           </slot>
         </div>

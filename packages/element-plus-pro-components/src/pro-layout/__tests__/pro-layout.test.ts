@@ -35,6 +35,98 @@ function mount(render: () => VNodeChild) {
 }
 
 describe('ProLayout 集成', () => {
+  it('公开插槽可复用布局控制器，并取得同一份 store', async () => {
+    const store = createProLayoutStore({ syncDocumentTheme: false })
+    cleanups.push(store.destroy)
+    let receivedStore: unknown
+    let selectMenu: ((key: string) => void) | undefined
+    let changeTab: ((key: string) => void) | undefined
+    let closeTab: ((key: string, index: number) => void) | undefined
+    let actionTab: ((action: string, key: string, keys: string[]) => void) | undefined
+    let reorderTabs: ((keys: string[]) => void) | undefined
+    const onMenuSelect = vi.fn()
+    const onActiveKeyUpdate = vi.fn()
+    const onTabChange = vi.fn()
+    const onActiveTabKeyUpdate = vi.fn()
+    const onTabClose = vi.fn()
+    const onTabAction = vi.fn()
+    const onTabReorder = vi.fn()
+    const container = mount(() =>
+      h(
+        ProLayout,
+        {
+          store,
+          height: '400px',
+          showSettings: false,
+          menus: [
+            { key: 'dashboard', title: '工作台' },
+            { key: 'orders', title: '订单' }
+          ],
+          tabs: [
+            { key: 'dashboard', label: '工作台' },
+            { key: 'orders', label: '订单' }
+          ],
+          activeKey: 'dashboard',
+          activeTabKey: 'dashboard',
+          onMenuSelect,
+          'onUpdate:activeKey': onActiveKeyUpdate,
+          onTabChange,
+          'onUpdate:activeTabKey': onActiveTabKeyUpdate,
+          onTabClose,
+          onTabAction,
+          onTabReorder
+        },
+        {
+          default: () => h('div', '正文'),
+          'aside-menu': (slotProps: { select: (key: string) => void }) => {
+            selectMenu = slotProps.select
+            return h('button', { class: 'test-aside-menu' }, '自定义菜单')
+          },
+          'menu-extra': ({ item }: { item: { key: string } }) =>
+            h('span', { class: 'test-menu-extra' }, item.key),
+          'tabs-prefix': ({ store: slotStore }: { store: unknown }) => {
+            receivedStore = slotStore
+            return h('button', { class: 'test-tabs-prefix' }, '前置')
+          },
+          tabs: (slotProps: {
+            change: (key: string) => void
+            close: (key: string, index: number) => void
+            action: (action: string, key: string, keys: string[]) => void
+            reorder: (keys: string[]) => void
+          }) => {
+            changeTab = slotProps.change
+            closeTab = slotProps.close
+            actionTab = slotProps.action
+            reorderTabs = slotProps.reorder
+            return h('div', { class: 'test-tabs' }, '自定义标签栏')
+          },
+          'tabs-extra': () => h('button', { class: 'test-tabs-extra' }, '后置')
+        }
+      )
+    )
+    await nextTick()
+    expect(container.querySelector('.test-aside-menu')).not.toBeNull()
+    expect(container.querySelector('.test-tabs-prefix')).not.toBeNull()
+    expect(container.querySelector('.test-tabs')).not.toBeNull()
+    expect(container.querySelector('.test-tabs-extra')).not.toBeNull()
+    expect(receivedStore).toBe(store)
+
+    selectMenu?.('orders')
+    changeTab?.('orders')
+    closeTab?.('orders', 1)
+    actionTab?.('closeOther', 'orders', ['dashboard'])
+    reorderTabs?.(['orders', 'dashboard'])
+    await nextTick()
+
+    expect(onActiveKeyUpdate).toHaveBeenCalledWith('orders')
+    expect(onMenuSelect).toHaveBeenCalledWith('orders', expect.objectContaining({ key: 'orders' }))
+    expect(onActiveTabKeyUpdate).toHaveBeenCalledWith('orders')
+    expect(onTabChange).toHaveBeenCalledWith('orders')
+    expect(onTabClose).toHaveBeenCalledWith('orders', 1)
+    expect(onTabAction).toHaveBeenCalledWith('closeOther', 'orders', ['dashboard'])
+    expect(onTabReorder).toHaveBeenCalledWith(['orders', 'dashboard'])
+  })
+
   it('折叠侧栏的子菜单保留标准图标节点，避免被 Element Plus 隐藏', () => {
     const MenuIcon = defineComponent({
       name: 'MenuIcon',

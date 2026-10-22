@@ -24,7 +24,17 @@
       @select="onSelect"
       @update:fixed="onFixedChange"
       @children-visible="value => emit('children-visible', value)"
-    />
+    >
+      <template v-if="$slots['menu-icon']" #menu-icon="slotData">
+        <slot name="menu-icon" v-bind="slotData" />
+      </template>
+      <template v-if="$slots['menu-title']" #menu-title="slotData">
+        <slot name="menu-title" v-bind="slotData" />
+      </template>
+      <template v-if="$slots['menu-extra']" #menu-extra="slotData">
+        <slot name="menu-extra" v-bind="slotData" />
+      </template>
+    </ProLayoutMixMenu>
   </aside>
 </template>
 

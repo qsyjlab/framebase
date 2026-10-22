@@ -35,8 +35,19 @@
                   v-for="menu in menus"
                   :key="menu.key"
                   :item="menu"
+                  :active-key="activeKey"
                   :router="router"
-                />
+                >
+                  <template v-if="$slots['menu-icon']" #icon="slotData">
+                    <slot name="menu-icon" v-bind="slotData" />
+                  </template>
+                  <template v-if="$slots['menu-title']" #title="slotData">
+                    <slot name="menu-title" v-bind="slotData" />
+                  </template>
+                  <template v-if="$slots['menu-extra']" #extra="slotData">
+                    <slot name="menu-extra" v-bind="slotData" />
+                  </template>
+                </ProLayoutMenuItem>
               </el-menu>
             </slot>
           </div>
@@ -300,7 +311,7 @@ function toggle() {
       justify-content: center;
       gap: 0 !important;
     }
-    :deep(.el-menu--collapse .pro-layout-menu__title) {
+    :deep(.el-menu--collapse .pro-layout-menu__content) {
       display: none !important;
     }
   }

@@ -258,31 +258,106 @@ const themeVars = useProLayoutTheme(project.layout.config)
 
 ## 插槽
 
-所有插槽均透传上下文载荷（`layoutMode` / `collapsed` / `isMobile` / `asideWidth` / `headerHeight` /
-`theme` / `themeColor` / `toggleCollapsed` 等）；`menu` / `tabs` / `mobile-menu` / `settings` / `header-*`
-还附带各自的数据子集。
+ProLayout 只开放有明确归属的扩展点。页面正文结构由业务页面或 `ProPageContainer` 管理；侧栏外壳、
+响应式形态以及头部内置控制项仍由 ProLayout 管理，避免替换局部后丢失布局联动。所有插槽都能取得
+同一份 `store` 和基础布局上下文。
 
-| 插槽                                | 说明                                            |
-| ----------------------------------- | ----------------------------------------------- |
-| default                             | 内容区正文                                      |
-| logo                                | Logo 区域（头部或侧栏）                         |
-| aside                               | 替换整个侧栏                                    |
-| aside-menu / menu                   | 替换侧栏菜单；menu 为兼容别名                   |
-| aside-trigger                       | 替换侧栏底部折叠按钮                            |
-| header / header-left / header-right | 整 / 部分头部                                   |
-| breadcrumb                          | 头部面包屑                                      |
-| header-menu                         | 顶部菜单区                                      |
-| notification                        | 头部通知（默认 `el-popover`）                   |
-| fullscreen                          | 头部全屏按钮                                    |
-| theme-toggle                        | 头部主题切换按钮                                |
-| setting-button                      | 头部设置按钮                                    |
-| user-menu                           | 头部用户菜单                                    |
-| header-actions                      | 头部右侧操作                                    |
-| tabs                                | 标签栏                                          |
-| footer                              | 页脚                                            |
-| mobile-menu                         | 移动端 drawer 菜单                              |
-| settings                            | 布局设置抽屉                                    |
-| settings-extra                      | 默认设置抽屉内的扩展区域（config / setSetting） |
+| 插槽                     | 说明                                                   |
+| ------------------------ | ------------------------------------------------------ |
+| default                  | 内容区正文                                             |
+| logo                     | Logo 区域（头部或侧栏）                                |
+| aside-menu               | 替换桌面侧栏菜单内容，不替换侧栏外壳                   |
+| menu                     | `aside-menu` 的兼容别名，已废弃，后续版本移除          |
+| aside-trigger            | 替换侧栏底部折叠按钮                                   |
+| mobile-menu              | 替换移动端 Drawer 内的菜单内容                         |
+| menu-title / menu-extra  | 自定义默认菜单项标题 / 右侧附加内容                    |
+| header                   | 替换整个头部                                           |
+| breadcrumb               | 替换默认面包屑                                         |
+| header-menu              | 替换顶部导航菜单区域                                   |
+| header-actions           | 在默认头部右侧追加业务操作                             |
+| notification / user-menu | 替换通知 / 用户菜单                                    |
+| tabs                     | 替换整个标签栏                                         |
+| tabs-prefix / tabs-extra | 在默认标签栏左 / 右侧追加内容                          |
+| footer                   | 替换页脚                                               |
+| settings                 | 替换布局设置抽屉                                       |
+| settings-extra           | 默认设置抽屉内的扩展区域，取得 `config` / `setSetting` |
+
+`fullscreen`、`theme-toggle`、`setting-button` 通过对应 props 控制显隐；需要完全不同的交互时使用
+`header`。菜单图标直接通过 `LayoutMenuItem.icon` 配置。
+
+### 整体替换插槽上下文
+
+整体替换插槽不仅提供数据，也提供继续驱动 ProLayout 的控制器。自定义实现不需要复制组件内部的
+受控状态和事件同步逻辑。
+
+| 插槽                         | 额外上下文                                                            |
+| ---------------------------- | --------------------------------------------------------------------- |
+| `aside-menu` / `mobile-menu` | `menus`、`activeKey`、`collapsed`、`select(key)`                      |
+| `tabs` / `tabs-*`            | `tabs`、`activeKey`、`change`、`close`、`action`、`reorder`           |
+| `header`                     | `menus`、`activeKey`、`openMobileMenu`、`openSettings`、`toggleTheme` |
+| `settings`                   | `visible`、`open`、`close`                                            |
+
+替换侧栏菜单时可以直接复用公开的 `ProLayoutMenuItem`：
+
+```vue
+<script setup lang="ts">
+import { ProLayoutMenuItem } from '@framebase/element-plus-pro-components'
+</script>
+
+<template>
+  <ProLayout :menus="menus">
+    <template #aside-menu="{ menus, activeKey, select }">
+      <el-menu :default-active="activeKey" @select="select">
+        <ProLayoutMenuItem
+          v-for="item in menus"
+          :key="item.key"
+          :item="item"
+          :active-key="activeKey"
+        />
+      </el-menu>
+    </template>
+  </ProLayout>
+</template>
+```
+
+替换标签栏时也可以复用默认组件，并把事件交回上下文控制器：
+
+```vue
+<script setup lang="ts">
+import { ProLayoutTabs } from '@framebase/element-plus-pro-components'
+</script>
+
+<template>
+  <ProLayout :tabs="tabs">
+    <template #tabs="{ tabs, activeKey, change, close, action, reorder }">
+      <ProLayoutTabs
+        :tabs="tabs"
+        :active-key="activeKey"
+        @change="change"
+        @close="close"
+        @action="action"
+        @reorder="reorder"
+      />
+    </template>
+  </ProLayout>
+</template>
+```
+
+### 公开子组件
+
+以下子组件作为稳定 API，可用于插槽内复用：
+
+- `ProLayoutLogo`
+- `ProLayoutMenuItem`
+- `ProLayoutTabs`
+- `ProLayoutBreadcrumb`
+- `ProLayoutFooter`
+
+以下组件属于 Advanced API，继续导出以保持兼容，但其参数和内部结构可能随 ProLayout 演进：
+
+- `ProLayoutAside` / `ProLayoutHeader`
+- `ProLayoutMixMenu` / `ProLayoutMixSidebar`
+- `ProLayoutSettings` / `ProLayoutCheckButtonGroup`
 
 ## 事件
 

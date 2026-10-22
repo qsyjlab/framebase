@@ -29,6 +29,36 @@
         }}</RouterLink>
       </slot>
     </template>
+    <template #menu-title="{ item, active }">
+      <span :class="['layout-demo-menu-title', active && 'is-active']">{{ item.title }}</span>
+    </template>
+    <template #menu-extra="{ item, level }">
+      <el-badge
+        v-if="menuBadges[item.key]"
+        class="layout-demo-menu-badge"
+        :value="menuBadges[item.key]"
+        :max="99"
+        :type="level === 0 ? 'primary' : 'danger'"
+      />
+    </template>
+    <template #tabs-prefix="{ store: layoutStore }">
+      <el-tooltip content="通过插槽访问布局 Store" placement="bottom">
+        <button
+          class="layout-demo-tabs-action"
+          type="button"
+          @click="layoutStore.toggleCollapsed()"
+        >
+          <el-icon><Fold v-if="!layoutStore.config.collapsed" /><Expand v-else /></el-icon>
+        </button>
+      </el-tooltip>
+    </template>
+    <template #tabs-extra="{ store: layoutStore }">
+      <el-tooltip content="打开布局设置" placement="bottom">
+        <button class="layout-demo-tabs-action" type="button" @click="layoutStore.openSettings()">
+          <el-icon><Setting /></el-icon>
+        </button>
+      </el-tooltip>
+    </template>
     <section class="layout-demo-hero">
       <div>
         <p>
@@ -120,7 +150,9 @@ import {
   Grid,
   Link,
   Warning,
-  InfoFilled
+  InfoFilled,
+  Fold,
+  Expand
 } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import {
@@ -201,6 +233,12 @@ const menus: LayoutMenuItem[] = [
   },
   { key: 'about', title: '关于', icon: markRaw(InfoFilled) }
 ]
+const menuBadges: Record<string, number> = {
+  reports: 3,
+  business: 8,
+  orders: 12,
+  tasks: 5
+}
 const activeTitle = computed(() => findLayoutMenu(menus, activeKey.value)?.title ?? activeKey.value)
 const breadcrumbs = computed(() => {
   const root = findLayoutRootMenu(menus, activeKey.value)
@@ -319,6 +357,40 @@ const activities = [
   font-size: 12px;
   white-space: nowrap;
   color: var(--pro-layout-text-secondary);
+}
+.layout-demo-menu-title.is-active {
+  font-weight: 600;
+}
+.layout-demo-menu-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.layout-demo-menu-badge :deep(.el-badge__content) {
+  position: static;
+  transform: none;
+}
+.layout-demo-tabs-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 36px;
+  width: 36px;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-right: 1px solid var(--pro-layout-line);
+  color: var(--pro-layout-text-regular);
+  background: transparent;
+  cursor: pointer;
+}
+.layout-demo-tabs-action:last-child {
+  border-right: 0;
+  border-left: 1px solid var(--pro-layout-line);
+}
+.layout-demo-tabs-action:hover {
+  color: var(--el-color-primary);
+  background: var(--pro-layout-hover-bg);
 }
 .layout-demo-hero,
 .layout-demo-card,
