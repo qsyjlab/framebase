@@ -1,5 +1,6 @@
 <template>
-  <div class="app-shell">
+  <RouterView v-if="route.meta.standalone" />
+  <div v-else class="app-shell">
     <aside class="app-sidebar">
       <RouterLink class="brand" to="/">
         <span class="brand__mark">F</span>

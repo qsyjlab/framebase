@@ -140,6 +140,17 @@ export const navigation: PlaygroundNavGroup[] = [
         components: ['ProConfigProvider']
       }
     ]
+  },
+  {
+    title: '布局',
+    items: [
+      {
+        path: '/layout',
+        title: '布局',
+        description: '完整后台壳：四种导航模式、菜单、标签页与设置抽屉。',
+        components: ['ProLayout']
+      }
+    ]
   }
 ]
 
@@ -228,6 +239,19 @@ const routes: RouteRecordRaw[] = [
     path: '/config',
     component: () => import('./views/ConfigPage.vue'),
     meta: { title: '全局配置', description: '局部尺寸、主题和组件默认值。' }
+  },
+  {
+    path: '/layout',
+    component: () => import('./views/LayoutPage.vue'),
+    meta: {
+      title: '布局',
+      description: '完整后台壳：四种导航模式、菜单、标签页与设置抽屉。'
+    }
+  },
+  {
+    path: '/layout/preview',
+    component: () => import('./views/LayoutPreviewPage.vue'),
+    meta: { title: 'ProLayout 独立预览', standalone: true }
   }
 ]
 

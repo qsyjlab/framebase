@@ -50,9 +50,7 @@ export default defineConfig({
         },
         {
           text: '路径类型',
-          items: [
-            { text: 'DataPath / DataIndex', link: '/core/data-path' }
-          ]
+          items: [{ text: 'DataPath / DataIndex', link: '/core/data-path' }]
         },
         {
           text: '分页工具',
@@ -111,9 +109,7 @@ export default defineConfig({
         },
         {
           text: '配置',
-          items: [
-            { text: 'useHookConfig / provideHookConfig', link: '/vue/use-hook-config' }
-          ]
+          items: [{ text: 'useHookConfig / provideHookConfig', link: '/vue/use-hook-config' }]
         }
       ],
       '/components': [
@@ -121,6 +117,7 @@ export default defineConfig({
         {
           text: '数据展示',
           items: [
+            { text: 'ProPageContainer 页面容器', link: '/components/pro-page-container' },
             { text: 'ProCard 卡片', link: '/components/pro-card' },
             { text: 'ProDescriptions 描述列表', link: '/components/pro-descriptions' },
             { text: 'ProList 列表', link: '/components/pro-list' },
@@ -168,6 +165,10 @@ export default defineConfig({
             { text: 'ProPreviewFile 文件预览', link: '/components/pro-preview-file' },
             { text: 'ProConfigProvider 全局配置', link: '/components/pro-config-provider' }
           ]
+        },
+        {
+          text: '布局',
+          items: [{ text: 'ProLayout 布局', link: '/components/pro-layout' }]
         }
       ]
     },

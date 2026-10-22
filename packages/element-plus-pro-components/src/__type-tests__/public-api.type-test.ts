@@ -9,6 +9,7 @@ import {
   ProField,
   ProForm,
   ProList,
+  ProPageContainer,
   ProSelect,
   ProStatus,
   ProTable,
@@ -27,6 +28,7 @@ import {
   type ProFormInstance,
   type ProFormSchema,
   type ProListInstance,
+  type ProPageContainerProps,
   type ProSelectInstance,
   type ProTableColumns,
   type ProTableInstance,
@@ -96,6 +98,12 @@ type TableReloadResult = Expect<Equal<ReturnType<(typeof table)['reload']>, Prom
 type LegacyTableDataResult = Expect<
   Equal<Awaited<ReturnType<(typeof table)['getData']>>, UserRecord[]>
 >
+
+const pageContainerProps: ProPageContainerProps = {
+  title: '用户详情',
+  breadcrumb: ['首页', { text: '用户', to: '/users' }],
+  footerAlign: 'right'
+}
 
 const listRef = shallowRef<ProListInstance<UserRecord> | null>(null)
 const list = useProList(listRef)
@@ -168,6 +176,7 @@ void [
   ProField,
   ProForm,
   ProList,
+  ProPageContainer,
   ProSelect,
   ProStatus,
   ProTable,
@@ -177,6 +186,7 @@ void [
   formSchema,
   requestUsers,
   table,
+  pageContainerProps,
   list,
   descriptions,
   select,

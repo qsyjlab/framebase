@@ -4,16 +4,17 @@ Framebase 按使用场景将组件分为四类。下表列出全部组件及其�
 
 ## 数据展示
 
-| 组件                                            | 说明                                  |
-| ----------------------------------------------- | ------------------------------------- |
-| [ProCard](/components/pro-card)                 | 内容卡片,统一标题、操作区与边距规范。 |
-| ProStatisticCard                                | 统计卡片,内置数值与趋势展示。         |
-| [ProDescriptions](/components/pro-descriptions) | 描述列表,Schema 化的详情展示。        |
-| [ProList](/components/pro-list)                 | 列表,支持选择、分页与自定义渲染。     |
-| [ProEmpty](/components/pro-empty)               | 空状态占位。                          |
-| [ProResult](/components/pro-result)             | 结果页,统一成功/失败/警告反馈。       |
-| [ProStatus](/components/pro-status)             | 状态点、状态标签与自定义语义颜色。    |
-| [ProBadge](/components/pro-badge)               | 通知红点、数量徽标与自定义颜色。      |
+| 组件                                               | 说明                                   |
+| -------------------------------------------------- | -------------------------------------- |
+| [ProPageContainer](/components/pro-page-container) | 页面级标题、面包屑、操作区与内容布局。 |
+| [ProCard](/components/pro-card)                    | 内容卡片,统一标题、操作区与边距规范。  |
+| ProStatisticCard                                   | 统计卡片,内置数值与趋势展示。          |
+| [ProDescriptions](/components/pro-descriptions)    | 描述列表,Schema 化的详情展示。         |
+| [ProList](/components/pro-list)                    | 列表,支持选择、分页与自定义渲染。      |
+| [ProEmpty](/components/pro-empty)                  | 空状态占位。                           |
+| [ProResult](/components/pro-result)                | 结果页,统一成功/失败/警告反馈。        |
+| [ProStatus](/components/pro-status)                | 状态点、状态标签与自定义语义颜色。     |
+| [ProBadge](/components/pro-badge)                  | 通知红点、数量徽标与自定义颜色。       |
 
 ## 操作反馈
 

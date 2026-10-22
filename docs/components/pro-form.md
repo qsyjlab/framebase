@@ -10,6 +10,96 @@ ProForm 是 Schema 驱动的高级表单组件，通过 `fields` 配置字段即
 pro-form/basic
 :::
 
+## useProForm 查询表单
+
+`useProForm` 除了提供表单命令（`validate`、`setFieldValue` 等），还内置查询参数维护：提交/重置时自动把表单值写入 `params`，配合 ProTable 的 `:params` 或 `usePagedList` 的 `params`，参数变化自动回第一页重新请求，不再需要手写 search 函数：
+
+```ts
+// ❌ 之前：每个页面都要手写一遍
+function search(val: { scopeName?: string }) {
+  params.value = Object.assign({}, params.value, val)
+}
+```
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { useProForm } from '@framebase/element-plus-pro-components'
+
+const formRef = ref()
+
+const searchFields = [
+  { key: 'scopeName', label: '名称', valueType: 'input' },
+  { key: 'status', label: '状态', valueType: 'select', valueEnum: {...} }
+]
+
+const { params, search, reset } = useProForm<{
+  scopeName?: string
+  status?: string
+}>(formRef, {
+  removeEmpty: true // 提交时去掉 '' / null / undefined / []
+})
+</script>
+
+<template>
+  <!-- search / reset 直接作为事件处理器：事件携带的表单值写入 params -->
+  <pro-form
+    ref="formRef"
+    inline
+    :fields="searchFields"
+    :action-props="{ autoOffset: false }"
+    @submit="search"
+    @reset="reset"
+  />
+
+  <pro-table :columns="columns" :request="request" :params="params" />
+</template>
+```
+
+`search` / `reset` 都是双模式函数：
+
+- **带值调用**（作为 `@submit` / `@reset` 事件处理器）：事件携带的表单值直接写入 `params`（提交前表单已完成校验，不会重复校验；`@reset` 路径不会二次 reset）
+- **无参调用**（程序化触发）：`search()` 校验通过后读取表单值写入 `params`；`reset()` 重置表单后写入重置值
+
+两者都返回是否发生更新（值未变化时为 `false`）。需要在 `params` 变化时做额外事情（如埋点、额外请求），直接 `watch(params, cb)`。
+
+搭配 `usePagedList` / `useCrud` 时，把 `params` 作为查询参数传入即可：
+
+```ts
+const table = usePagedList({
+  request,
+  params: () => form.params.value
+})
+```
+
+需要额外查询条件（非表单来源，如 Tab、排序）时在绑定处组合：
+
+```ts
+params: () => ({ ...form.params.value, tab: activeTab.value })
+```
+
+### 查询相关返回值
+
+| 属性     | 类型                            | 说明                                                  |
+| -------- | ------------------------------- | ----------------------------------------------------- |
+| `params` | `Ref<TModel>`                   | 当前查询参数，整体替换更新；绑定到 ProTable `:params` |
+| `search` | `(values?) => Promise<boolean>` | 查询；`@submit` 事件处理器或无参程序化调用            |
+| `reset`  | `(values?) => Promise<boolean>` | 重置；`@reset` 事件处理器或无参程序化调用             |
+
+### UseProFormOptions
+
+| 属性            | 类型                         | 默认值  | 说明                                                          |
+| --------------- | ---------------------------- | ------- | ------------------------------------------------------------- |
+| `initialValues` | `Partial<TModel>`            | `{}`    | 初始查询参数                                                  |
+| `transform`     | `(values: TModel) => TModel` | —       | 值进入 `params` 前的最后加工（改写 key、补充派生参数等）      |
+| `removeEmpty`   | `boolean`                    | `false` | 移除空值（`''` / `null` / `undefined` / `[]`）后再写入 params |
+
+### 设计说明
+
+- **整体替换而非合并**：每次提交/重置都用最新表单值整体替换 `params`，字段被移除后不会残留旧查询条件；额外的非表单参数在表格绑定处组合。
+- **值未变化则跳过更新**：重复点击查询不会触发重复请求；强制刷新请使用表格的 `reload` / `refresh`。
+- 不传 options 时查询能力保持惰性（`params` 初始为 `{}`），原有 `useProForm(formRef)` 用法完全不受影响。
+
 ## Props
 
 | 参数             | 说明                              | 类型                                              | 默认值 |
