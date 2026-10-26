@@ -121,6 +121,12 @@ export const navigation: PlaygroundNavGroup[] = [
         title: '轻量筛选',
         description: '行内紧凑筛选栏，支持展开/收起与多种边框样式。',
         components: ['ProLightFilter']
+      },
+      {
+        path: '/data/crud',
+        title: 'CRUD 编排',
+        description: 'useCrudTable：查询条件、选中、列定义与增删改查一体化。',
+        components: ['ProTable', 'ProModalForm', 'useCrudTable']
       }
     ]
   },
@@ -228,6 +234,14 @@ const routes: RouteRecordRaw[] = [
     meta: {
       title: '轻量筛选',
       description: '行内紧凑筛选栏，支持展开/收起与多种边框样式。'
+    }
+  },
+  {
+    path: '/data/crud',
+    component: () => import('./views/crud/CrudPage.vue'),
+    meta: {
+      title: 'CRUD 编排',
+      description: 'useCrudTable：查询条件、选中、列定义与增删改查一体化。'
     }
   },
   {
