@@ -96,21 +96,32 @@ pnpm release:publish
 
 ### 示例渲染与样式隔离
 
-`:::demo` 默认把示例渲染在 **iframe** 里（`DemoFrame` → `demo-runtime.html?demo=<路径>`），
-目的是让组件完全不接触 VitePress 的 `.vp-doc` 排版样式。运行时页不带导航侧栏，
-高度由 `ResizeObserver` 回传、暗色主题通过 `postMessage` 下发，示例代码无需任何改动。
+`:::demo` 默认**内联渲染**在文档流里。VitePress 的排版样式全部挂在 `.vp-doc` 下，
+而 `.vp-doc table`（0,1,1）会压过组件自己的 `.el-table__body`（0,1,0），
+导致示例被文档样式污染（表格变成 `display: block`、斑马纹覆盖等）。
 
-例外：以浮层（下拉、对话框）或整屏布局为主的示例，浮层可能被 iframe 边界裁切，
-此时用 `:::demo inline` 退回内联渲染：
+解决办法是 `.vitepress/plugins/vp-doc-specificity.ts`：构建期把 VitePress 默认主题里
+所有 `.vp-doc` 选择器包进 `:where()`，把特异性降到 (0,0,1)。
+
+```css
+.vp-doc table  (0,1,1)  →  :where(.vp-doc) table  (0,0,1)
+```
+
+于是文档里没有组件类的普通元素照旧吃 VitePress 样式，而组件内部带类名的元素
+自然胜出——这与 Element Plus 官方文档「用低特异性选择器写排版」思路一致，
+但不需要重写整套文档样式，也不需要 iframe，弹窗/下拉等浮层完全不受限。
+
+例外：如果示例会**反向污染文档**（例如写了全局选择器、`body`/`:root` 样式），
+用 `:::demo isolated` 把它放进 iframe：
 
 ```md
-:::demo inline 通过 request 进行分页请求
-pro-table/basic
+:::demo isolated 一个带全局样式的示例
+pro-layout/basic
 :::
 ```
 
-内联模式依赖 `theme/style.css` 里的 `.vp-raw` 重置块（对齐 Element Plus 官方文档的做法），
-新增冲突时需要在那个文件里补规则。
+iframe 模式下高度由 `ResizeObserver` 回传、暗色主题通过 `postMessage` 下发，
+浮层会被 iframe 边界约束，所以只作为逃生口使用。
 
 ## 文档部署
 

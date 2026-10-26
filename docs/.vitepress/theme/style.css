@@ -51,7 +51,8 @@
   }
 }
 
-.vp-doc table {
+/* 与 vp-doc-exclude-raw 插件保持同一约定：示例区域（.vp-raw 子树）不套用文档表格样式 */
+.vp-doc table:not(.vp-raw *) {
   display: block;
   border-collapse: collapse;
   margin: 20px 0;
@@ -71,130 +72,13 @@
 }
 
 /* ========================================
- * Element Plus 组件样式隔离
+ * 组件样式隔离
  *
- * Shadow DOM 在 EP 生态下不可行（Teleport/Popper/全局配置会失效），
- * EP 官方文档也是用同样的「.vp-raw 重置」方案。
- *
- * 优先级分析（关键）：
- * - .vp-doc table        (0,1,1)  →  EP .el-table__body (0,1,0)  → vp-doc 赢，需重置
- * - .vp-doc tr           (0,1,1)  →  EP .el-table tr    (0,1,1)  → EP 后加载本就赢，不需重置
- * - .vp-doc tr:nth-child(2n) (0,2,1) → EP .el-table tr (0,1,1) → vp-doc 赢，需重置
- * - .vp-doc th/td        (0,1,1)  →  EP .el-table th.el-table__cell (0,2,1) → EP 赢，不需重置
- *
- * 所以只重置 vp-doc 真正赢过 EP 的属性：
- *   table 的 display/margin/border-collapse/overflow
- *   tr:nth-child(2n) 的斑马纹背景
- *   tr 的 border-top
- * 不要重置 background-color / padding / font-weight，让 EP 接管
+ * VitePress 的 .vp-doc 排版样式会匹配到组件内部元素（例如 .vp-doc table 把
+ * <table> 改成 display:block）。这里不手写重置，而是由
+ * .vitepress/plugins/vp-doc-exclude-raw.ts 在构建期给这些选择器加上
+ * :not(.vp-raw *) —— 示例区域（.vp-raw 子树）不再命中任何 .vp-doc 规则。
  * ======================================== */
-
-/* ---------- 1. table / tr / th / td ----------
- * 影响：ProTable / ProEditableTable / ProDragSortTable / ProDescriptions
- */
-.vp-raw table {
-  display: table;
-  margin: 0;
-  border-collapse: separate;
-  overflow: visible;
-}
-
-/* 只撤销 vp-doc 强加的斑马纹（vp-doc :nth-child(2n) 优先级高于 EP .el-table tr），
-   重置为 transparent 后 EP .el-table tr 的 background-color 才能显示 */
-.vp-raw tr:nth-child(2n) {
-  background-color: transparent;
-}
-
-/* 撤销 vp-doc 给 tr 加的 border-top（EP 不用 border-top，用 td 的 border-bottom） */
-.vp-raw tr {
-  border-top: 0;
-}
-
-/* th/td 的 border 需要重置：vp-doc th, td { border: 1px solid } 是简写属性，
-   会覆盖 EP 设置的 border-bottom / border-right 的颜色。
-   重置为 0 后，EP 的 .el-table th.el-table__cell 会重新设置正确的边框 */
-.vp-raw th,
-.vp-raw td {
-  border: 0;
-}
-
-/* ---------- 2. ul / ol / li ----------
- * 影响：ProForm radio/checkbox 渲染为列表、ProList、分页器
- */
-.vp-raw ul,
-.vp-raw ol {
-  padding-left: 0;
-  margin: 0;
-  list-style: none;
-}
-
-.vp-raw li + li {
-  margin-top: 0;
-}
-
-.vp-raw li > ol,
-.vp-raw li > ul {
-  margin: 0;
-}
-
-/* ---------- 3. a 链接 ----------
- * 影响：ProTable 工具栏、ProForm 操作区
- */
-.vp-raw a {
-  font-weight: inherit;
-  color: inherit;
-  text-decoration: none;
-}
-
-.vp-raw a:hover {
-  color: inherit;
-}
-
-.vp-raw a > code {
-  color: inherit;
-}
-
-/* ---------- 4. p 段落 ----------
- * 影响：ProCard 内容、ProForm 提示、ProEmpty 文案
- */
-.vp-raw p {
-  margin: 0;
-  line-height: inherit;
-}
-
-/* ---------- 5. 行内代码 code ----------
- * 影响：ProField 代码字段、ProDescriptions 代码值
- */
-.vp-raw :not(pre) > code {
-  font-size: inherit;
-  color: inherit;
-  background-color: transparent;
-  border-radius: 0;
-  padding: 0;
-  font-weight: inherit;
-}
-
-/* ---------- 6. blockquote / strong / hr ---------- */
-.vp-raw blockquote {
-  margin: 0;
-  border-left: 0;
-  padding-left: 0;
-  color: inherit;
-}
-
-.vp-raw blockquote > p {
-  margin: 0;
-  font-size: inherit;
-}
-
-.vp-raw strong {
-  font-weight: 600;
-}
-
-.vp-raw hr {
-  margin: 0;
-  border-top: 0;
-}
 
 .reset-btn {
   background: transparent;

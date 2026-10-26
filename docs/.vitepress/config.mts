@@ -1,5 +1,6 @@
 import { defineConfig } from 'vitepress'
 import { transformDemo } from './plugins/transform-demo'
+import { vpDocExcludeRaw } from './plugins/vp-doc-exclude-raw'
 
 export default defineConfig({
   title: 'Framebase',
@@ -11,7 +12,7 @@ export default defineConfig({
     }
   },
   vite: {
-    plugins: []
+    plugins: [vpDocExcludeRaw()]
   },
   themeConfig: {
     nav: [

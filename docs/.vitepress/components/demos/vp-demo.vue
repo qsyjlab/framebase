@@ -12,8 +12,8 @@ const props = withDefaults(
     path?: string
     rawSource?: string
     description?: string
-    /** `:::demo inline` 时内联渲染，默认用 iframe 隔离 */
-    inline?: string
+    /** `:::demo isolated` 时用 iframe 渲染，默认内联 */
+    isolated?: string
   }>(),
   {
     description: ''
@@ -57,7 +57,12 @@ const copyCode = async () => {
     <p text="sm" v-html="decodedDescription" />
 
     <div class="example">
-      <Example v-if="path" :file="path" :demo="formatPathDemos[path]" :inline="Boolean(inline)" />
+      <Example
+        v-if="path"
+        :file="path"
+        :demo="formatPathDemos[path]"
+        :isolated="Boolean(isolated)"
+      />
 
       <ElDivider class="m-0" />
 

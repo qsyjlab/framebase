@@ -15,6 +15,7 @@ const name = ref('')
 const demo = ref<unknown>(null)
 
 let observer: ResizeObserver | undefined
+let popperObserver: MutationObserver | undefined
 let root: HTMLElement | null = null
 
 function applyTheme(theme: string | null) {
@@ -23,12 +24,34 @@ function applyTheme(theme: string | null) {
   document.documentElement.style.colorScheme = dark ? 'dark' : 'light'
 }
 
+function measureHeight() {
+  if (!root) return 0
+  const rootRect = root.getBoundingClientRect()
+  let bottom = rootRect.bottom
+  // Teleport 到 body 的浮层（下拉、tooltip、popover）是绝对定位的，
+  // 不计入 #demo-root 高度，但会超出它的下边界。
+  // 用 body 直接子节点的 rect 并集求真实下边界——不能直接读 scrollHeight，
+  // 那会把「上一轮撑大的 iframe 高度」算进去，导致只增不减。
+  Array.from(document.body.children).forEach(child => {
+    if (child === root) return
+    const rect = child.getBoundingClientRect()
+    if (rect.height > 0 && rect.width > 0) bottom = Math.max(bottom, rect.bottom)
+  })
+  return Math.ceil(Math.max(bottom, rootRect.height))
+}
+
 function reportHeight() {
-  if (!root) return
-  window.parent.postMessage(
-    { type: 'framebase-demo:height', height: Math.ceil(root.getBoundingClientRect().height) },
-    '*'
-  )
+  const height = measureHeight()
+  if (height <= 0) return
+  window.parent.postMessage({ type: 'framebase-demo:height', height }, '*')
+}
+
+/** 浮层挂载/卸载有过渡动画，等两帧再量，并补一次兜底测量。 */
+function scheduleReport() {
+  requestAnimationFrame(() => {
+    requestAnimationFrame(reportHeight)
+  })
+  window.setTimeout(reportHeight, 200)
 }
 
 function handleMessage(event: MessageEvent) {
@@ -50,12 +73,18 @@ onMounted(async () => {
     observer = new ResizeObserver(reportHeight)
     observer.observe(root)
   }
+  // 浮层由 Teleport 插到 body，监听 body 子节点变化即可感知开合
+  if (typeof MutationObserver !== 'undefined') {
+    popperObserver = new MutationObserver(scheduleReport)
+    popperObserver.observe(document.body, { childList: true })
+  }
   window.addEventListener('message', handleMessage)
   reportHeight()
 })
 
 onBeforeUnmount(() => {
   observer?.disconnect()
+  popperObserver?.disconnect()
   window.removeEventListener('message', handleMessage)
 })
 

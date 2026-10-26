@@ -10,16 +10,16 @@ defineProps({
     type: Object,
     required: true
   },
-  /** `:::demo inline` —— 内联渲染，依赖 .vp-raw 重置；默认走 iframe 隔离 */
-  inline: Boolean
+  /** `:::demo isolated` —— 用 iframe 彻底隔离；默认内联渲染 */
+  isolated: Boolean
 })
 </script>
 
 <template>
   <div class="example-showcase vp-raw">
     <ClientOnly>
-      <component :is="demo" v-if="inline && demo" class="vp-raw" v-bind="$attrs" />
-      <DemoFrame v-else :file="file" />
+      <DemoFrame v-if="isolated" :file="file" />
+      <component :is="demo" v-else-if="demo" class="vp-raw" v-bind="$attrs" />
     </ClientOnly>
   </div>
 </template>
