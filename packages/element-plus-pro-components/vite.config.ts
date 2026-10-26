@@ -3,7 +3,6 @@ import { createRequire } from 'node:module'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
-import ElementPlusStyles from 'unplugin-element-plus/vite'
 import Components from 'unplugin-vue-components/vite'
 import { createElementPlusResolvers } from '../../build/element-plus-resolver'
 
@@ -29,12 +28,11 @@ export default defineConfig(({ command }) => ({
     vueJsx(),
     Components({
       dts: false,
-      resolvers: [createElementPlusResolvers()]
-    }),
-    ElementPlusStyles({
-      // Directive styles are already supplied by ElementPlusResolver using
-      // their real component names (loading, popover and infinite-scroll).
-      ignoreComponents: ['LoadingDirective', 'PopoverDirective', 'InfiniteScroll']
+      // 库产物不注入 Element Plus 的按需样式：
+      // 1) `import 'element-plus/es/components/x/style/css'` 会让 SSR（Node 直接跑 ESM）
+      //    抛 ERR_UNKNOWN_FILE_EXTENSION: .css；
+      // 2) 样式副作用应当由使用方决定（全量 CSS / 自定义主题 / 自己的按需方案）。
+      resolvers: [createElementPlusResolvers({ importStyle: false })]
     })
   ],
   // `@framebase/core` is a workspace package. During build we resolve to its
