@@ -7,5 +7,6 @@ export * from './pro-table'
 export * from './pro-table-utils'
 export * from './pro-table-editable-utils'
 export * from './use-pro-table'
+export * from './use-crud-table'
 
 export default ProTable
