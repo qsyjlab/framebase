@@ -4,14 +4,9 @@
 
 ## 基础用法
 
-```vue
-<template>
-  <ProStatus tone="success" text="运行中" />
-  <ProStatus tone="processing" text="发布中" />
-  <ProStatus tone="warning" text="待确认" variant="tag" />
-  <ProStatus text="品牌状态" color="#722ed1" />
-</template>
-```
+:::demo 语义色点状状态、标签形态、自定义单色与完整颜色配置
+pro-status/basic
+:::
 
 完整自定义颜色：
 
@@ -43,4 +38,11 @@
 | pulse     | 是否启用呼吸动画   | `boolean`                          | `false`     |
 | live      | 无障碍动态播报模式 | `'off' \| 'polite' \| 'assertive'` | `'off'`     |
 
-`default` 与 `icon` 插槽均接收 `value`、`text`、`tone`、`variant`、`colors` 和 `meta`。
+## Slots
+
+| 插槽名  | 说明                      | 参数                                           |
+| ------- | ------------------------- | ---------------------------------------------- |
+| default | 替换状态文本              | `{ value, text, tone, variant, colors, meta }` |
+| icon    | 替换状态图标（圆点/图标） | `{ value, text, tone, variant, colors, meta }` |
+
+ProStatus 不抛出事件，也没有实例方法；状态切换完全由 props 驱动。

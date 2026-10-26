@@ -4,80 +4,9 @@
 
 ## 基础用法
 
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { ProStepsForm } from '@framebase/element-plus-pro-components'
-import type { FormSchema } from '@framebase/element-plus-pro-components'
-
-interface Model {
-  name: string
-  email: string
-  plan: string
-  remark: string
-}
-
-const formRef = ref()
-
-const steps = [
-  {
-    key: 'basic',
-    title: '基本信息',
-    description: '填写账户信息',
-    fields: [
-      {
-        field: 'name',
-        label: '姓名',
-        component: 'input',
-        rules: [{ required: true, message: '请输入姓名' }]
-      },
-      { field: 'email', label: '邮箱', component: 'input' }
-    ] as FormSchema<Model>[]
-  },
-  {
-    key: 'plan',
-    title: '套餐选择',
-    fields: [
-      {
-        field: 'plan',
-        label: '套餐',
-        component: 'select',
-        options: [
-          { label: '免费版', value: 'free' },
-          { label: '专业版', value: 'pro' }
-        ]
-      }
-    ] as FormSchema<Model>[]
-  },
-  {
-    key: 'confirm',
-    title: '确认信息',
-    fields: [{ field: 'remark', label: '备注', component: 'textarea' }] as FormSchema<Model>[],
-    beforeNext: values => {
-      if (!values.plan) {
-        alert('请先选择套餐')
-        return false
-      }
-      return true
-    }
-  }
-]
-
-async function onFinish(values: Model) {
-  await fetch('/api/orders', { method: 'POST', body: JSON.stringify(values) })
-  return true
-}
-</script>
-
-<template>
-  <ProStepsForm
-    ref="formRef"
-    :steps="steps"
-    :on-finish="onFinish"
-    @success="() => console.log('提交成功')"
-  />
-</template>
-```
+:::demo 基础用法
+pro-steps-form/basic
+:::
 
 通过 `actions` 插槽自定义底部按钮:
 

@@ -132,7 +132,9 @@ export default defineConfig({
           text: '操作反馈',
           items: [
             { text: 'ProAsyncButton 异步按钮', link: '/components/pro-async-button' },
-            { text: 'ProConfirmButton 确认按钮', link: '/components/pro-confirm-button' }
+            { text: 'ProConfirmButton 确认按钮', link: '/components/pro-confirm-button' },
+            { text: 'ProException 异常页', link: '/components/pro-exception' },
+            { text: 'ProErrorBoundary 错误边界', link: '/components/pro-error-boundary' }
           ]
         },
         {
@@ -155,7 +157,8 @@ export default defineConfig({
           items: [
             { text: 'ProTable 表格', link: '/components/pro-table' },
             { text: 'ProEditableTable 可编辑表格', link: '/components/pro-editable-table' },
-            { text: 'ProDragSortTable 拖拽排序表格', link: '/components/pro-drag-sort-table' }
+            { text: 'ProDragSortTable 拖拽排序表格', link: '/components/pro-drag-sort-table' },
+            { text: 'ProLightFilter 轻量筛选', link: '/components/pro-light-filter' }
           ]
         },
         {

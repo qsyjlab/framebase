@@ -22,6 +22,8 @@ Framebase 按使用场景将组件分为四类。下表列出全部组件及其�
 | -------------------------------------------------- | -------------------------------------- |
 | [ProAsyncButton](/components/pro-async-button)     | 自动加载、防重复执行与异步结果反馈。   |
 | [ProConfirmButton](/components/pro-confirm-button) | 危险操作确认、异步执行与显式权限控制。 |
+| [ProException](/components/pro-exception)          | 403/404/500 异常页与自定义插画。       |
+| [ProErrorBoundary](/components/pro-error-boundary) | 捕获子树异常，用兜底 UI 替换出错区域。 |
 
 ## 数据录入
 
@@ -47,6 +49,7 @@ Framebase 按使用场景将组件分为四类。下表列出全部组件及其�
 | [ProTable](/components/pro-table)                   | 请求驱动表格,分页/选择/列设置开箱即用。 |
 | [ProEditableTable](/components/pro-editable-table)  | 可编辑表格,行编辑/新增/校验/保存/删除。 |
 | [ProDragSortTable](/components/pro-drag-sort-table) | 拖拽排序表格。                          |
+| [ProLightFilter](/components/pro-light-filter)      | 行内轻量筛选栏,标签点击弹出筛选面板。   |
 
 ## 文件与配置
 

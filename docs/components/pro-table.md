@@ -181,6 +181,36 @@ const crud = useCrudTable<UserRecord, UserQuery, UserFormModel>({
 | request-state-change | 请求生命周期变化         | `lifecycle: ProTableRequestLifecycle` |
 | request-error        | 请求出错                 | `error: unknown`                      |
 
+## Slots
+
+| 插槽名        | 说明                 | 参数                                                    |
+| ------------- | -------------------- | ------------------------------------------------------- |
+| headerTitle   | 表格标题区           | —                                                       |
+| toolbar       | 工具栏左侧操作区     | `{ action, selectedKeys, selectedRows, loading, size }` |
+| extra         | 工具栏下方右侧信息区 | `{ data, loading, action }`                             |
+| alert         | 选中提示条整体       | `{ selectedKeys, selectedRows, clearSelection }`        |
+| alert-options | 提示条右侧操作区     | `{ selectedKeys, selectedRows, clearSelection }`        |
+| empty         | 空状态与错误态       | `{ status, error, retry }`                              |
+
+`action` 是表格命令的聚合对象，可直接在插槽里调用 `action.reload()` / `action.reset()` 等。
+
+## Expose
+
+通过模板 ref 或 `useProTable` 拿到实例后可使用下列成员（完整命令清单见上方「命令式调用 useProTable」）：
+
+| 成员                                                                                                                                  | 说明                                                                 |
+| ------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `getTable()`                                                                                                                          | 原始 ElTable 实例                                                    |
+| `data` / `loading` / `total`                                                                                                          | 响应式状态，读取即建立依赖追踪                                       |
+| `pageInfo` / `sorter` / `filters` / `serverState`                                                                                     | 分页、排序、筛选状态                                                 |
+| `selectedKeys` / `selectedRows`                                                                                                       | 选中态                                                               |
+| `requestLifecycle` / `error`                                                                                                          | 请求生命周期与最近一次错误                                           |
+| `reload` / `refresh` / `reset` / `setPageInfo` / `setSorter` / `setFilters` / `resetServerState`                                      | 数据命令                                                             |
+| `clearSelection` / `getSelectedRows` / `scrollTo` / `doLayout` / `doHeight`                                                           | 视图与选中命令                                                       |
+| `startEditable` / `saveEditable` / `cancelEditable` / `deleteEditable` / `validateEditable` / `saveAllEditable` / `cancelAllEditable` | 行内编辑命令                                                         |
+| `columnsSettingUtils`                                                                                                                 | 列设置：`mergeColumnsMap` / `resetColumnsMap` / `getColumnMapConfig` |
+| `editableCellUtils`                                                                                                                   | 行内编辑命令的聚合对象，便于整体透传给子组件                         |
+
 ## 类型
 
 ```ts

@@ -4,38 +4,9 @@
 
 ## 基础用法
 
-静态数据 + 搜索 + 勾选:
-
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { ProTree } from '@framebase/element-plus-pro-components'
-
-const checkedKeys = ref<number[]>([])
-const data = [
-  {
-    id: 1,
-    label: '部门 A',
-    children: [
-      { id: 11, label: '小组 A1' },
-      { id: 12, label: '小组 A2' }
-    ]
-  },
-  { id: 2, label: '部门 B' }
-]
-</script>
-
-<template>
-  <ProTree
-    :data="data"
-    node-key="id"
-    checkable
-    searchable
-    default-expand-all
-    v-model="checkedKeys"
-  />
-</template>
-```
+:::demo 静态数据 + 搜索 + 勾选:
+pro-tree/basic
+:::
 
 异步加载 + 字段映射:
 

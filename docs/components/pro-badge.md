@@ -2,21 +2,9 @@
 
 用于图标、头像和按钮上的通知红点、数量或短文本徽标，兼容 Element Plus Badge 的核心能力并补充语义色、呼吸动画和四方向定位。
 
-```vue
-<template>
-  <ProBadge dot pulse>
-    <el-button circle>通知</el-button>
-  </ProBadge>
-
-  <ProBadge :value="12" :max="9">
-    <el-button>未读消息</el-button>
-  </ProBadge>
-
-  <ProBadge value="NEW" color="#722ed1">
-    <el-button>版本更新</el-button>
-  </ProBadge>
-</template>
-```
+:::demo 图标、数字与文本徽标，支持语义色、呼吸动画和四方向定位
+pro-badge/basic
+:::
 
 ## Props
 
