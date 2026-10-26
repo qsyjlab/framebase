@@ -12,6 +12,8 @@ const props = withDefaults(
     path?: string
     rawSource?: string
     description?: string
+    /** `:::demo isolated` 时以 iframe 隔离渲染 */
+    isolated?: string
   }>(),
   {
     description: ''
@@ -55,7 +57,12 @@ const copyCode = async () => {
     <p text="sm" v-html="decodedDescription" />
 
     <div class="example">
-      <Example v-if="path" :file="path" :demo="formatPathDemos[path]" />
+      <Example
+        v-if="path"
+        :file="path"
+        :demo="formatPathDemos[path]"
+        :isolated="Boolean(isolated)"
+      />
 
       <ElDivider class="m-0" />
 

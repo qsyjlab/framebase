@@ -18,7 +18,10 @@ export function transformDemo(md: MarkdownIt) {
     render(tokens, idx) {
       const m = tokens[idx].info.trim().match(/^demo\s*(.*)$/)
       if (tokens[idx].nesting === 1) {
-        const description = m && m.length > 1 ? m[1] : ''
+        const rawInfo = m && m.length > 1 ? m[1].trim() : ''
+        // `:::demo isolated` —— 该示例用 iframe 隔离渲染
+        const isolated = /(^|\s)isolated(\s|$)/.test(rawInfo)
+        const description = rawInfo.replace(/\s*\bisolated\b\s*/, ' ').trim()
         const sourceFileToken = tokens[idx + 2]
         let source = ''
         const sourceFile = sourceFileToken.children?.[0].content ?? ''
@@ -28,7 +31,7 @@ export function transformDemo(md: MarkdownIt) {
 
         if (!source) throw new Error(`Incorrect source file: ${sourceFile}`)
 
-        return `<Demo  source="${encodeURIComponent(
+        return `<Demo${isolated ? ' isolated="true"' : ''}  source="${encodeURIComponent(
           highlight(source, 'vue')
         )}" path="${sourceFile}" raw-source="${encodeURIComponent(
           source

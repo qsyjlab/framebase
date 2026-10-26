@@ -6,7 +6,7 @@ ProTable 是基于 Element Plus Table 封装的高级表格组件，内置分页
 
 通过 `columns` 定义列，`request` 函数接收分页参数并返回 `{ data, total, success }`。`valueType` 配合 `valueEnum` 可快速渲染金额、状态等格式化内容。
 
-:::demo 通过 request 进行分页请求，状态列使用 valueEnum 渲染为标签
+:::demo isolated 通过 request 进行分页请求，状态列使用 valueEnum 渲染为标签
 pro-table/basic
 :::
 
@@ -38,6 +38,84 @@ await table.setPageInfo({ current: 2 })
 :::demo 通过 useProTable 读取 loading/total/selectedKeys 等响应式状态，并调用 reload/setPageInfo 命令
 pro-table/use-pro-table
 :::
+
+## 业务编排 useCrudTable
+
+`useProTable` 只负责「把实例包装成状态 + 命令」，查询条件、选中态、列定义与增删改查动作仍需业务自己拼装。`useCrudTable` 把这些重复逻辑收拢到一个泛型贯通的 hook 里，业务页只剩「声明接口 + 声明列 + 挂模板」：
+
+```ts
+import { shallowRef } from 'vue'
+import { useCrudTable, type CrudTableFormController } from '@framebase/element-plus-pro-components'
+import { createUser, deleteUser, deleteUsers, fetchUsers, updateUser } from './api'
+
+const formRef = shallowRef<CrudTableFormController<UserFormModel> | null>(null)
+
+const crud = useCrudTable<UserRecord, UserQuery, UserFormModel>({
+  request: fetchUsers,
+  defaultParams: { keyword: '', status: '' },
+  create: createUser,
+  update: (row, values) => updateUser(row.id, values),
+  remove: row => deleteUser(row.id),
+  removeMany: (_rows, keys) => deleteUsers(keys as number[]),
+  columns: ({ actionColumn }) => [
+    { key: 'name', dataIndex: 'name', title: '姓名', minWidth: 160 },
+    {
+      key: 'status',
+      dataIndex: 'status',
+      title: '状态',
+      valueType: 'status',
+      valueEnum: statusEnum
+    },
+    actionColumn()
+  ],
+  form: {
+    ref: formRef,
+    titles: { create: '新增用户', edit: '编辑用户' },
+    toFormValues: row => ({ name: row.name, email: row.email })
+  }
+})
+```
+
+模板只需要把 `tableProps` 整体透传，`columns` / `params` / `request` / 选中双向绑定都由它提供：
+
+```vue
+<ProTable v-bind="tableProps" ref="tableRef" />
+
+<el-input v-model="params.keyword" placeholder="搜索姓名" @keyup.enter="table.reload()" />
+<el-button :disabled="!isDirtyParams" @click="resetParams()">重置</el-button>
+<el-button @click="openCreate()">新增</el-button>
+<el-button :disabled="!selectedKeys.length" :loading="removing" @click="removeMany()">
+  批量删除
+</el-button>
+
+<!-- 表单只管收集值，提交由 submitForm 分派 create / update -->
+<ProModalForm ref="formRef" :fields="fields" :on-finish="submitForm" />
+```
+
+### 内置行为
+
+| 行为     | 说明                                                                                                                                   |
+| -------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| 二次确认 | `remove` / `removeMany` 默认弹 `ElMessageBox`，`confirm: { remove: false }` 关闭，传函数可自定义文案                                   |
+| 成功提示 | 默认「新增成功 / 更新成功 / 删除成功」，`messages: { create: false }` 关闭或改文案                                                     |
+| 刷新策略 | `create` 默认 `reload`（回第 1 页），`update` / `remove` / `removeMany` 默认 `refresh`（保持当前页），可用 `refreshOn` 覆盖为 `'none'` |
+| 删除末行 | 删除后当前页为空且不在第 1 页时，自动 `setPageInfo` 回上一页                                                                           |
+| 批量删除 | 未传 `rows` 时取当前选中行，成功后清空选中                                                                                             |
+| 并发保护 | 写操作进行中重复调用直接忽略；`creating` / `updating` / `removing` 可用于按钮 loading                                                  |
+| 查询条件 | `params` 是 `reactive` 对象，可直接 `v-model` 绑搜索表单；`setParams` 同值短路，避免多余请求                                           |
+
+### 返回值
+
+| 成员                                                     | 说明                                                                                           |
+| -------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `table` / `tableRef`                                     | 底层 `useProTable` 的完整能力与模板 ref                                                        |
+| `tableProps`                                             | 直接 `v-bind` 到 `<ProTable>`，已含 `columns` / `params` / `request` / `rowKey` / 选中双向绑定 |
+| `params` / `setParams` / `resetParams` / `isDirtyParams` | 查询条件状态与重置                                                                             |
+| `selectedKeys` / `selectedRows`                          | 选中态（与表格双向同步）                                                                       |
+| `create` / `update` / `remove` / `removeMany`            | 已含确认、提示、刷新策略的动作                                                                 |
+| `openCreate` / `openEdit` / `editingRow`                 | 配合 `form.ref` 打开表单容器，并记录当前编辑行                                                 |
+| `submitForm`                                             | 表单提交入口：有 `editingRow` 走 `update`，否则走 `create`                                     |
+| `submitting` / `creating` / `updating` / `removing`      | 写操作进行状态                                                                                 |
 
 ## Props
 

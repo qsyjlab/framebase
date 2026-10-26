@@ -1,14 +1,26 @@
-import { h } from 'vue'
+import { defineComponent, h } from 'vue'
 import Theme from 'vitepress/theme'
+import { useData } from 'vitepress'
 import './style.css'
 
 import 'prismjs/themes/prism.css'
+import DemoRuntime from '../components/demos/DemoRuntime.vue'
+
+/**
+ * iframe 运行时页：frontmatter `demoRuntime: true` 的页面只渲染单个示例，
+ * 不带导航/侧栏，也不进入 `.vp-doc` 作用域（VitePress 1.6 无 theme.layouts，只能在此分流）。
+ */
+const Layout = defineComponent({
+  name: 'FramebaseLayout',
+  setup() {
+    const { frontmatter } = useData()
+    return () => (frontmatter.value.demoRuntime ? h(DemoRuntime) : h(Theme.Layout, null, {}))
+  }
+})
 
 export default {
   extends: Theme,
-  Layout: () => {
-    return h(Theme.Layout, null, {})
-  },
+  Layout,
   async enhanceApp({ app }) {
     if (!import.meta.env.SSR) {
       const ElementPlus = (await import('element-plus')).default

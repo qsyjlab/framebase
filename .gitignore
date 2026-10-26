@@ -3,6 +3,7 @@ dist/
 .output/
 .cache/
 **/.vitepress/cache/
+**/.vitepress/.temp/
 coverage/
 *.log
 *.tgz
