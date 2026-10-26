@@ -74,16 +74,25 @@
 
 // Checkbox —— 尺寸与圆角必须覆盖在 .el-checkbox 上：
 // EP 2.14 在 .el-checkbox 处声明 --el-checkbox-*（14px / radius-small），
-// 写在 html:root 的同名词会被就近遮蔽；16px + radius-xs 避免方框趋近正圆。
-.el-checkbox {
-  --el-checkbox-border-radius: var(--framebase-radius-xs);
-  --el-checkbox-input-width: 16px;
-  --el-checkbox-input-height: 16px;
+// 且按需引入的组件样式会晚于主题注入，同特异性下会被 EP 覆盖；
+// 因此统一加 html 前缀提升特异性，保证 18px + 3px 真正生效。
+// 14px 配 6px 圆角会趋近正圆，18px + 3px 才是方形勾选框。
+html .el-checkbox {
+  --el-checkbox-border-radius: 3px;
+  --el-checkbox-input-width: 18px;
+  --el-checkbox-input-height: 18px;
 }
 
-.el-checkbox__inner {
+html .el-checkbox__inner {
   width: var(--el-checkbox-input-width);
   height: var(--el-checkbox-input-height);
+}
+
+// 勾选符号由 EP 用 top/left: 50% + translate(-45%, -60%) 居中绘制，
+// 只能改宽高，不要动 left/top，否则会破坏居中；按 18px 等比放到 4 × 9。
+html .el-checkbox__inner::after {
+  width: 4px;
+  height: 9px;
 }
 
 // Switch
