@@ -19,9 +19,13 @@ export function transformDemo(md: MarkdownIt) {
       const m = tokens[idx].info.trim().match(/^demo\s*(.*)$/)
       if (tokens[idx].nesting === 1) {
         const rawInfo = m && m.length > 1 ? m[1].trim() : ''
-        // `:::demo isolated` —— 该示例用 iframe 隔离渲染
-        const isolated = /(^|\s)isolated(\s|$)/.test(rawInfo)
-        const description = rawInfo.replace(/\s*\bisolated\b\s*/, ' ').trim()
+        // 默认渲染成 iframe，彻底隔离 VitePress 样式；
+        // `:::demo inline` 退回内联渲染（依赖 .vp-raw 重置），仅用于必须跟随页面排版的示例。
+        const inline = /(^|\s)inline(\s|$)/.test(rawInfo)
+        const description = rawInfo
+          .replace(/\s*\binline\b\s*/, ' ')
+          .replace(/\s*\bisolated\b\s*/, ' ')
+          .trim()
         const sourceFileToken = tokens[idx + 2]
         let source = ''
         const sourceFile = sourceFileToken.children?.[0].content ?? ''
@@ -31,7 +35,7 @@ export function transformDemo(md: MarkdownIt) {
 
         if (!source) throw new Error(`Incorrect source file: ${sourceFile}`)
 
-        return `<Demo${isolated ? ' isolated="true"' : ''}  source="${encodeURIComponent(
+        return `<Demo${inline ? ' inline="true"' : ''}  source="${encodeURIComponent(
           highlight(source, 'vue')
         )}" path="${sourceFile}" raw-source="${encodeURIComponent(
           source

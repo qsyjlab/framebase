@@ -6,7 +6,7 @@ ProTable 是基于 Element Plus Table 封装的高级表格组件，内置分页
 
 通过 `columns` 定义列，`request` 函数接收分页参数并返回 `{ data, total, success }`。`valueType` 配合 `valueEnum` 可快速渲染金额、状态等格式化内容。
 
-:::demo isolated 通过 request 进行分页请求，状态列使用 valueEnum 渲染为标签
+:::demo 通过 request 进行分页请求，状态列使用 valueEnum 渲染为标签
 pro-table/basic
 :::
 

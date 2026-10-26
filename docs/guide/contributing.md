@@ -94,6 +94,24 @@ pnpm release:publish
 - 组件示例放在 `docs/examples/`，通过 `:::demo` 语法嵌入文档
 - 新增组件文档后，需在 `docs/.vitepress/config.mts` 的 `sidebar` 中注册
 
+### 示例渲染与样式隔离
+
+`:::demo` 默认把示例渲染在 **iframe** 里（`DemoFrame` → `demo-runtime.html?demo=<路径>`），
+目的是让组件完全不接触 VitePress 的 `.vp-doc` 排版样式。运行时页不带导航侧栏，
+高度由 `ResizeObserver` 回传、暗色主题通过 `postMessage` 下发，示例代码无需任何改动。
+
+例外：以浮层（下拉、对话框）或整屏布局为主的示例，浮层可能被 iframe 边界裁切，
+此时用 `:::demo inline` 退回内联渲染：
+
+```md
+:::demo inline 通过 request 进行分页请求
+pro-table/basic
+:::
+```
+
+内联模式依赖 `theme/style.css` 里的 `.vp-raw` 重置块（对齐 Element Plus 官方文档的做法），
+新增冲突时需要在那个文件里补规则。
+
 ## 文档部署
 
 文档站点通过 GitHub Actions 自动部署到 GitHub Pages。
